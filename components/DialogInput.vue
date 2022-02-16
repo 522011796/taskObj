@@ -15,7 +15,7 @@
         </div>
       </div>
       <div class="dialog-content-block">
-        <el-input v-model="inputValue" placeholder="请填写信息"></el-input>
+        <el-input v-model="inputValue" :placeholder="placeholder ? placeholder : '请填写信息'"></el-input>
       </div>
       <div class="dialog-bottom-block">
         <el-row>
@@ -48,6 +48,10 @@ export default {
       default: false
     },
     title: {
+      type: String,
+      default: ''
+    },
+    placeholder: {
       type: String,
       default: ''
     }

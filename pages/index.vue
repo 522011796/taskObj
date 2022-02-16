@@ -1,7 +1,35 @@
 <template>
   <div class="container">
     <div class="header-item">
-      xxx
+      <el-row>
+        <el-col :span="8">
+          <el-button size="mini">退出</el-button>
+        </el-col>
+        <el-col :span="16" class="textRight">
+          <el-dropdown trigger="click">
+            <el-button type="success" size="mini">
+              {{ oprTitle }}<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>
+                <div @click="oprItem($event, 1, '创建场景')">
+                  创建场景
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div @click="oprItem($event, 2, '场所列表')">
+                  场所列表
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div @click="oprItem($event, 3, '模版列表')">
+                  模版列表
+                </div>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </el-col>
+      </el-row>
     </div>
     <div class="padding-left10 padding-right10 padding-top5" :style="contentStyle">
       <div v-for="n in 10" class="block-item bg-333333 marginBottom10 border-radius-5" @click="test">
@@ -208,8 +236,10 @@ import DialogMessage from "../components/DialogMessage";
 import DrawerTypeSheet from "../components/DrawerTypeSheet";
 import DrawerRoom from "../components/DrawerRoom";
 import DrawerDeviceGroup from "../components/DrawerDeviceGroup";
+import mixins from "../mixins/mixins";
 export default {
   layout: 'default',
+  mixins: [mixins],
   components: {
     DialogMessage,
     DrawerDeviceGroup,
@@ -219,6 +249,7 @@ export default {
   },
   data() {
     return {
+      oprTitle: '请选择',
       tableHeader: {},
       tableData: [],
       typeData: [{name:'原创',value:'1'},{name:'模版',value:'2'}],
@@ -232,10 +263,6 @@ export default {
       drawerRoom: false,
       drawerDeviceGroup: false,
       directionEdit: 'btt',
-      contentStyle:{
-        'height': '0px',
-        'overflow-y': 'auto'
-      },
       formSence:{
         id: '',
         envKey: '',
@@ -261,15 +288,9 @@ export default {
     }
   },
   mounted() {
-    this.hh();
+
   },
   methods: {
-    hh(){
-      if (process.browser) {
-        let screenWidth = window.innerWidth;
-        this.contentStyle.height = window.innerHeight - 40 + 'px';
-      }
-    },
     createTemp(){
       this.drawerTemp = true;
     },
@@ -328,6 +349,22 @@ export default {
     },
     changeInternal(data){
       this.formSence.internal = data;
+    },
+    oprItem(event, type, value){
+      this.oprTitle = value;
+      if (type == 1){
+        this.$router.push({
+          path: '/orderList'
+        });
+      }else if (type == 2){
+        this.$router.push({
+          path: '/envList'
+        });
+      }else if (type == 3){
+        this.$router.push({
+          path: '/templateList'
+        });
+      }
     },
     handleClose(done, type){
       this.drawerSheet = false;

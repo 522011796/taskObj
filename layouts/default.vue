@@ -1,6 +1,6 @@
 <template>
     <div>
-      <div :style="contentStyle">
+      <div :style="contentDefaultStyle">
         <vue-page-transition name="fade-in-right">
           <nuxt></nuxt>
         </vue-page-transition>
@@ -9,14 +9,13 @@
 </template>
 
 <script>
+    import mixins from "../mixins/mixins";
     export default {
       name: "default",
+      mixins: [mixins],
       data(){
         return {
-          contentStyle:{
-            'height': '0px',
-            'overflow-y': 'hiddle'
-          }
+
         }
       },
       mounted() {
@@ -29,15 +28,10 @@
         //window.removeEventListener('scroll', this.handleScroll) //  离开页面清除（移除）滚轮滚动事件
       },
       created() {
-        this.hh();
+
       },
       methods:{
-        hh(){
-          if (process.browser) {
-            let screenWidth = window.innerWidth;
-            this.contentStyle.height = window.innerHeight + 'px';
-          }
-        }
+
       }
     }
 </script>
