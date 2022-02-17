@@ -13,21 +13,21 @@
           <el-row>
             <el-col :span="4">
               <div class="textLeft">
-                <el-button size="mini" v-if="deviceType == true" type="text" class="color-666666" @click="returnGroup">返回</el-button>
+                <el-button size="mini" v-if="deviceType == true" type="text" class="color-666666" @click="returnGroup">{{$t('返回')}}</el-button>
                 <span v-else>&nbsp;</span>
               </div>
             </el-col>
             <el-col :span="16">
               <div class="textCenter">
                 <el-button-group>
-                  <el-button size="mini" :disabled="deviceType" :type="type == 1 ? 'success' : ''" @click="tabClick($event, 1)">批量</el-button>
-                  <el-button size="mini" :type="type == 2 ? 'success' : ''" @click="tabClick($event, 2)">任务</el-button>
+                  <el-button size="mini" :disabled="deviceType" :type="type == 1 ? 'success' : ''" @click="tabClick($event, 1)">{{$t('批量')}}</el-button>
+                  <el-button size="mini" :type="type == 2 ? 'success' : ''" @click="tabClick($event, 2)">{{$t('任务')}}</el-button>
                 </el-button-group>
               </div>
             </el-col>
             <el-col :span="4">
               <div class="textRight">
-                <el-button size="mini" type="text">确认</el-button>
+                <el-button size="mini" type="text">{{$t('确认')}}</el-button>
               </div>
             </el-col>
           </el-row>

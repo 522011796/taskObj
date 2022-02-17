@@ -3,7 +3,7 @@
     <div class="header-item">
       <el-row>
         <el-col :span="8">
-          <el-button size="mini">退出</el-button>
+          <el-button size="mini">{{$t('退出')}}</el-button>
         </el-col>
         <el-col :span="16" class="textRight">
           <el-dropdown trigger="click">
@@ -13,17 +13,17 @@
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
                 <div @click="oprItem($event, 1, '创建场景')">
-                  创建场景
+                  {{$t('创建场景')}}
                 </div>
               </el-dropdown-item>
               <el-dropdown-item>
                 <div @click="oprItem($event, 2, '场所列表')">
-                  场所列表
+                  {{$t('场所列表')}}
                 </div>
               </el-dropdown-item>
               <el-dropdown-item>
                 <div @click="oprItem($event, 3, '模版列表')">
-                  模版列表
+                  {{$t('模版列表')}}
                 </div>
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -52,13 +52,13 @@
             <el-col :span="12">
               <div class="textRight">
                 <span class="index-opr-block" @click.stop="createTemp">
-                  <a href="javascript:;" class="color-warning">创建模版</a>
+                  <a href="javascript:;" class="color-warning">{{$t('创建模版')}}</a>
                 </span>
                 <span class="index-opr-block" @click.stop="edit">
-                  <a href="javascript:;" class="color-success">修改</a>
+                  <a href="javascript:;" class="color-success">{{$t('修改')}}</a>
                 </span>
                 <span class="index-opr-block" @click.stop="del">
-                  <a href="javascript:;" class="color-error">删除</a>
+                  <a href="javascript:;" class="color-error">{{$t('删除')}}</a>
                 </span>
               </div>
             </el-col>
@@ -79,17 +79,17 @@
           <el-row>
             <el-col :span="3">
               <div class="textCenter">
-                <el-button size="mini" type="text" class="color-666666" @click="cancelScene">取消</el-button>
+                <el-button size="mini" type="text" class="color-666666" @click="cancelScene">{{$t('取消')}}</el-button>
               </div>
             </el-col>
             <el-col :span="18">
               <div class="textCenter">
-                <span>场景管理</span>
+                <span>{{$t('场景管理')}}</span>
               </div>
             </el-col>
             <el-col :span="3">
               <div class="textCenter">
-                <el-button size="mini" type="text" @click="okScene">确定</el-button>
+                <el-button size="mini" type="text" @click="okScene">{{$t('确定')}}</el-button>
               </div>
             </el-col>
           </el-row>
@@ -97,27 +97,27 @@
       </div>
       <div>
         <el-form class="custom-form" label-width="90px" ref="formSence" :model="formSence">
-          <el-form-item label="场景名称" prop="pass" @click.native="showInput">
+          <el-form-item :label="$t('场景名称')" prop="pass" @click.native="showInput">
             <div class="textRight">
-              <label>{{ formSence.name != '' ?  formSence.name : '请设置'}}</label>
+              <label>{{ formSence.name != '' ?  formSence.name : $t('请设置')}}</label>
               <label class="fa fa-chevron-right"></label>
             </div>
           </el-form-item>
-          <el-form-item label="房间" prop="pass" @click.native="showRoom">
+          <el-form-item :label="$t('房间')" prop="pass" @click.native="showRoom">
             <div class="textRight">
-              <label>{{ formSence.roomId != '' ?  formSence.roomId : '请设置'}}</label>
+              <label>{{ formSence.roomId != '' ?  formSence.roomId : $t('请设置')}}</label>
               <label class="fa fa-chevron-right"></label>
             </div>
           </el-form-item>
-          <el-form-item label="场景类型" prop="pass" @click.native="showType">
+          <el-form-item :label="$t('场景类型')" prop="pass" @click.native="showType">
             <div class="textRight">
               <div class="textRight">
-                <label>{{ formSence.sceneType != '' ?  formSence.sceneType : '请设置'}}</label>
+                <label>{{ formSence.sceneType != '' ?  formSence.sceneType : $t('请设置')}}</label>
                 <label class="fa fa-chevron-right"></label>
               </div>
             </div>
           </el-form-item>
-          <el-form-item label="场景开源" prop="pass">
+          <el-form-item :label="$t('场景开源')" prop="pass">
             <div class="textRight">
               <el-switch
                 v-model="formSence.openSource"
@@ -127,7 +127,7 @@
               </el-switch>
             </div>
           </el-form-item>
-          <el-form-item label="内部调用" prop="pass">
+          <el-form-item :label="$t('内部调用')" prop="pass">
             <div class="textRight">
               <el-switch
                 v-model="formSence.internal"
@@ -155,17 +155,17 @@
           <el-row>
             <el-col :span="3">
               <div class="textCenter">
-                <el-button size="mini" type="text" class="color-666666" @click="cancelTemp">取消</el-button>
+                <el-button size="mini" type="text" class="color-666666" @click="cancelTemp">{{$t('取消')}}</el-button>
               </div>
             </el-col>
             <el-col :span="18">
               <div class="textCenter">
-                <span>模版管理</span>
+                <span>{{$t('模版管理')}}</span>
               </div>
             </el-col>
             <el-col :span="3">
               <div class="textCenter">
-                <el-button size="mini" type="text" @click="okTemp">确定</el-button>
+                <el-button size="mini" type="text" @click="okTemp">{{$t('确定')}}</el-button>
               </div>
             </el-col>
           </el-row>
@@ -173,21 +173,21 @@
       </div>
       <div>
         <el-form class="custom-form" label-width="90px" ref="formTpl" :model="formTpl">
-          <el-form-item label="模版名称" prop="pass" @click.native="showInput">
+          <el-form-item :label="$t('模版名称')" prop="pass" @click.native="showInput">
             <div class="textRight">
-              <label>{{ formTpl.tplName != '' ?  formTpl.tplName : '请设置'}}</label>
+              <label>{{ formTpl.tplName != '' ?  formTpl.tplName : $t('请设置')}}</label>
               <label class="fa fa-chevron-right"></label>
             </div>
           </el-form-item>
-          <el-form-item label="模版类型" prop="pass" @click.native="showTempType">
+          <el-form-item :label="$t('模版类型')" prop="pass" @click.native="showTempType">
             <div class="textRight">
               <div class="textRight">
-                <label>{{ formTpl.tplType != '' ?  formTpl.tplType : '请设置'}}</label>
+                <label>{{ formTpl.tplType != '' ?  formTpl.tplType : $t('请设置')}}</label>
                 <label class="fa fa-chevron-right"></label>
               </div>
             </div>
           </el-form-item>
-          <el-form-item label="模版开源" prop="pass">
+          <el-form-item :label="$t('模版开源')" prop="pass">
             <div class="textRight">
               <el-switch
                 v-model="formTpl.tplOpen"
@@ -197,7 +197,7 @@
               </el-switch>
             </div>
           </el-form-item>
-          <el-form-item label="设备名称" prop="pass" @click.native="showDeviceList">
+          <el-form-item :label="$t('设备名称')" prop="pass" @click.native="showDeviceList">
             <div class="textRight">
               <div class="textRight">
                 <label>
@@ -209,9 +209,9 @@
               </div>
             </div>
           </el-form-item>
-          <el-form-item label="模版描述" prop="pass">
+          <el-form-item :label="$t('模版描述')" prop="pass">
             <div class="textRight">
-              <el-input type="textarea" :rows="3" placeholder="请输入模版描述" v-model="formTpl.tplDesc"></el-input>
+              <el-input type="textarea" :rows="3" :placeholder="$t('请输入模版描述')" v-model="formTpl.tplDesc"></el-input>
             </div>
           </el-form-item>
         </el-form>
@@ -249,11 +249,11 @@ export default {
   },
   data() {
     return {
-      oprTitle: '请选择',
+      oprTitle: this.$t('请设置'),
       tableHeader: {},
       tableData: [],
-      typeData: [{name:'原创',value:'1'},{name:'模版',value:'2'}],
-      tempTypeData: [{name:'个人',value:'1'},{name:'系统',value:'2'}],
+      typeData: [{name:this.$t('原创'),value:'1'},{name:this.$t('模版'),value:'2'}],
+      tempTypeData: [{name:this.$t('个人'),value:'1'},{name:this.$t('系统'),value:'2'}],
       drawerEdit: false,
       drawerTemp: false,
       dialogInput: false,

@@ -13,7 +13,7 @@
           <el-row>
             <el-col :span="24">
               <div class="textCenter">
-                <span>选择信息</span>
+                <span>{{$t('选择信息')}}</span>
               </div>
             </el-col>
           </el-row>

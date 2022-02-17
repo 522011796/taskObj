@@ -11,17 +11,17 @@
       width="280px">
       <div slot="title">
         <div class="dialog-header-block">
-          <span class="color-666666 font-size-14 fontBold">{{ title ? title : '提示' }}</span>
+          <span class="color-666666 font-size-14 fontBold">{{ title ? title : $t('提示') }}</span>
         </div>
       </div>
       <div class="dialog-content-block textCenter">
-        <span>{{message ? message : '确定删除该数据吗？'}}</span>
+        <span>{{message ? message : $t('确定删除该数据吗？')}}</span>
       </div>
       <div class="dialog-bottom-block">
         <el-row>
           <el-col :span="11">
             <div class="textCenter" @click="cancelDialog">
-              <span>取消</span>
+              <span>{{$t('取消')}}</span>
             </div>
           </el-col>
           <el-col :span="2">
@@ -31,7 +31,7 @@
           </el-col>
           <el-col :span="11">
             <div class="textCenter color-success" @click="okDialog">
-              <span>确定</span>
+              <span>{{$t('确定')}}</span>
             </div>
           </el-col>
         </el-row>

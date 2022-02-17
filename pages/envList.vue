@@ -5,11 +5,11 @@
         <el-col :span="4">
           <el-button size="mini" type="text" @click="returnIndex">
             <i class="fa fa-chevron-left color-disabled"></i>
-            <span class="color-disabled">返回</span>
+            <span class="color-disabled">{{$t("返回")}}</span>
           </el-button>
         </el-col>
         <el-col :span="16" class="textCenter">
-          <span>场所列表</span>
+          <span>{{$t("场所列表")}}</span>
         </el-col>
         <el-col :span="4">
           <span>&nbsp;</span>

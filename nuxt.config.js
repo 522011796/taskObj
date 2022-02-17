@@ -27,7 +27,12 @@ export default {
   plugins: [
     '@/plugins/element-ui',
     {src: '@/plugins/vueGantt', ssr: false},
-    '@/plugins/vuePageTrasition'
+    '@/plugins/vuePageTrasition',
+    '@/plugins/i18n',
+    '@/plugins/axios',
+    {src: '@/plugins/vueColors', ssr: false},
+    '@/plugins/moment',
+    '@/plugins/qs',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

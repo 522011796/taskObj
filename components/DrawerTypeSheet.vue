@@ -13,7 +13,7 @@
           <el-row>
             <el-col :span="24">
               <div class="textCenter">
-                <span>选择信息</span>
+                <span>{{$t('选择信息')}}</span>
               </div>
             </el-col>
           </el-row>
@@ -24,7 +24,7 @@
           <span class="color-666666">{{ item.name }}</span>
         </div>
         <div @click="itemClick($event, 'cancel')" class="drawer-item-class color-disabled">
-          <span>取消</span>
+          <span>{{$t('取消')}}</span>
         </div>
       </div>
     </el-drawer>
