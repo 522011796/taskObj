@@ -33,6 +33,7 @@ export default {
     {src: '@/plugins/vueColors', ssr: false},
     '@/plugins/moment',
     '@/plugins/qs',
+    '@/plugins/vueToast',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

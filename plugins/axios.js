@@ -1,4 +1,3 @@
-import {showLoading, hideLoading} from '../utils/loading';
 export default function({store, redirect, req, router, $axios }) {
   // request interceptor
   let jsonData = {
@@ -31,9 +30,6 @@ export default function({store, redirect, req, router, $axios }) {
   );
   $axios.onRequest(config => {
     //console.log(config)
-    if (config.loading != false){
-      showLoading();
-    }
   });
 
   // response interceptor
@@ -46,31 +42,24 @@ export default function({store, redirect, req, router, $axios }) {
     response => {
       const res = response;
       if(response.config.url.indexOf(".json") != -1){
-        hideLoading();
         return res
       }else{
         if (res.data.code === 200) {
-          hideLoading();
           return res;
         } else if (res.data.code === 3022) {
           return res;
         } else if (res.data.code === 401) {
-          hideLoading();
           redirect('/login');
           return res;
         } else if (res.data.code === 403) {
-          hideLoading();
           //redirect('/noPermission');
           return res;
         } else if (res.data.code === 404) {
-          hideLoading();
           //redirect('/404');
           return res;
         }else {
-          hideLoading();
           return res;
         }
-        hideLoading();
       }
       //return Promise.reject(new Error(res.msg || 'Error'))
       return response;

@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <loading :pag-loading="pagLoading"></loading>
     <div class="header-item">
       <el-row>
         <el-col :span="4">
@@ -17,13 +18,13 @@
       </el-row>
     </div>
     <div class="padding-left10 padding-right10 padding-top5" :style="contentStyle">
-      <div v-for="(item, index) in 20" :key="index" class="block-item bg-333333 marginBottom10 border-radius-5" @click="selEnv($event, item)">
+      <div v-for="(item, index) in tableData" :key="item.id" class="block-item bg-333333 marginBottom10 border-radius-5" @click="selEnv($event, item)">
         <div class="padding-lf10">
           <div class="padding-top5">
-            <span class="font-size-14">name</span>
+            <span class="font-size-14">{{ item.envName }}</span>
           </div>
           <div class="marginTop5">
-            <span class="color-disabled">subTitle</span>
+            <span class="color-disabled">{{ item.envKey }}</span>
           </div>
         </div>
       </div>
@@ -33,14 +34,18 @@
 
 <script>
 import mixins from "../mixins/mixins";
+import {common, commonConfig} from "../utils/api/url";
+import {MessageCommonTips} from "../utils/utils";
+import Loading from "../components/Loading";
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
-
+    Loading
   },
   data() {
     return {
+      pagLoading: false,
       tableHeader: {},
       tableData: []
     }
@@ -48,15 +53,35 @@ export default {
   mounted() {
 
   },
+  created() {
+    this.init();
+  },
   methods: {
     selEnv($event, item){
       this.$router.push({
-        path: '/'
+        path: '/',
+        query: {
+          envKey: item.envKey
+        }
       });
     },
     returnIndex(){
       this.$router.push({
         path: '/'
+      });
+    },
+    init(){
+      let params = {
+
+      };
+      this.pagLoading = true;
+      this.$axios.get(commonConfig.baseUrl + common.envList, {params: params,sessionId: this.sessionId, userKey: this.userKey}).then(res => {
+        if (res.data.code == 200){
+          this.tableData = res.data.data;
+        }else {
+          MessageCommonTips(this, res.data.msg, 'error');
+        }
+        this.pagLoading = false;
       });
     }
   }

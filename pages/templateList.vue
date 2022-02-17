@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <loading :pag-loading="pagLoading"></loading>
     <div class="header-item">
       <el-row>
         <el-col :span="4">
@@ -10,8 +11,8 @@
         </el-col>
         <el-col :span="16" class="textCenter">
           <el-button-group>
-            <el-button :type="type == 1 ? 'success' : ''" size="mini" @click="selType($event, 1)">{{$t("我的")}}</el-button>
-            <el-button :type="type == 2 ? 'success' : ''" size="mini" @click="selType($event, 2)">{{$t("系统")}}</el-button>
+            <el-button :type="type == 2 ? 'success' : ''" size="mini" @click="selType($event, 2)">{{$t("我的")}}</el-button>
+            <el-button :type="type == 1 ? 'success' : ''" size="mini" @click="selType($event, 1)">{{$t("系统")}}</el-button>
             <el-button :type="type == 3 ? 'success' : ''" size="mini" @click="selType($event, 3)">{{$t("待接收")}}</el-button>
           </el-button-group>
         </el-col>
@@ -21,36 +22,37 @@
       </el-row>
     </div>
     <div class="padding-left10 padding-right10 padding-top5" :style="contentStyle">
-      <div v-for="(item, index) in 10" :key="index" class="block-item bg-333333 marginBottom10 border-radius-5" @click="selEnv($event, item)">
+      <div v-for="(item, index) in tableData" :key="item.id" class="block-item bg-333333 marginBottom10 border-radius-5" @click="selEnv($event, item)">
         <el-row>
           <el-col :span="12">
             <div class="padding-lf10">
               <div class="padding-top5">
-                <span class="font-size-14">name</span>
+                <span class="font-size-14">{{ item.tplName }}</span>
               </div>
               <div class="marginTop5">
-                <span class="color-disabled">subTitle</span>
+                <span class="color-disabled" v-if="type == 2">{{ item.tplDesc }}</span>
+                <span class="color-disabled" v-if="type == 3">{{ item.nickName }}</span>
               </div>
             </div>
           </el-col>
           <el-col :span="12">
             <div class="textRight">
-              <span class="item-opr-block" v-if="type == 1" @click.stop="shareTemp($event, item)">
+              <span class="item-opr-block" v-if="type == 2" @click.stop="shareTemp($event, item, 'share')">
                 <a href="javascript:;" class="color-disabled">{{$t("分享")}}</a>
               </span>
               <span class="item-opr-block" v-if="type == 1 || type == 2" @click.stop="useTemp($event, item)">
                 <a href="javascript:;" class="color-warning">{{$t("使用")}}</a>
               </span>
-              <span class="item-opr-block" v-if="type == 1" @click.stop="editTemp($event, item)">
+              <span class="item-opr-block" v-if="type == 2" @click.stop="editTemp($event, item)">
                 <a href="javascript:;" class="color-success">{{$t("修改")}}</a>
               </span>
-              <span class="item-opr-block" v-if="type == 1" @click.stop="delTemp($event, item)">
+              <span class="item-opr-block" v-if="type == 2" @click.stop="delTemp($event, item, 'share')">
                 <a href="javascript:;" class="color-error">{{$t("删除")}}</a>
               </span>
-              <span class="item-opr-block" v-if="type == 3" @click.stop="arrowTemp($event, item)">
+              <span class="item-opr-block" v-if="type == 3" @click.stop="arrowTemp($event, item, 3)">
                 <a href="javascript:;" class="color-success">{{$t("接受")}}</a>
               </span>
-              <span class="item-opr-block" v-if="type == 3" @click.stop="refectTemp($event, item)">
+              <span class="item-opr-block" v-if="type == 3" @click.stop="arrowTemp($event, item, 2)">
                 <a href="javascript:;" class="color-error">{{$t("拒绝")}}</a>
               </span>
             </div>
@@ -116,10 +118,14 @@
 import mixins from "../mixins/mixins";
 import DialogInput from "../components/DialogInput";
 import DrawerTempList from "../components/DrawerTempList";
+import {common, commonConfig} from "../utils/api/url";
+import {MessageCommonTips} from "../utils/utils";
+import Loading from "../components/Loading";
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
+    Loading,
     DrawerTempList,
     DialogInput
 
@@ -130,18 +136,21 @@ export default {
       placeholder: '',
       tableHeader: {},
       tableData: [],
-      type: 1,
+      type: 2,
+      oprType: '',
+      pagLoading: false,
       dialogInput: false,
       dialogMessage: false,
       drawerEdit: false,
       drawerTemp: false,
       drawerTempList: false,
       directionEdit: 'btt',
+      tplData: '',
       formTpl:{
         id: '',
         tplName: '',
         tplOpen: true,
-        tplType: 2,
+        tplType: 1,
         tplSource: '',
         tplDesc: ''
       }
@@ -150,9 +159,36 @@ export default {
   mounted() {
 
   },
+  created() {
+    this.init(2);
+  },
   methods: {
+    init(type){
+      let url = '';
+      let params = {};
+      this.data = [];
+      if (type == 3){
+        params = {
+          statusSet: '1'
+        };
+        url = common.queryReceiveTplShareInfoList;
+      }else {
+        params = {
+          tplType: type
+        };
+        url = common.queryTplInfoList;
+      }
+      this.pagLoading = true;
+      this.$axios.get(this.baseUrl + url, {params: params, sessionId: this.sessionId, userKey: this.userKey}).then(res => {
+        if (res.data.code == 200){
+          this.tableData = res.data.data;
+        }
+        this.pagLoading = false;
+      });
+    },
     selType(event, type){
       this.type = type;
+      this.init(type);
     },
     selEnv($event, item){
       this.$router.push({
@@ -165,6 +201,8 @@ export default {
       });
     },
     shareTemp(event, item){
+      this.oprType = 'share';
+      this.tplData = item;
       this.title = this.$t('分享模版');
       this.placeholder = this.$t('请填写分享的账号信息');
       this.dialogInput = true;
@@ -177,14 +215,33 @@ export default {
     useTemp(event, item){
       this.drawerTempList = true;
     },
-    delTemp(event, item){
+    delTemp(event, item, type){
+      this.oprType = type;
+      this.tplData = item;
       this.dialogMessage = true;
     },
     editTemp(event, item){
+      this.formTpl = {
+        id: item.id,
+        tplName: item.tplName,
+        tplDesc: item.tplDesc
+      };
       this.drawerTemp = true;
     },
-    arrowTemp(event, item){
-
+    arrowTemp(event, item, status){
+      let params = {
+        status: status,
+        tplShareId: item.id
+      };
+      params = this.$qs.stringify(params);
+      this.$axios.post(this.baseUrl + common.handleShareTplInfo, params, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+        if (res.data.code == 200){
+          MessageCommonTips(res.data.msg);
+          this.init(this.type);
+        }else {
+          MessageCommonTips(res.data.msg);
+        }
+      });
     },
     refectTemp(event, item){
 
@@ -194,18 +251,67 @@ export default {
       this.dialogMessage = false;
     },
     okDialog(data){
-      console.log(data);
+      if (data == ''){
+        return;
+      }
+      if (this.oprType == 'share'){
+        let params = {
+          account: data,
+          tplId: this.tplData.id
+        };
+        params = this.$qs.stringify(params);
+        this.$axios.post(this.baseUrl + common.sendShareTplInfo, params, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+          if (res.data.code == 200){
+            MessageCommonTips(res.data.msg);
+            this.dialogInput = false;
+          }else {
+            MessageCommonTips(res.data.msg);
+          }
+        });
+      }
     },
     okDeleteDialog(data){
-      console.log(data);
+      let params = {
+        tplId: this.tplData.id
+      };
+      params = this.$qs.stringify(params);
+      this.$axios.post(this.baseUrl + common.deleteTplInfo, params, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+        if (res.data.code == 200){
+          this.init(this.type);
+          this.item = "";
+          this.dialogMessage = false;
+        }else {
+          MessageCommonTips(res.data.msg);
+        }
+      });
     },
     cancelTemp(){
       this.drawerTemp = false;
     },
     okTemp(){
-      this.drawerTemp = false;
+      let params = {
+        tplId: this.formTpl.id,
+        tplName: this.formTpl.tplName,
+        tplOpen: this.formTpl.tplOpen,
+        tplType: this.formTpl.tplType,
+        tplDesc: this.formTpl.tplDesc,
+        tplSource: ''
+      };
+      params = this.$qs.stringify(params);
+      let url = common.editTplInfo;
+      this.$axios.post(this.baseUrl + url, params, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+        if (res.data.code == 200){
+          this.drawerTemp = false;
+          this.init(this.type);
+          MessageCommonTips(res.data.msg);
+        }else {
+          MessageCommonTips(res.data.msg);
+        }
+      });
     },
     handleClose(done, type){
+      this.oprType = '';
+      this.tplData = '';
       if (type == false){
         this.drawerTempList = false;
       }

@@ -1,9 +1,10 @@
 <template>
   <div class="container">
+    <loading :pag-loading="pagLoading"></loading>
     <div class="header-item">
       <el-row>
         <el-col :span="8">
-          <el-button size="mini">{{$t('退出')}}</el-button>
+          <el-button size="mini" @click="logout">{{$t('退出')}}</el-button>
         </el-col>
         <el-col :span="16" class="textRight">
           <el-dropdown trigger="click">
@@ -32,20 +33,20 @@
       </el-row>
     </div>
     <div class="padding-left10 padding-right10 padding-top5" :style="contentStyle">
-      <div v-for="n in 10" class="block-item bg-333333 marginBottom10 border-radius-5" @click="test">
+      <div v-for="(item, index) in tableData" :key="index" class="block-item bg-333333 marginBottom10 border-radius-5" @click="test">
         <div>
           <el-row>
             <el-col :span="12">
               <div class="padding-lf10">
                 <div class="marginTop5">
-                  <span class="font-size-14">name</span>
-                  <span>(0/0)</span>
+                  <span class="font-size-14">{{ item.sceneName }}</span>
+                  <span>({{item.successCount}}/{{item.totalCount}})</span>
                 </div>
                 <div class="marginTop10">
                   <span>
-                    <img src="~/static/img/1.png" class="icon-item"/>
+                    <img v-if="item.roomId" :src="require(`~/static/img/${item.roomId}.png`)" class="icon-item"/>
                   </span>
-                  <span class="color-666666 subTitle-item">subTitle</span>
+                  <span class="color-666666 subTitle-item">{{ item.roomId }}</span>
                 </div>
               </div>
             </el-col>
@@ -237,6 +238,7 @@ import DrawerTypeSheet from "../components/DrawerTypeSheet";
 import DrawerRoom from "../components/DrawerRoom";
 import DrawerDeviceGroup from "../components/DrawerDeviceGroup";
 import mixins from "../mixins/mixins";
+import {common} from "../utils/api/url";
 export default {
   layout: 'default',
   mixins: [mixins],
@@ -249,6 +251,7 @@ export default {
   },
   data() {
     return {
+      pagLoading: false,
       oprTitle: this.$t('请设置'),
       tableHeader: {},
       tableData: [],
@@ -288,9 +291,23 @@ export default {
     }
   },
   mounted() {
-
+    this.init();
+  },
+  created() {
   },
   methods: {
+    init(){
+      let params = {
+        envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey")
+      };
+      this.pagLoading = true;
+      this.$axios.get(this.baseUrl + common.senceList, {params: params, sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+        if (res.data.code == 200){
+          this.tableData = res.data.data;
+        }
+        this.pagLoading = false;
+      });
+    },
     createTemp(){
       this.drawerTemp = true;
     },
@@ -389,6 +406,16 @@ export default {
     },
     okTemp(){
       this.drawerTemp = false;
+    },
+    logout(){
+      this.$axios.get(this.baseUrl + common.logout, {sessionId: this.sessionId, userKey: this.userKey}).then(res => {
+        if (res.data.code == 200) {
+          localStorage.removeItem("envKey");
+          localStorage.removeItem("sessionId");
+          localStorage.removeItem("accountRole");
+          this.$router.push("/login");
+        }
+      });
     },
     test(){
       this.$router.push({

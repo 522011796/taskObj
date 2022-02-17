@@ -59,10 +59,13 @@ export default {
   computed: {
     drawer_:{
       get(){
+        if (this.dialogInput == false){
+          this.inputValue = '';
+        }
         return this.dialogInput
       },
       set(v){
-        this.$emit("changeDialog",v)
+        this.$emit("changeDialog",v);
       }
     }
   },

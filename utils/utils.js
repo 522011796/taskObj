@@ -1,4 +1,5 @@
 import { Message } from 'element-ui';
+import showToast from './../components/toast/index';
 
 export function oneOf (value, validList) {
   for (let i = 0; i < validList.length; i++) {
@@ -39,20 +40,8 @@ export function MessageWarning(text = '警告') {
   })
 }
 
-export function MessageCommonTips(_self, value, type) {
-  if (_self.appType == 'app'){
-    _self.$toast(value);
-  }else {
-    if (type == 'success'){
-      MessageSuccess(value);
-    }else if (type == 'warning'){
-      MessageWarning(value);
-    }else if (type == 'error'){
-      MessageError(value);
-    }else {
-      MessageWarning(value);
-    }
-  }
+export function MessageCommonTips(value) {
+  showToast(value);
 }
 
 export function getLength (str) {
