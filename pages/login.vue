@@ -136,7 +136,7 @@ export default {
     },
     isNeedImageCode(){
       if (this.form.username == "" || this.form.password == ""){
-        MessageCommonTips(this, this.$t("请输入账号信息！"), 'warning');
+        MessageCommonTips(this.$t("请输入账号信息！"));
         return;
       }
       let params = {
@@ -169,7 +169,7 @@ export default {
             }
           }
         }else {
-          MessageCommonTips(this, res.data.msg, 'error');
+          MessageCommonTips(res.data.msg);
         }
         this.loading = false;
       });
@@ -208,7 +208,7 @@ export default {
             localStorage.setItem("account", JSON.stringify(this.restaurants));
           }
         }else {
-          MessageCommonTips(this, res.data.msg, 'error');
+          MessageCommonTips(res.data.msg);
           this.getImageCode();
         }
         this.loading = false;
@@ -223,7 +223,7 @@ export default {
           this.envListData = res.data.data;
           this.drawerVisible = true;
         }else {
-          MessageCommonTips(this, res.data.msg, 'error');
+          MessageCommonTips(res.data.msg);
         }
       });
     },

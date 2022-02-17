@@ -52,13 +52,13 @@
             </el-col>
             <el-col :span="12">
               <div class="textRight">
-                <span class="index-opr-block" @click.stop="createTemp">
+                <span class="index-opr-block" @click.stop="createTemp($event, item)">
                   <a href="javascript:;" class="color-warning">{{$t('创建模版')}}</a>
                 </span>
-                <span class="index-opr-block" @click.stop="edit">
+                <span class="index-opr-block" @click.stop="edit($event, item)">
                   <a href="javascript:;" class="color-success">{{$t('修改')}}</a>
                 </span>
-                <span class="index-opr-block" @click.stop="del">
+                <span class="index-opr-block" @click.stop="del($event, item)">
                   <a href="javascript:;" class="color-error">{{$t('删除')}}</a>
                 </span>
               </div>
@@ -239,6 +239,7 @@ import DrawerRoom from "../components/DrawerRoom";
 import DrawerDeviceGroup from "../components/DrawerDeviceGroup";
 import mixins from "../mixins/mixins";
 import {common} from "../utils/api/url";
+import {MessageCommonTips} from "../utils/utils";
 export default {
   layout: 'default',
   mixins: [mixins],
@@ -266,6 +267,8 @@ export default {
       drawerRoom: false,
       drawerDeviceGroup: false,
       directionEdit: 'btt',
+      removeSenceItem: '',
+      timer: null,
       formSence:{
         id: '',
         envKey: '',
@@ -308,13 +311,28 @@ export default {
         this.pagLoading = false;
       });
     },
-    createTemp(){
+    senceInfo(senceId){
+      let params = {
+        envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey"),
+        sceneId: senceId
+      };
+      this.$axios.get(this.baseUrl + common.senceInfo, {params: params,sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+        if (res.data.code == 201){
+          clearInterval(this.timer);
+          this.timer = null;
+          this.dialogMessage = false;
+          this.init();
+        }
+      });
+    },
+    createTemp(event, item){
       this.drawerTemp = true;
     },
-    edit(){
+    edit(event, item){
       this.drawerEdit = true;
     },
-    del(){
+    del(event, item){
+      this.removeSenceItem = item;
       this.dialogMessage = true;
     },
     showInput(){
@@ -333,6 +351,7 @@ export default {
       this.drawerDeviceGroup = true;
     },
     cancelDialog(){
+      this.removeSenceItem = '';
       this.dialogInput = false;
       this.dialogMessage = false;
     },
@@ -340,7 +359,24 @@ export default {
       console.log(data);
     },
     okDeleteDialog(data){
-      console.log(data);
+      let _self = this;
+      let params = {
+        envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey"),
+        sceneId: this.removeSenceItem.sceneId
+      };
+      params = this.$qs.stringify(params);
+      this.$axios.post(this.baseUrl + common.removeSence, params, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+        if (res.data.code == 200){
+          clearInterval(this.timer);
+          this.dialogMessage = false;
+          this.pagLoading = true;
+          this.timer = setInterval(function (){
+            _self.senceInfo(_self.removeSenceItem.sceneId);
+          },1000);
+        }else {
+          MessageCommonTips(res.data.msg);
+        }
+      });
     },
     typeItemClick(data){
       if (data != 'cancel'){
