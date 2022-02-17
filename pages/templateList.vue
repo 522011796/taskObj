@@ -107,16 +107,20 @@
     <dialog-message :dialog-message="dialogMessage" @cancel="cancelDialog" @okClick="okDeleteDialog"></dialog-message>
 
     <dialog-input :title="title" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelDialog" @okClick="okDialog"></dialog-input>
+
+    <drawer-temp-list :drawer-temp-list="drawerTempList" @handleClose="handleClose"></drawer-temp-list>
   </div>
 </template>
 
 <script>
 import mixins from "../mixins/mixins";
 import DialogInput from "../components/DialogInput";
+import DrawerTempList from "../components/DrawerTempList";
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
+    DrawerTempList,
     DialogInput
 
   },
@@ -131,6 +135,7 @@ export default {
       dialogMessage: false,
       drawerEdit: false,
       drawerTemp: false,
+      drawerTempList: false,
       directionEdit: 'btt',
       formTpl:{
         id: '',
@@ -170,7 +175,7 @@ export default {
       this.dialogInput = true;
     },
     useTemp(event, item){
-
+      this.drawerTempList = true;
     },
     delTemp(event, item){
       this.dialogMessage = true;
@@ -199,6 +204,11 @@ export default {
     },
     okTemp(){
       this.drawerTemp = false;
+    },
+    handleClose(done, type){
+      if (type == false){
+        this.drawerTempList = false;
+      }
     }
   }
 }

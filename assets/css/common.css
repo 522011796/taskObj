@@ -312,5 +312,14 @@ span,div,button,label{
   height: 40px;
   padding: 0px 10px;
 }
+.item-light-block{
+  height: 50px;
+  line-height: 50px;
+  background: #F2F6FC;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  color: #666666;
+  padding: 0px 10px;
+}
 
 
