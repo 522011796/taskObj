@@ -20,8 +20,8 @@
         </div>
       </div>
       <div>
-        <div v-for="(item, index) in 100" :key="index" @click="itemClick($event, item)" class="drawer-item-class">
-          <span class="color-666666">xxxx</span>
+        <div v-for="(item, index) in data" :key="index" @click="itemClick($event, item, index)" class="drawer-item-class">
+          <span class="color-666666">{{ item.name }}</span>
         </div>
       </div>
     </el-drawer>
@@ -66,8 +66,8 @@ export default {
     }
   },
   methods: {
-    itemClick(event, item){
-      this.$emit('click', item);
+    itemClick(event, item, index){
+      this.$emit('click', item, index);
     },
     handleClose(done) {
       this.$emit('handleClose', done);

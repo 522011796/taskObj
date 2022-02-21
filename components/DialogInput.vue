@@ -15,7 +15,7 @@
         </div>
       </div>
       <div class="dialog-content-block">
-        <el-input v-model="inputValue" :placeholder="placeholder ? placeholder : $t('请填写信息')"></el-input>
+        <el-input :message_="message_" v-model="inputValue" :placeholder="placeholder ? placeholder : $t('请填写信息')"></el-input>
       </div>
       <div class="dialog-bottom-block">
         <el-row>
@@ -54,6 +54,10 @@ export default {
     placeholder: {
       type: String,
       default: ''
+    },
+    message: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -61,12 +65,17 @@ export default {
       get(){
         if (this.dialogInput == false){
           this.inputValue = '';
+        }else {
+          this.inputValue = this.message;
         }
-        return this.dialogInput
+        return this.dialogInput;
       },
       set(v){
         this.$emit("changeDialog",v);
       }
+    },
+    message_(){
+      this.inputValue = this.message;
     }
   },
   data() {

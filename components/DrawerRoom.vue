@@ -21,13 +21,13 @@
       </div>
       <div class="padding-full10">
         <el-row :gutter="8">
-          <el-col :span="8" v-for="(item, index) in 50" :key="index" @click.native="itemClick($event, item)">
+          <el-col :span="8" v-for="(item, index) in data" :key="index" @click.native="itemClick($event, item)">
             <div class="textCenter collection-item-block">
               <div>
-                <img src="~/static/img/1.png" class="collection-item-icon"/>
+                <img :src="require(`~/static/img/${item.id}.png`)" class="collection-item-icon"/>
               </div>
               <div>
-                <span class="color-666666">房间</span>
+                <span class="color-666666">{{ item.name }}</span>
               </div>
             </div>
           </el-col>

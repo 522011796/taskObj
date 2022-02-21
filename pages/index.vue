@@ -46,7 +46,7 @@
                   <span>
                     <img v-if="item.roomId" :src="require(`~/static/img/${item.roomId}.png`)" class="icon-item"/>
                   </span>
-                  <span class="color-666666 subTitle-item">{{ item.roomId }}</span>
+                  <span class="color-666666 subTitle-item">{{ globalRoomObj[item.roomId] }}</span>
                 </div>
               </div>
             </el-col>
@@ -98,22 +98,22 @@
       </div>
       <div>
         <el-form class="custom-form" label-width="90px" ref="formSence" :model="formSence">
-          <el-form-item :label="$t('场景名称')" prop="pass" @click.native="showInput">
-            <div class="textRight">
+          <el-form-item :label="$t('场景名称')" prop="pass" @click.native="showInput('scene')">
+            <div class="textRight color-666666">
               <label>{{ formSence.name != '' ?  formSence.name : $t('请设置')}}</label>
               <label class="fa fa-chevron-right"></label>
             </div>
           </el-form-item>
           <el-form-item :label="$t('房间')" prop="pass" @click.native="showRoom">
-            <div class="textRight">
-              <label>{{ formSence.roomId != '' ?  formSence.roomId : $t('请设置')}}</label>
+            <div class="textRight color-666666">
+              <label>{{ formSence.roomId != '' ?  globalRoomObj[formSence.roomId] : $t('请设置')}}</label>
               <label class="fa fa-chevron-right"></label>
             </div>
           </el-form-item>
-          <el-form-item :label="$t('场景类型')" prop="pass" @click.native="showType">
+          <el-form-item :label="$t('场景类型')" prop="pass">
             <div class="textRight">
               <div class="textRight">
-                <label>{{ formSence.sceneType != '' ?  formSence.sceneType : $t('请设置')}}</label>
+                <label>{{ formSence.sceneType != '' ?  sceneTypeInfo(formSence.sceneType) : $t('请设置')}}</label>
                 <label class="fa fa-chevron-right"></label>
               </div>
             </div>
@@ -121,6 +121,7 @@
           <el-form-item :label="$t('场景开源')" prop="pass">
             <div class="textRight">
               <el-switch
+                disabled
                 v-model="formSence.openSource"
                 active-color="#13ce66"
                 inactive-color="#ff4949"
@@ -172,18 +173,18 @@
           </el-row>
         </div>
       </div>
-      <div>
+      <div v-loading="templateLoading">
         <el-form class="custom-form" label-width="90px" ref="formTpl" :model="formTpl">
-          <el-form-item :label="$t('模版名称')" prop="pass" @click.native="showInput">
-            <div class="textRight">
+          <el-form-item :label="$t('模版名称')" prop="pass" @click.native="showInput('template')">
+            <div class="textRight color-666666">
               <label>{{ formTpl.tplName != '' ?  formTpl.tplName : $t('请设置')}}</label>
               <label class="fa fa-chevron-right"></label>
             </div>
           </el-form-item>
-          <el-form-item :label="$t('模版类型')" prop="pass" @click.native="showTempType">
-            <div class="textRight">
+          <el-form-item :label="$t('模版类型')" prop="pass" @click.native="role == 'ROLE_ADMIN' ? showTempType : ''">
+            <div class="textRight" :class="role == 'ROLE_ADMIN' ? 'color-666666' : 'color-disabled'">
               <div class="textRight">
-                <label>{{ formTpl.tplType != '' ?  formTpl.tplType : $t('请设置')}}</label>
+                <label>{{ formTpl.tplType != '' ?  templateTypeInfo(formTpl.tplType) : $t('请设置')}}</label>
                 <label class="fa fa-chevron-right"></label>
               </div>
             </div>
@@ -191,6 +192,7 @@
           <el-form-item :label="$t('模版开源')" prop="pass">
             <div class="textRight">
               <el-switch
+                disabled
                 v-model="formTpl.tplOpen"
                 active-color="#13ce66"
                 inactive-color="#ff4949"
@@ -200,11 +202,11 @@
           </el-form-item>
           <el-form-item :label="$t('设备名称')" prop="pass" @click.native="showDeviceList">
             <div class="textRight">
-              <div class="textRight">
+              <div class="textRight color-666666">
                 <label>
-                  <span>0</span>
+                  <span>{{deviceSetCount}}</span>
                   /
-                  <span class="color-success">0</span>
+                  <span class="color-success">{{deviceListCount}}</span>
                 </label>
                 <label class="fa fa-chevron-right"></label>
               </div>
@@ -223,11 +225,11 @@
 
     <dialog-message :dialog-message="dialogMessage" @cancel="cancelDialog" @okClick="okDeleteDialog"></dialog-message>
 
-    <dialog-input :dialog-input="dialogInput" @cancel="cancelDialog" @okClick="okDialog"></dialog-input>
+    <dialog-input :dialog-input="dialogInput" :message="inputValue" @cancel="cancelDialog" @okClick="okDialog"></dialog-input>
 
-    <drawer-room :drawer-room="drawerRoom" @click="roomItemClick" @handleClose="handleClose"></drawer-room>
+    <drawer-room :drawer-room="drawerRoom" :data="globalRoomList" @click="roomItemClick" @handleClose="handleClose"></drawer-room>
 
-    <drawer-device-group :drawer-device-group="drawerDeviceGroup" @click="groupItemClick" @handleClose="handleClose"></drawer-device-group>
+    <drawer-device-group :drawer-device-group="drawerDeviceGroup" :data="deviceTplData" @click="groupItemClick" @cancelGroup="cancelGroup"  @okGroup="okGroup" @handleClose="handleClose"></drawer-device-group>
   </div>
 </template>
 
@@ -239,10 +241,11 @@ import DrawerRoom from "../components/DrawerRoom";
 import DrawerDeviceGroup from "../components/DrawerDeviceGroup";
 import mixins from "../mixins/mixins";
 import {common} from "../utils/api/url";
-import {MessageCommonTips} from "../utils/utils";
+import {inArray, MessageCommonTips, templateType} from "../utils/utils";
+import mixinsData from "../mixins/mixinsData";
 export default {
   layout: 'default',
-  mixins: [mixins],
+  mixins: [mixins,mixinsData],
   components: {
     DialogMessage,
     DrawerDeviceGroup,
@@ -254,10 +257,12 @@ export default {
     return {
       pagLoading: false,
       oprTitle: this.$t('请设置'),
+      inputValue: '',
       tableHeader: {},
       tableData: [],
       typeData: [{name:this.$t('原创'),value:'1'},{name:this.$t('模版'),value:'2'}],
-      tempTypeData: [{name:this.$t('个人'),value:'1'},{name:this.$t('系统'),value:'2'}],
+      tempTypeData: [{name:this.$t('个人'),value:'2'},{name:this.$t('系统'),value:'1'}],
+      templateLoading: false,
       drawerEdit: false,
       drawerTemp: false,
       dialogInput: false,
@@ -269,6 +274,13 @@ export default {
       directionEdit: 'btt',
       removeSenceItem: '',
       timer: null,
+      editSceneList: [],
+      inputType: '',
+      role: '',
+      deviceSetCount: 0,
+      deviceListCount: 0,
+      deviceTplBakData: [],
+      deviceTplData: [],
       formSence:{
         id: '',
         envKey: '',
@@ -281,7 +293,8 @@ export default {
         sceneType: 1,
         sourceCode: '',
         openSource: true,
-        img: ''
+        img: '',
+        duration: 0
       },
       formTpl:{
         id: '',
@@ -295,6 +308,7 @@ export default {
   },
   mounted() {
     this.init();
+    this.role = localStorage.getItem("accountRole");
   },
   created() {
   },
@@ -326,16 +340,48 @@ export default {
       });
     },
     createTemp(event, item){
+      this.deviceSetCount = 0;
+      this.deviceListCount = 0;
+      this.deviceTplBakData =  [];
+      this.deviceTplData = [];
       this.drawerTemp = true;
+      this.templateLoading = true;
+      setTimeout(() => {
+        this.getSourceUrl(item.sourceUrl);
+      },500);
     },
     edit(event, item){
+      this.$axios.get(item.sourceUrl).then(res => {
+        this.formSence = {
+          id: res.data.id,
+          envKey: '',
+          name: res.data.name,
+          iconId:  res.data.icon,
+          internal: res.data.internal == 1 ? true : false,
+          roomId: res.data.room,
+          sceneId: res.data.id,
+          sceneName: res.data.name,
+          sceneType: 1,
+          sourceCode: '',
+          openSource: true,
+          img: '',
+          duration: res.data.duration,
+        };
+        this.editSceneList = res.data.tasks;
+      });
       this.drawerEdit = true;
     },
     del(event, item){
       this.removeSenceItem = item;
       this.dialogMessage = true;
     },
-    showInput(){
+    showInput(type){
+      this.inputType = type;
+      if (type == 'scene'){
+        this.inputValue = this.formSence.name;
+      }else if (type == 'template'){
+        this.inputValue = this.formTpl.tplName;
+      }
       this.dialogInput = true;
     },
     showType(){
@@ -348,15 +394,22 @@ export default {
       this.drawerRoom = true;
     },
     showDeviceList(){
+      this.deviceTplData = JSON.parse(JSON.stringify(this.deviceTplBakData));
       this.drawerDeviceGroup = true;
     },
     cancelDialog(){
       this.removeSenceItem = '';
+      this.inputType = '';
       this.dialogInput = false;
       this.dialogMessage = false;
     },
     okDialog(data){
-      console.log(data);
+      if (this.inputType == 'scene'){
+        this.formSence.name = data;
+      }else if (this.inputType == 'template'){
+        this.formTpl.tplName = data;
+      }
+      this.dialogInput = false;
     },
     okDeleteDialog(data){
       let _self = this;
@@ -380,15 +433,18 @@ export default {
     },
     typeItemClick(data){
       if (data != 'cancel'){
+        this.formSence.sceneType = data.value;
       }
       this.drawerSheet = false;
     },
     tempTypeItemClick(data){
       if (data != 'cancel'){
+        this.formTpl.tplType = data.value;
       }
       this.drawerTempSheet = false;
     },
     roomItemClick(data){
+      this.formSence.roomId = data.id;
       this.drawerRoom = false;
     },
     groupItemClick(data){
@@ -427,7 +483,7 @@ export default {
       if (type == 'device'){
         console.log(111);
       }else{
-        this.drawerDeviceGroup= false;
+        //this.drawerDeviceGroup= false;
       }
       done();
     },
@@ -435,13 +491,198 @@ export default {
       this.drawerEdit = false;
     },
     okScene(){
-      this.drawerEdit = false;
+      //源码用
+      let dataObj = {
+        id:this.formSence.id,
+        room: this.formSence.roomId,
+        name: this.formSence.name,
+        icon: 1,
+        enable: 1,
+        internal: this.formSence.internal == false ? 0 : 1,
+        duration: this.formSence.duration,
+        tasks: this.editSceneList
+      };
+      //云端用
+      let codeData = {
+        envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey"),
+        iconId: 1,
+        internal: this.formSence.internal,
+        openSource: false,
+        roomId: this.formSence.roomId,
+        sceneName: this.formSence.name,
+        sceneType: 1,
+        sourceCode: JSON.stringify(dataObj)
+      };
+      if (this.formSence.id != ""){
+        codeData['sceneId'] = this.formSence.id;
+      }
+      codeData = this.$qs.stringify(codeData);
+
+      let url = common.editSence;
+
+      this.$axios.post(this.baseUrl + url, codeData, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+        if (res.data.code == 200){
+          this.installSence(res.data.data.sceneId, dataObj.tasks);
+          this.drawerEdit = false;
+        }else {
+          MessageCommonTips(res.data.msg);
+        }
+        this.drawerEdit = false;
+      });
+    },
+    installSence(senceId, tasks){
+      let params = {
+        envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey"),
+        sceneId: senceId
+      };
+      params = this.$qs.stringify(params);
+      this.$axios.post(this.baseUrl + common.installSence, params, {sessionId: this.sessionId, userKey: this.userKey}).then(res => {
+        if (res.data.code == 200){
+          MessageCommonTips(res.data.msg);
+          this.init();
+        }else {
+          MessageCommonTips(res.data.msg);
+        }
+      });
     },
     cancelTemp(){
       this.drawerTemp = false;
     },
     okTemp(){
-      this.drawerTemp = false;
+      let dataExtraJSon = [];
+      let dataIndex = 0;
+      let errorCount = 0;
+      let params = {
+        tplName: this.formTpl.tplName,
+        tplOpen: this.formTpl.tplOpen,
+        tplType: this.formTpl.tplType,
+        tplDesc: this.formTpl.tplDesc
+      };
+
+      let sourceData = this.formTpl.tplSource.tasks;
+      let dArr = [];
+      let sourceDataExtra = [];
+      let dataJSon = {};
+
+      if (this.formTpl.tplName == ""){
+        MessageCommonTips(this.$t("请输入模版名称"));
+        return;
+      }
+      if (this.deviceSetCount != this.deviceListCount){
+        MessageCommonTips(this.$t("请编辑设备名称"));
+        return;
+      }
+
+      //console.log(this.deviceTplData);
+      for (let i = 0; i < this.deviceTplData.length; i++){
+        let extraT = this.deviceTplData[i]['t'];
+        let extraD = this.deviceTplData[i]['d'];
+        let dataObj = {};
+        let dataArr = [];
+
+        if (errorCount > 0){
+          break;
+        }
+
+        for (let j = 0; j < extraD.length; j++){
+          if (extraD[j]['extraSn'] == "" || extraD[j]['extraSn'] == undefined){
+            errorCount++;
+            break;
+          }
+          dataIndex++;
+          let key = '$'+dataIndex;
+          dataObj[key] = extraD[j]['name'];
+          dataArr.push(dataObj);
+
+          dataExtraJSon.push({
+            key: key,
+            sn: extraD[j]['extraSn']
+          });
+        }
+
+        if (extraT == 1){
+          dataJSon['light'] = dataObj;
+        }else if (extraT == 2){
+          dataJSon['switch'] = dataObj;
+        }else if (extraT == 3){
+          dataJSon['curtains'] = dataObj;
+        }else if (extraT == 5){
+          dataJSon['music'] = dataObj;
+        }
+      }
+
+      params['tplAbstract'] = JSON.stringify(dataJSon);
+
+      for (let i = 0; i < sourceData.length; i++){
+        let d = sourceData[i].d;
+        let extraT = sourceData[i].t;
+        sourceDataExtra.push({
+          i: sourceData[i].i,
+          n: sourceData[i].n,
+          t: sourceData[i].t,
+          d: []
+        });
+        for (let j = 0; j < d.length; j++){
+          if (dArr.indexOf(d[j]) == -1){
+            dArr.push(d[j]);
+          }
+        }
+        //console.log(dArr);
+        for (let j = 0; j < d.length; j++){
+          let key = "";
+          for (let k = 0; k < dataExtraJSon.length; k++){
+            if (d[j] == dataExtraJSon[k].sn){
+              key = dataExtraJSon[k].key;
+            }
+          }
+          sourceDataExtra[i]['d'].push(key);
+        }
+      }
+      params['tplSource'] = JSON.stringify(sourceDataExtra);
+
+      if (errorCount > 0){
+        MessageCommonTips(this.$t("有未设置的设备位置,请设置！"));
+        return;
+      }
+
+      params = this.$qs.stringify(params);
+      let url = common.createTplInfo;
+      this.configLoading = true;
+      this.$axios.post(this.baseUrl + url, params, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+        if (res.data.code == 200){
+          this.drawerCreateTplVisible = false;
+          this.tplSetDeviceVisible = false;
+          MessageCommonTips(res.data.msg);
+        }else {
+          MessageCommonTips(res.data.msg);
+        }
+        this.drawerTemp = false;
+      });
+    },
+    cancelGroup(){
+      this.drawerDeviceGroup = false;
+    },
+    okGroup(){
+      let num = 0;
+      let deviceSetCount = 0;
+      let deviceListCount = 0;
+      this.deviceSetCount = 0;
+      for (let i = 0; i < this.deviceTplData.length; i++){
+        if (this.deviceTplData[i].extraCount <= 0){
+          num++;
+          break;
+        }
+        deviceListCount += this.deviceTplData[i].d.length;
+        deviceSetCount += this.deviceTplData[i].extraCount;
+      }
+      if (num > 0){
+        MessageCommonTips(this.$t("有未设置的设备,请设置！"));
+        return;
+      }
+      this.deviceSetCount = deviceSetCount;
+      this.deviceListCount = deviceListCount;
+      this.deviceTplBakData = JSON.parse(JSON.stringify(this.deviceTplData));
+      this.drawerDeviceGroup = false;
     },
     logout(){
       this.$axios.get(this.baseUrl + common.logout, {sessionId: this.sessionId, userKey: this.userKey}).then(res => {
@@ -452,6 +693,77 @@ export default {
           this.$router.push("/login");
         }
       });
+    },
+    getSourceUrl(sourceUrl){
+      this.$axios.get(sourceUrl).then(res => {
+        this.formTpl.tplSource = res.data;
+        this.initTplConfig(res.data);
+      });
+    },
+    initTplConfig(data){
+      let taskType = [];
+      let taskDevice = [];
+      let deviceSetCount = 0;
+      let deviceListCount = 0;
+      let deviceCountIndex = 0;
+      //缓存场景中的设备列表，用于后期选择
+      let task = data.tasks;
+      task.map((e) => {
+        taskType.push(e['t']);
+      });
+      //数组去重
+      taskType = taskType.filter((e, i, self) => {
+        return self.indexOf(e) == i
+      });
+      for (let j = 0; j < taskType.length; j++){
+        let device = [];
+        let deviceIndex = 0;
+        let deviceList = [];
+
+        taskDevice.push({
+          t: taskType[j]
+        });
+        let arr = task.filter((e) => {
+          return e['t'] == taskType[j];
+        });
+        for(let k = 0; k < arr.length; k++) {
+          let taskD = arr[k].d;
+          for(let i = 0; i < taskD.length; i++) {
+            let child = {
+              sn: taskD[i],
+            };
+            let sel = inArray(child, device, 'sn');
+            if (sel == -1){
+              deviceIndex++;
+              deviceCountIndex++;
+              deviceList.push({
+                n: taskD[i],
+                name: this.getDeviceName(taskD[i]),
+                label: this.getDeviceName(taskD[i]),
+              });
+              device.push({
+                extra: "$" + deviceIndex,
+                name: this.deviceTypeInfo(taskType[j]) + deviceIndex,
+                nickname: this.deviceTypeInfo(taskType[j]) + deviceIndex,
+                sn: taskD[i],
+                extraSn: '',
+                extraName: '',
+                editVisible: false,
+                visible: false
+              });
+            }
+          }
+          taskDevice[j]['dd'] = deviceList;
+          taskDevice[j]['d'] = device;
+          taskDevice[j]['extraCount'] = 0;
+          deviceSetCount = 0;
+          deviceListCount = deviceCountIndex;
+          this.deviceTplBakData = taskDevice;
+        }
+      }
+      this.deviceSetCount = deviceSetCount;
+      this.deviceListCount = deviceListCount;
+      this.templateLoading = false;
     },
     test(){
       this.$router.push({

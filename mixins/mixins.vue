@@ -1,5 +1,6 @@
 <script>
-    import {commonConfig} from "../utils/api/url";
+import {common, commonConfig} from "../utils/api/url";
+import {deviceType, sceneType, templateType} from "../utils/utils";
 
     export default {
       name: "mixins",
@@ -66,6 +67,15 @@
               localStorage.setItem("accountRole", 'ROLE_ADMIN');
             }
           }
+        },
+        templateTypeInfo(type){
+          return templateType(type);
+        },
+        sceneTypeInfo(type){
+          return sceneType(type);
+        },
+        deviceTypeInfo(type){
+          return deviceType(type);
         }
       }
     }

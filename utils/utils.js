@@ -228,6 +228,22 @@ export function deviceType(type){
   return deviceType[type];
 }
 
+export function sceneType(type){
+  let sceneType = {
+    "1": "原创",
+    "2": "模版"
+  };
+  return sceneType[type];
+}
+
+export function templateType(type){
+  let templateType = {
+    "2": "个人",
+    "1": "系统"
+  };
+  return templateType[type];
+}
+
 export function inArray(search,array,tag){
   for(var i in array){
     if (tag){
