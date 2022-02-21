@@ -4,7 +4,8 @@
     <div class="header-item" v-if="globalDeviceType != 'ios'">
       <el-row>
         <el-col :span="8">
-          <el-button size="mini" @click="logout">{{$t('退出')}}</el-button>
+          <el-button size="mini" @click="logout" v-if="appType != 'app'">{{$t('退出')}}--{{appType}}</el-button>
+          <span v-else>&nbsp;</span>
         </el-col>
         <el-col :span="16" class="textRight">
           <el-dropdown trigger="click">
@@ -17,7 +18,7 @@
                   {{$t('创建场景')}}
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item>
+              <el-dropdown-item v-if="appType != 'app'">
                 <div @click="oprItem($event, 2, '场所列表')">
                   {{$t('场所列表')}}
                 </div>
@@ -33,7 +34,7 @@
       </el-row>
     </div>
     <div class="padding-left10 padding-right10 padding-top5" :style="contentStyle">
-      <div v-for="(item, index) in tableData" :key="index" class="block-item bg-333333 marginBottom10 border-radius-5" @click="test">
+      <div v-for="(item, index) in 20" :key="index" class="block-item bg-333333 marginBottom10 border-radius-5" @click="test">
         <div>
           <el-row>
             <el-col :span="12">
@@ -468,16 +469,40 @@ export default {
       this.oprTitle = value;
       if (type == 1){
         this.$router.push({
-          path: '/orderList'
+          path: '/orderList',
+          query: {
+            envKey: this.$route.query.envKey,
+            sessionId: this.$route.query.sessionId,
+            role: this.$route.query.role,
+            userKey: this.$route.query.userKey,
+            appType: this.$route.query.appType,
+            deviceType: this.$route.query.deviceType,
+          }
         });
       }else if (type == 2){
         this.$router.push({
-          path: '/envList'
+          path: '/envList',
+          query: {
+            envKey: this.$route.query.envKey,
+            sessionId: this.$route.query.sessionId,
+            role: this.$route.query.role,
+            userKey: this.$route.query.userKey,
+            appType: this.$route.query.appType,
+            deviceType: this.$route.query.deviceType,
+          }
         });
       }else if (type == 3){
         this.setPageStatus(2);
         this.$router.push({
-          path: '/templateList'
+          path: '/templateList',
+          query: {
+            envKey: this.$route.query.envKey,
+            sessionId: this.$route.query.sessionId,
+            role: this.$route.query.role,
+            userKey: this.$route.query.userKey,
+            appType: this.$route.query.appType,
+            deviceType: this.$route.query.deviceType,
+          }
         });
       }
     },
