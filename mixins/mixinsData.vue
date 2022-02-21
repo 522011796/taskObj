@@ -6,7 +6,8 @@ import {common, commonConfig} from "../utils/api/url";
         return {
           globalRoomList: [],
           globalRoomObj: {},
-          globalDeviceOldList: []
+          globalDeviceOldList: [],
+          globalDeviceList: []
         }
       },
       mounted() {
@@ -30,6 +31,30 @@ import {common, commonConfig} from "../utils/api/url";
               for (let i = 0; i < this.globalRoomList.length; i++){
                 this.globalRoomObj[this.globalRoomList[i].id] = this.globalRoomList[i].name;
               }
+            }
+          });
+        },
+        async getDeviceList(type){
+          let data = [];
+          let params = {
+            envKey: this.envKey,
+            pageNum: 1,
+            pageSize: 99999
+          };
+          await this.$axios.get(this.baseUrl + common.deviceList, {params: params, sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+            if (res.data.code == 200) {
+              let list = res.data.data.list;
+              let listArr = [];
+              //type不为空，过滤掉非type设备
+              if (type || type === 0) {
+                for (let i = 0; i < list.length; i++) {
+                  if (list[i].devType === type) {
+                    listArr.push(list[i]);
+                  }
+                }
+                list = listArr;
+              }
+              this.globalDeviceList = list;
             }
           });
         },

@@ -40,7 +40,7 @@
               <span class="item-opr-block" v-if="type == 2" @click.stop="shareTemp($event, item, 'share')">
                 <a href="javascript:;" class="color-disabled">{{$t("分享")}}</a>
               </span>
-              <span class="item-opr-block" v-if="type == 1 || type == 2" @click.stop="useTemp($event, item)">
+              <span class="item-opr-block" v-if="type == 1 || type == 2" @click.stop="useTemp($event, item, index)">
                 <a href="javascript:;" class="color-warning">{{$t("使用")}}</a>
               </span>
               <span class="item-opr-block" v-if="type == 2" @click.stop="editTemp($event, item)">
@@ -110,7 +110,7 @@
 
     <dialog-input :title="title" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelDialog" @okClick="okDialog"></dialog-input>
 
-    <drawer-temp-list :drawer-temp-list="drawerTempList" @handleClose="handleClose"></drawer-temp-list>
+    <drawer-temp-list :drawer-temp-list="drawerTempList" :data="dataList" :data-group="dataGroupList" :index="editIndex" @handleClose="handleClose"></drawer-temp-list>
   </div>
 </template>
 
@@ -136,6 +136,8 @@ export default {
       placeholder: '',
       tableHeader: {},
       tableData: [],
+      dataList: [],
+      dataGroupList: [],
       type: 2,
       oprType: '',
       pagLoading: false,
@@ -146,6 +148,7 @@ export default {
       drawerTempList: false,
       directionEdit: 'btt',
       tplData: '',
+      editIndex: 0,
       formTpl:{
         id: '',
         tplName: '',
@@ -212,7 +215,86 @@ export default {
       this.placeholder = '';
       this.dialogInput = true;
     },
-    useTemp(event, item){
+    useTemp(event, item, index){
+      let params = {
+        tplId: item.id
+      };
+      let deviceExtra = [];
+      let device$ = [];
+      let deviceOtherData = [];
+      this.$axios.get(this.baseUrl + common.queryTplInfo, {params: params, sessionId: this.sessionId, userKey: this.userKey}).then(res => {
+        if (res.data.code == 200){
+          let tplSource = JSON.parse(res.data.data.tplSource);
+          let tplAbstract = JSON.parse(res.data.data.tplAbstract);
+          let data = [];
+
+          for (let item in tplAbstract) {
+            for (let itemChild in tplAbstract[item]) {
+              deviceOtherData.push({
+                key: itemChild,
+                value: tplAbstract[item][itemChild]
+              })
+            }
+          }
+
+          for (let i = 0; i < tplSource.length; i++){
+            tplSource[i]['dExtra'] = [];
+            tplSource[i]['dExtraCount'] = 0;
+            let t = tplSource[i].t;
+
+            for (let j = 0; j < tplSource[i].d.length; j++){
+              let keyName = "";
+              let arr = deviceOtherData.filter((e) => {
+                return e.key == tplSource[i].d[j];
+              });
+
+              if (t == 1){
+                keyName = tplAbstract.light[tplSource[i].d[j]];
+              }else if (t == 2){
+                keyName = tplAbstract.switch[tplSource[i].d[j]];
+              }if (t == 3){
+                keyName = tplAbstract.curtains[tplSource[i].d[j]];
+              }if (t == 5){
+                keyName = tplAbstract.music[tplSource[i].d[j]];
+              }
+
+              device$.push({
+                key: keyName,
+                extraKey: tplSource[i].d[j],
+                value: '',
+                t: t,
+                sn: '',
+                visible: false
+              });
+
+              tplSource[i]['dExtra'].push({
+                key: keyName,
+                extraKey: tplSource[i].d[j],
+                value: "",
+                set: false,
+                t: t,
+                sn: '',
+                visibleMore: false
+              });
+            }
+          }
+
+          let arrId = [];
+          for(var item of device$){
+            if(arrId.indexOf(item['key']) == -1){
+              arrId.push(item['key']);
+              deviceExtra.push(item);
+            }
+          }
+          this.dataList = deviceExtra.sort((a, b) => {
+            return this.compareValue(a.t, b.t)
+          });
+          this.dataGroupList = tplSource;
+        }else {
+          MessageCommonTips(res.data.msg);
+        }
+      });
+      this.editIndex = index;
       this.drawerTempList = true;
     },
     delTemp(event, item, type){
