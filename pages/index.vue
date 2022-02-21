@@ -4,7 +4,7 @@
     <div class="header-item" v-if="globalDeviceType != 'ios'">
       <el-row>
         <el-col :span="8">
-          <el-button size="mini" @click="logout" v-if="appType != 'app'">{{$t('退出')}}--{{appType}}</el-button>
+          <el-button size="mini" @click="logout" v-if="appType != 'app'">{{$t('退出')}}</el-button>
           <span v-else>&nbsp;</span>
         </el-col>
         <el-col :span="16" class="textRight">
