@@ -12,6 +12,7 @@ import {deviceType, sceneType, templateType} from "../utils/utils";
           envKey: '',
           sessionId: '',
           appType: '',
+          globalDeviceType: '',
           userKey: '',
           contentDefaultStyle:{
             'height': '0px',
@@ -136,7 +137,12 @@ import {deviceType, sceneType, templateType} from "../utils/utils";
                 _self.$router.push({
                   path: '/',
                   query: {
-                    appType: _self.$route.query.appType
+                    envKey: _self.$route.query.envKey,
+                    sessionId: _self.$route.query.sessionId,
+                    role: _self.$route.query.role,
+                    userKey: _self.$route.query.userKey,
+                    appType: _self.$route.query.appType,
+                    deviceType: _self.$route.query.deviceType,
                   }
                 });
               }
@@ -144,7 +150,12 @@ import {deviceType, sceneType, templateType} from "../utils/utils";
                 _self.$router.push({
                   path: '/',
                   query: {
-                    appType: _self.$route.query.appType
+                    envKey: _self.$route.query.envKey,
+                    sessionId: _self.$route.query.sessionId,
+                    role: _self.$route.query.role,
+                    userKey: _self.$route.query.userKey,
+                    appType: _self.$route.query.appType,
+                    deviceType: _self.$route.query.deviceType,
                   }
                 });
               }
@@ -153,7 +164,12 @@ import {deviceType, sceneType, templateType} from "../utils/utils";
                 _self.$router.push({
                   path: '/orderList',
                   query: {
-                    appType: _self.$route.query.appType
+                    envKey: _self.$route.query.envKey,
+                    sessionId: _self.$route.query.sessionId,
+                    role: _self.$route.query.role,
+                    userKey: _self.$route.query.userKey,
+                    appType: _self.$route.query.appType,
+                    deviceType: _self.$route.query.deviceType,
                   }
                 });
               }
@@ -162,7 +178,12 @@ import {deviceType, sceneType, templateType} from "../utils/utils";
                 _self.$router.push({
                   path: '/templateList',
                   query: {
-                    appType: _self.$route.query.appType
+                    envKey: _self.$route.query.envKey,
+                    sessionId: _self.$route.query.sessionId,
+                    role: _self.$route.query.role,
+                    userKey: _self.$route.query.userKey,
+                    appType: _self.$route.query.appType,
+                    deviceType: _self.$route.query.deviceType,
                   }
                 });
               }

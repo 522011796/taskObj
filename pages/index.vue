@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <loading :pag-loading="pagLoading"></loading>
-    <div class="header-item" v-if="appType != 'app'">
+    <div class="header-item" v-if="globalDeviceType != 'ios'">
       <el-row>
         <el-col :span="8">
           <el-button size="mini" @click="logout">{{$t('退出')}}</el-button>
@@ -492,7 +492,7 @@ export default {
         //this.drawerDeviceGroup= false;
       }
 
-      this.dismissDialogStatus();
+
       done();
     },
     closeDialog(event){

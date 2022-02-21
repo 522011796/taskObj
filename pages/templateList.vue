@@ -4,7 +4,7 @@
     <div class="header-item">
       <el-row>
         <el-col :span="4">
-          <el-button size="mini" type="text" @click="returnIndex" v-if="appType != 'app'">
+          <el-button size="mini" type="text" @click="returnIndex" v-if="globalDeviceType != 'ios'">
             <i class="fa fa-chevron-left color-disabled"></i>
             <span class="color-disabled">{{$t("返回")}}</span>
           </el-button>
@@ -400,8 +400,8 @@ export default {
       this.tplData = '';
       if (type == false){
         this.drawerTempList = false;
+        this.dismissDialogStatus();
       }
-      this.dismissDialogStatus();
     },
     closeDialog(event){
       if (!event){
