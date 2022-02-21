@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <loading :pag-loading="pagLoading"></loading>
-    <div class="header-item">
+    <div class="header-item" v-if="appType != 'app'">
       <el-row>
         <el-col :span="8">
           <el-button size="mini" @click="logout">{{$t('退出')}}</el-button>

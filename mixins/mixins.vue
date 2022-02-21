@@ -27,9 +27,9 @@ import {deviceType, sceneType, templateType} from "../utils/utils";
 
       },
       created() {
+        this.getUrl();
         this.mainStyle();
         this.defaultStyle();
-        this.getUrl();
       },
       methods: {
         defaultStyle(){
@@ -41,7 +41,9 @@ import {deviceType, sceneType, templateType} from "../utils/utils";
         mainStyle(){
           if (process.browser) {
             let screenWidth = window.innerWidth;
-            this.contentStyle.height = window.innerHeight - 40 + 'px';
+            console.log(this.appType);
+            let headHeight = this.appType == "app" ? 0 : 40;
+            this.contentStyle.height = window.innerHeight - headHeight + 'px';
           }
         },
         getUrl(){
