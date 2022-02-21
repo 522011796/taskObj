@@ -41,7 +41,6 @@ import {deviceType, sceneType, templateType} from "../utils/utils";
         mainStyle(){
           if (process.browser) {
             let screenWidth = window.innerWidth;
-            console.log(this.appType);
             let headHeight = this.appType == "app" ? 0 : 40;
             this.contentStyle.height = window.innerHeight - headHeight + 'px';
           }
