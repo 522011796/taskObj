@@ -34,7 +34,7 @@
       </el-row>
     </div>
     <div class="padding-left10 padding-right10 padding-top5" :style="contentStyle">
-      <div v-for="(item, index) in 20" :key="index" class="block-item bg-333333 marginBottom10 border-radius-5" @click="test">
+      <div v-for="(item, index) in tableData" :key="index" class="block-item bg-333333 marginBottom10 border-radius-5" @click="test">
         <div>
           <el-row>
             <el-col :span="12">
