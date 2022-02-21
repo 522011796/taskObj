@@ -4,10 +4,11 @@
     <div class="header-item">
       <el-row>
         <el-col :span="4">
-          <el-button size="mini" type="text" @click="returnIndex">
+          <el-button size="mini" type="text" @click="returnIndex" v-if="appType != 'app'">
             <i class="fa fa-chevron-left color-disabled"></i>
             <span class="color-disabled">{{$t("返回")}}</span>
           </el-button>
+          <span v-else>&nbsp;</span>
         </el-col>
         <el-col :span="16" class="textCenter">
           <el-button-group>
@@ -67,7 +68,8 @@
       :show-close="false"
       size="35%"
       :visible.sync="drawerTemp"
-      :direction="directionEdit">
+      :direction="directionEdit"
+      @close="closeDialog">
       <div slot="title">
         <div class="block-opr-header">
           <el-row>
@@ -294,6 +296,7 @@ export default {
           MessageCommonTips(res.data.msg);
         }
       });
+      this.showDialogStatus();
       this.editIndex = index;
       this.drawerTempList = true;
     },
@@ -308,6 +311,7 @@ export default {
         tplName: item.tplName,
         tplDesc: item.tplDesc
       };
+      this.showDialogStatus();
       this.drawerTemp = true;
     },
     arrowTemp(event, item, status){
@@ -396,6 +400,12 @@ export default {
       this.tplData = '';
       if (type == false){
         this.drawerTempList = false;
+      }
+      this.dismissDialogStatus();
+    },
+    closeDialog(event){
+      if (!event){
+        this.dismissDialogStatus();
       }
     }
   }

@@ -74,7 +74,8 @@
       :show-close="false"
       size="40%"
       :visible.sync="drawerEdit"
-      :direction="directionEdit">
+      :direction="directionEdit"
+      @close="closeDialog">
       <div slot="title">
         <div class="block-opr-header">
           <el-row>
@@ -151,7 +152,8 @@
       :show-close="false"
       size="40%"
       :visible.sync="drawerTemp"
-      :direction="directionEdit">
+      :direction="directionEdit"
+      @close="closeDialog">
       <div slot="title">
         <div class="block-opr-header">
           <el-row>
@@ -346,6 +348,8 @@ export default {
       this.deviceTplData = [];
       this.drawerTemp = true;
       this.templateLoading = true;
+
+      this.showDialogStatus();
       setTimeout(() => {
         this.getSourceUrl(item.sourceUrl);
       },500);
@@ -369,6 +373,7 @@ export default {
         };
         this.editSceneList = res.data.tasks;
       });
+      this.showDialogStatus();
       this.drawerEdit = true;
     },
     del(event, item){
@@ -470,6 +475,7 @@ export default {
           path: '/envList'
         });
       }else if (type == 3){
+        this.setPageStatus(2);
         this.$router.push({
           path: '/templateList'
         });
@@ -485,7 +491,14 @@ export default {
       }else{
         //this.drawerDeviceGroup= false;
       }
+
+      this.dismissDialogStatus();
       done();
+    },
+    closeDialog(event){
+      if (!event){
+        this.dismissDialogStatus();
+      }
     },
     cancelScene(){
       this.drawerEdit = false;
