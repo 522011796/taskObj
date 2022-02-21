@@ -171,8 +171,6 @@ export default {
       item.extraSn = '';
       item.extraName = '';
       item.extraCount--;
-      //this.deviceItemAllList = JSON.parse(JSON.stringify(this.deviceBottomList));
-      console.log(this.deviceItemAllList);
     },
     returnGroup(){
       this.type = 'group';
