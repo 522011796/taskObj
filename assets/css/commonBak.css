@@ -381,8 +381,8 @@ span,div,button,label{
   border: 0px solid #e8eaec !important;
 }
 .elx-table .elx-table--body-wrapper, .elx-table .elx-table--footer-wrapper {
-  background-color: #595959 !important;
-  margin-top: 3px;
+   background-color: #595959 !important;
+   margin-top: 3px;
 }
 .elx-table.border--default .elx-table--header-wrapper, .elx-table.border--full .elx-table--header-wrapper, .elx-table.border--outer .elx-table--header-wrapper {
   background-color: unset !important;
@@ -429,63 +429,19 @@ span,div,button,label{
   position: relative;
 }
 .progressUpon{
-  background: rgb(38, 84, 124);
-  height: 30px;
-  width: 40px;
-  position: absolute;
-  top: 8px;
-}
+   background: rgb(38, 84, 124);
+   height: 30px;
+   width: 40px;
+   position: absolute;
+   top: 8px;
+ }
 .progressDownon{
-  background: rgb(255,209,102);
-  height: 30px;
-  width: 8px;
-  position: absolute;
-  top: 25px;
-  left: 0px;
-}
-.gantt__layout{
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-.gantt__area{
-  display: grid;
-  grid-template-columns: 70px 1fr;
-}
-.header-left{
-  cursor: pointer;
-  user-select: none;
-  border-right: 0.5px solid #666666;
-}
-.header-right{
-  position: relative;
-  overflow: auto;
-}
-.side {
-  overflow: auto;
-  cursor: pointer;
-  user-select: none;
-  border-right: 0.5px solid #666666;
-}
-.container-block {
-  position: relative;
-  overflow: auto;
-  white-space: nowrap;
-}
-.side::-webkit-scrollbar {
-  display: none;
-}
-.header-right{
-  height: 25px;
-  /*display: flex;*/
-  /*flex-direction: row;*/
-  /*align-items: center;*/
-}
-.header-right-block{
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-}
-.header-right-block::-webkit-scrollbar{
-  display: none;
-}
+   background: rgb(255,209,102);
+   height: 30px;
+   width: 8px;
+   position: absolute;
+   top: 25px;
+   left: 0px;
+ }
+
+

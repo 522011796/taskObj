@@ -1,6 +1,6 @@
 <script>
 import {common, commonConfig} from "../utils/api/url";
-import {deviceType, sceneType, templateType} from "../utils/utils";
+import {deviceType, orderColor, sceneType, templateType} from "../utils/utils";
 
     export default {
       name: "mixins",
@@ -87,6 +87,9 @@ import {deviceType, sceneType, templateType} from "../utils/utils";
         },
         deviceTypeInfo(type){
           return deviceType(type);
+        },
+        orderColorInfo(type){
+          return orderColor(type);
         },
         setPageStatus(value){
           /**

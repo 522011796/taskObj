@@ -34,6 +34,7 @@ export default {
     '@/plugins/moment',
     '@/plugins/qs',
     '@/plugins/vueToast',
+    {src: '@/plugins/umy-ui', ssr: false},
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
