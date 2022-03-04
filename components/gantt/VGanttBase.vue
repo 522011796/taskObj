@@ -28,11 +28,9 @@
             <div class="block" v-for="(item,index) in visibleData">
               <template>
                 <div v-for="(itemChild,indexChild) in visibleWidthData" class="bar" @click="test">
-                  {{item}}--{{itemChild}}
+<!--                  <div v-for="(n, i) in 10" class="list-item-block" style="display: inline-block"></div>-->
                 </div>
               </template>
-
-<!--              <div v-for="n in item*10" style="height: 30px;width: 5px;background: #00f;display: inline-block;position: absolute;top:5px;"></div>-->
             </div>
           </div>
         </div>
@@ -105,7 +103,8 @@ export default {
       drawerTest: false,
       visibleData: [],
       visibleWidthData: [],
-      contentTopDistance: 0
+      contentTopDistance: 0,
+      scrollTopTest: 0
     }
   },
   computed: {
@@ -137,19 +136,22 @@ export default {
       if (className.includes('container-block')) flag = 'container-block'
       if (className.includes('side')) flag = 'side'
     }, true);
-    area.addEventListener('touchmove', (event) => {
+    area.addEventListener('touchstart', (event) => {
       const className = event.target.className
       if (className.includes('bar')) flag = 'bar'
       if (className.includes('sideBar')) flag = 'sideBar'
     }, true);
     area.addEventListener('scroll', (event) => {
       if ((flag === 'container-block' || flag === 'bar') && event.target.className === 'container-block') {
-        side.scrollTop = event.target.scrollTop
-        header.scrollLeft = event.target.scrollLeft
+        side.scrollTop = event.target.scrollTop;
+        header.scrollLeft = event.target.scrollLeft;
 
         const scrollTop = event.target.scrollTop;
         const scrollLeft = event.target.scrollLeft;
-        this.updateVisibleData(scrollTop,scrollLeft);
+
+        if (scrollTop >= 0 && scrollLeft >= 0){
+          this.updateVisibleData(scrollTop,scrollLeft);
+        }
       }
       if (flag === 'side' || flag === 'sideBar') {
         container.scrollTop = event.target.scrollTop;
@@ -245,6 +247,7 @@ export default {
       const end = start + visibleCount + 6;
       this.visibleData = this.ganttData.slice(start, end);
 
+      scrollLeft = scrollLeft % 5 >= 0 ? scrollLeft : 0;
       const visibleWidthCount = Math.ceil((this.$el.clientWidth - 70) / this.baseWidth);
       const widthStart = Math.floor(scrollLeft / this.baseWidth);
       const widthEnd = widthStart + visibleWidthCount + 6;
@@ -363,5 +366,11 @@ wl-item-end:after {
   top: 0;
   right: 0;
   z-index: -1;
+}
+.list-item-block{
+  height: 10px;
+  width: 6px;
+  background: #00f;
+  top:5px;
 }
 </style>

@@ -1,17 +1,23 @@
 <template>
   <div class="container">
-    <v-gantt :gantt-data="dataTest" :gantt-col-data="ganttColData"></v-gantt>
+<!--    <v-gantt-base :gantt-data="dataTest" :gantt-col-data="ganttColData"></v-gantt-base>-->
+<!--    <v-gantt-bak></v-gantt-bak>-->
+    <v-gantt-pro :gantt-data="dataTest" :gantt-col-data="ganttColData"></v-gantt-pro>
   </div>
 </template>
 
 <script>
 import mixins from "../mixins/mixins";
-import VGantt from "../components/gantt/VGantt";
+import VGanttBak from "../components/gantt/VGanttBak";
+import VGanttBase from "../components/gantt/VGanttBase";
+import VGanttPro from "../components/gantt/VGanttPro";
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
-    VGantt
+    VGanttPro,
+    VGanttBase,
+    VGanttBak
 
   },
   data() {
