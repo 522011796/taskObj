@@ -70,6 +70,43 @@ import {deviceType, orderColor, sceneType, templateType} from "../utils/utils";
             }
           }
         },
+        changeTime(time, num) {
+          let hour = 0
+          let minute = 0
+          let second = 0
+          second = time / 1000
+          if (second >= 3600) {
+            minute = (second - (second % 60)) / 60
+            hour = parseInt((minute / 60).toString())
+            minute = minute % 60
+            /* eslint-disable */
+            hour >= 10 ? hour : hour = '0' + hour
+            minute >= 10 ? minute : minute = '0' + minute
+            second = second % 60
+            second >= 10 ? second : second = '0' + second
+            /* eslint-enable */
+            return hour + ':' + minute + ':' + second
+          }
+          if (second < 3600 && second >= 60) {
+            hour = '00'
+            minute = parseInt((second / 60).toString())
+            /* eslint-disable */
+            minute >= 10 ? minute : minute = '0' + minute
+            second = second % 60
+            second >= 10 ? second : second = '0' + second
+            /* eslint-enable */
+            return hour + ':' + minute + ':' + second
+          }
+          if (second < 60) {
+            hour = '00'
+            minute = '00'
+            second = parseInt(second)
+            /* eslint-disable */
+            second >= 10 ? second : second = '0' + second
+            /* eslint-enable */
+            return hour + ':' + minute + ':' + second
+          }
+        },
         compareValue(value1,value2){
           if (value1 < value2){
             return -1;

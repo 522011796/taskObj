@@ -2,7 +2,20 @@
   <div>
     <div class="gantt-chart" @wheel.passive="wheelHandle" @touchstart.passive="touchStartHandle" @touchmove.passive="touchMoveHandle" @touchend.passive="touchEndHandle">
       <div class="gantt-container" :style="[areaStyleObj, blockStyle]">
-
+        <div class="gantt-header" :style="{ width: `calc(100% + ${scrollYBarWidth}px)` }">
+          <div class="gantt-header-title" :style="{ 'line-height': titleHeight + 'px', height: titleHeight + 'px', width: titleWidth + 'px'}">
+            title
+          </div>
+          <div ref="headerTimeline" class="gantt-header-timeline">
+            <div class="gantt-timeline-wrapper" :style="{ width: totalWidth + scrollYBarWidth + 'px' }">
+              <v-gantt-time-line
+                :datas="ganttTimeData"
+                :scrollLeft="scrollLeft"
+                :widthOfBlocksWrapper="widthOfBlocksWrapper">
+              </v-gantt-time-line>
+            </div>
+          </div>
+        </div>
         <div class="gantt-body"
           :style="{ height: `calc(100% - ${actualHeaderHeight}px)` }" >
           <div class="gantt-table">
@@ -59,11 +72,13 @@ import throttle from "../../utils/throttle";
 import {isDef} from "../../utils/utils";
 import VGanttBlocks from "./VGanttBlocks";
 import VGanttLeftBar from "./VGanttLeftBar";
+import VGanttTimeLine from "./VGanttTimeLine";
 
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
+    VGanttTimeLine,
     VGanttLeftBar,
     VGanttBlocks
 
@@ -76,6 +91,9 @@ export default {
     ganttColData:{ // 甘特图数据
       type: Array,
       required: true
+    },
+    ganttTimeData:{ // 甘特图数据
+      type: Array
     },
     hideHeader: {
       type: Boolean,
@@ -164,10 +182,15 @@ export default {
         const realWidth = window.innerWidth;
         return {
           backgroundSize: `${cellWidth}px ${cellHeight}px`,
-          height: `${realHeight}px`,
+          height: `${realHeight }px`,
           width: `${cellWidth * ganttColData.length}px`,
         };
       }
+    },
+    cellWidthStyle() {
+      return {
+        width: `${this.cellWidth}px`
+      };
     },
     totalHeight() {
       const { ganttData, cellHeight } = this;
@@ -184,7 +207,7 @@ export default {
       return this.hideYScrollBar ? 0 : this.scrollBarWitdh;
     },
     actualHeaderHeight() {
-      return this.hideHeader ? 0 : this.titleHeight;
+      return this.titleHeight;
     },
     availableScrollLeft() {
       // 不减这个1，滚动到时间轴尽头后继续滚动会慢慢的溢出
@@ -339,8 +362,8 @@ export default {
     syncScrollX(event) {
       const { gantt_table, gantt_timeline, gantt_markArea } = this.selector;
       const leftValue = event.target.scrollLeft;
-      //this.scrollLeft = gantt_timeline.scrollLeft = gantt_table.scrollLeft = leftValue;
-      this.scrollLeft = gantt_table.scrollLeft = leftValue;
+      this.scrollLeft = gantt_timeline.scrollLeft = gantt_table.scrollLeft = leftValue;
+      //this.scrollLeft = gantt_table.scrollLeft = leftValue;
       //gantt_markArea.style.left = -leftValue + "px";
       this.$emit("scrollLeft", leftValue);
     },
@@ -406,6 +429,23 @@ export default {
   width: 100%;
   /*outline: 1px solid #f0f0f0;*/
 }
+.gantt-header{
+  display: flex;
+  border-bottom: 1px solid #505050;
+}
+.gantt-header-timeline{
+  overflow: hidden;
+}
+.gantt-header-title{
+  flex: none;
+}
+.gantt-timeline{
+  display:flex;
+  position: relative;
+}
+.gantt-timeline-scale{
+  display: flex;
+}
 .gantt-body {
   position: relative;
 }
@@ -429,7 +469,7 @@ export default {
   overflow: hidden;
 }
 .gantt-blocks {
-  background-image: linear-gradient(#505050 1px, transparent 0), linear-gradient(90deg, #505050 1px, transparent 0);
+  background-image: linear-gradient(#606060 1px, transparent 0), linear-gradient(90deg, #606060 1px, transparent 0);
 }
 .gantt-block {
   position: relative;

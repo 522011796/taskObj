@@ -2,8 +2,9 @@
   <div class="gantt-blocks">
     <div class="gantt-block gantt-block-top-space" :style="{ height: topSpace + 'px' }"></div>
     <div class="gantt-block" v-for="(item, index) in showDatas" :style="{ height: `${cellHeight}px` }" @click="test">
-      {{item}}
-      <!--                  <div v-for="n in ganttColData" class="gantt-block-item" style="height: 20px;width: 10px;background: #ddd;"></div>-->
+      <div v-for="(itemChild, indexChild) in item.children" class="gantt-block-item" :style="{left: `${ indexChild * cellWidth/10}px`, width: `${ itemChild.time * 6}px`}" style="height: 20px;background: #ddd;top:10px;">
+
+      </div>
     </div>
   </div>
 </template>

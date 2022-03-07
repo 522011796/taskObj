@@ -2,7 +2,7 @@
   <div class="gantt-leftbar">
     <div class="gantt-leftbar-item gantt-block-top-space" :style="{ height: topSpace + 'px' }" ></div>
     <div class="gantt-leftbar-item" :style="cellHeightStyle" v-for="(item, index) in showDatas">
-      {{item}}
+      {{item.menuTitle}}
     </div>
   </div>
 </template>

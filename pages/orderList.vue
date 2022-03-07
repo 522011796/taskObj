@@ -2,7 +2,7 @@
   <div class="container">
 <!--    <v-gantt-base :gantt-data="dataTest" :gantt-col-data="ganttColData"></v-gantt-base>-->
 <!--    <v-gantt-bak></v-gantt-bak>-->
-    <v-gantt-pro :datas="dataTest" :gantt-data="dataTest" :gantt-col-data="ganttColData" :scroll-to-postion="position" @scrollLeft="scrollLeftA"></v-gantt-pro>
+    <v-gantt-pro :datas="dataTest" :gantt-data="dataTest" :gantt-col-data="ganttColData" :gantt-time-data="ganttTimeData" :scroll-to-postion="position" @scrollLeft="scrollLeftA"></v-gantt-pro>
   </div>
 </template>
 
@@ -24,6 +24,7 @@ export default {
     return {
       dataTest: [],
       ganttColData: [],
+      ganttTimeData: [],
       position: 0,
       scrollToY: 0,
       positionA: 0
@@ -42,14 +43,31 @@ export default {
     init(){
       let data = [];
       let dataCol = [];
+      let dataTime = [];
       for (let i = 0; i < 50; i++){
-        data.push(i);
+        data.push({
+          time: i,
+          menuTitle: i,
+          children: [
+            {start: 0,end: 1,time: 1}
+          ]
+        });
       }
       for (let i = 0; i < 50; i++){
-        dataCol.push(i);
+        dataCol.push({
+          time: i,
+          start: 0,
+          end: 1
+        });
+      }
+      for (let i = 0; i < 50; i++){
+        dataTime.push({
+          time: i
+        });
       }
       this.dataTest = data;
       this.ganttColData = dataCol;
+      this.ganttTimeData = dataTime;
     },
     dateGanttType(date, item) {
       let start = item.start;
