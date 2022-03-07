@@ -2,7 +2,7 @@
   <div class="container">
 <!--    <v-gantt-base :gantt-data="dataTest" :gantt-col-data="ganttColData"></v-gantt-base>-->
 <!--    <v-gantt-bak></v-gantt-bak>-->
-    <v-gantt-pro :gantt-data="dataTest" :gantt-col-data="ganttColData"></v-gantt-pro>
+    <v-gantt-pro :datas="dataTest" :gantt-data="dataTest" :gantt-col-data="ganttColData" :scroll-to-postion="position" @scrollLeft="scrollLeftA"></v-gantt-pro>
   </div>
 </template>
 
@@ -24,6 +24,9 @@ export default {
     return {
       dataTest: [],
       ganttColData: [],
+      position: 0,
+      scrollToY: 0,
+      positionA: 0
     }
   },
   computed: {
@@ -94,6 +97,15 @@ export default {
         /* eslint-enable */
         return hour + ':' + minute + ':' + second
       }
+    },
+    scrollLeftA(val) {
+      this.position = { x: val };
+    }
+  },
+  watch: {
+    scrollToY(val) {
+      console.log(111);
+      this.position = { x: val };
     }
   }
 }

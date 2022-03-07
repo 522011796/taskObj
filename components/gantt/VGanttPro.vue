@@ -7,15 +7,30 @@
           :style="{ height: `calc(100% - ${actualHeaderHeight}px)` }" >
           <div class="gantt-table">
             <div ref="leftbarWrapper" class="gantt-leftbar-wrapper"
-              :style="{ width: titleWidth + 'px', height: `calc(100% + ${scrollXBarHeight}px)`}">
-              1
+              :style="{ width: titleWidth + 'px', height: `calc(100% + ${0}px)`}">
+
+              <v-gantt-left-bar
+                :datas="ganttData"
+                :scrollTop="scrollTop"
+                :heightOfBlocksWrapper="heightOfBlocksWrapper"
+                :cellHeight="cellHeight">
+              </v-gantt-left-bar>
             </div>
             <div ref="blocksWrapper" class="gantt-blocks-wrapper">
-              <div class="gantt-blocks" :style="rightContentStyle" :scrollTop="scrollTop" :scrollLeft="scrollLeft" :heightOfBlocksWrapper="heightOfBlocksWrapper" :widthOfBlocksWrapper="widthOfBlocksWrapper">
-                <div class="gantt-block" v-for="(item, index) in ganttData" :style="{ height: `${cellHeight}px` }" @click="test">
-<!--                  <div v-for="n in ganttColData" class="gantt-block-item" style="height: 20px;width: 10px;background: #ddd;"></div>-->
-                </div>
-              </div>
+              <v-gantt-blocks
+                :style="rightContentStyle"
+                :scrollTop="scrollTop"
+                :scrollLeft="scrollLeft"
+                :cell-width="cellWidth"
+                :cell-height="cellHeight"
+                :datas="ganttData"
+                :heightOfBlocksWrapper="heightOfBlocksWrapper"
+                :widthOfBlocksWrapper="widthOfBlocksWrapper"
+                :startTimeOfRenderArea="startTimeOfRenderArea"
+                :endTimeOfRenderArea="endTimeOfRenderArea"
+                @click="test">
+
+              </v-gantt-blocks>
             </div>
           </div>
         </div>
@@ -41,10 +56,16 @@
 <script>
 import mixins from "../../mixins/mixins";
 import throttle from "../../utils/throttle";
+import {isDef} from "../../utils/utils";
+import VGanttBlocks from "./VGanttBlocks";
+import VGanttLeftBar from "./VGanttLeftBar";
+
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
+    VGanttLeftBar,
+    VGanttBlocks
 
   },
   props:{
@@ -83,6 +104,17 @@ export default {
     titleWidth: {
       type: Number,
       default: 70
+    },
+    scrollToPostion: {
+      validator(obj) {
+        const validX = isDef(obj.x) ? !Number.isNaN(obj.x) : true;
+        const validY = isDef(obj.y) ? !Number.isNaN(obj.y) : true;
+        if (!validX && !validY) {
+          console.log("scrollToPostion x或y 有值为非Number类型");
+          return false;
+        }
+        return true;
+      }
     }
   },
   data() {
@@ -125,14 +157,6 @@ export default {
         return {width: `${realWidth}px`};
       }
     },
-    totalHeight() {
-      const { ganttData, cellHeight } = this;
-      return ganttData.length * cellHeight;
-    },
-    totalWidth() {
-      const { cellWidth } = this;
-      return cellWidth * this.ganttColData.length;
-    },
     rightContentStyle() {
       if (process.client){
         const { ganttData, ganttColData, cellHeight, cellWidth } = this;
@@ -144,6 +168,14 @@ export default {
           width: `${cellWidth * ganttColData.length}px`,
         };
       }
+    },
+    totalHeight() {
+      const { ganttData, cellHeight } = this;
+      return ganttData.length * cellHeight;
+    },
+    totalWidth() {
+      const { cellWidth } = this;
+      return cellWidth * this.ganttColData.length;
     },
     scrollXBarHeight() {
       return this.hideXScrollBar ? 0 : this.scrollBarWitdh;
@@ -162,6 +194,21 @@ export default {
     availableScrollTop() {
       const { totalHeight, heightOfBlocksWrapper } = this;
       return totalHeight - heightOfBlocksWrapper - 1;
+    },
+    startTimeOfRenderArea(){
+      if (this.heightOfBlocksWrapper === 0) {
+        return;
+      }
+      const { scrollLeft, cellWidth } = this;
+      return (scrollLeft / cellWidth);
+    },
+    endTimeOfRenderArea(){
+      if (this.heightOfBlocksWrapper === 0) {
+        return;
+      }
+      const { scrollLeft, cellWidth, widthOfBlocksWrapper, totalWidth } = this;
+      const renderWidth = totalWidth < widthOfBlocksWrapper ? totalWidth : widthOfBlocksWrapper;
+      return ((scrollLeft + renderWidth) / cellWidth);
     }
   },
   mounted() {
@@ -315,10 +362,38 @@ export default {
       this.preTouchPosition.x = 0;
       this.preTouchPosition.y = 0;
     },
+    scrollToPositionHandle(newV) {
+      if (!newV) {
+        return;
+      }
+      const x = Number.parseFloat(newV.x);
+      const y = Number.parseFloat(newV.y);
+      if (!Number.isNaN(x) && x !== this.scrollLeft) {
+        this.$nextTick(() => {
+          this.manualScroll(x);
+        });
+      }
+      if (!Number.isNaN(y) && y !== this.scrollTop) {
+        this.$nextTick(() => {
+          this.manualScroll(undefined, y);
+        });
+      }
+    },
+    scrollToPostionHandle(newV) {
+      return this.scrollToPositionHandle(newV);
+    },
     test(){
       this.drawerTest = true;
     }
-  }
+  },
+  watch: {
+    scrollToPostion: {
+      handler(newV) {
+        this.scrollToPositionHandle(newV);
+      },
+      immediate: true
+    }
+  },
 }
 </script>
 
