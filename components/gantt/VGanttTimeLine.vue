@@ -30,7 +30,8 @@ export default {
     titleHeight: {
       type: Number,
       default: 40
-    }
+    },
+    getPositonOffset: Function,
   },
   components: {
 

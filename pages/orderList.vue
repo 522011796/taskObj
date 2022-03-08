@@ -2,7 +2,15 @@
   <div class="container">
 <!--    <v-gantt-base :gantt-data="dataTest" :gantt-col-data="ganttColData"></v-gantt-base>-->
 <!--    <v-gantt-bak></v-gantt-bak>-->
-    <v-gantt-pro :datas="dataTest" :gantt-data="dataTest" :gantt-col-data="ganttColData" :gantt-time-data="ganttTimeData" :scroll-to-postion="position" @scrollLeft="scrollLeftA"></v-gantt-pro>
+    <v-gantt-pro
+      :datas="dataTest"
+      :gantt-data="dataTest"
+      :gantt-col-data="ganttColData"
+      :gantt-time-data="ganttTimeData"
+      :scroll-to-postion="position"
+      @scrollLeft="scrollLeftA">
+
+    </v-gantt-pro>
   </div>
 </template>
 
@@ -45,12 +53,16 @@ export default {
       let dataCol = [];
       let dataTime = [];
       for (let i = 0; i < 50; i++){
+        let testBar = [];
+        for (let j = 0; j < i*20; j++){
+          let start = j * 100;
+          let end = (j+1) * 100;
+          testBar.push({start: start,end: end,time: 100,type: j % 2 == 0 ? 1 : 2});
+        }
         data.push({
           time: i,
           menuTitle: i,
-          children: [
-            {start: 0,end: 1,time: 1}
-          ]
+          children: testBar
         });
       }
       for (let i = 0; i < 50; i++){
@@ -122,7 +134,6 @@ export default {
   },
   watch: {
     scrollToY(val) {
-      console.log(111);
       this.position = { x: val };
     }
   }

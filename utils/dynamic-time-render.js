@@ -54,6 +54,7 @@ const dynamicRender = {
     },
     showDatas() {
       const { startRenderNum, endRenderNum, datas } = this;
+      this.campareDataTime(datas.slice(startRenderNum, endRenderNum));
       return datas.slice(startRenderNum, endRenderNum);
     },
     /**

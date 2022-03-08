@@ -14,6 +14,7 @@ import {deviceType, orderColor, sceneType, templateType} from "../utils/utils";
           appType: '',
           globalDeviceType: '',
           userKey: '',
+          globalDataKeys: [],
           contentDefaultStyle:{
             'height': '0px',
             'overflow-y': 'hiddle'
@@ -115,6 +116,15 @@ import {deviceType, orderColor, sceneType, templateType} from "../utils/utils";
           }else{
             return 0;
           }
+        },
+        campareDataTime(data){
+          this.globalDataKeys = data;
+        },
+        returnDataKeys(data){
+          return data;
+        },
+        concatArray(data) {
+
         },
         templateTypeInfo(type){
           return templateType(type);

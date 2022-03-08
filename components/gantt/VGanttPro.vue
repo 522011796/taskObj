@@ -11,7 +11,8 @@
               <v-gantt-time-line
                 :datas="ganttTimeData"
                 :scrollLeft="scrollLeft"
-                :widthOfBlocksWrapper="widthOfBlocksWrapper">
+                :widthOfBlocksWrapper="widthOfBlocksWrapper"
+                :get-positon-offset="getPositonOffset">
               </v-gantt-time-line>
             </div>
           </div>
@@ -36,6 +37,7 @@
                 :scrollLeft="scrollLeft"
                 :cell-width="cellWidth"
                 :cell-height="cellHeight"
+                :block-width="blockWidth"
                 :datas="ganttData"
                 :heightOfBlocksWrapper="heightOfBlocksWrapper"
                 :widthOfBlocksWrapper="widthOfBlocksWrapper"
@@ -123,6 +125,11 @@ export default {
       type: Number,
       default: 70
     },
+    scrollToTime: {
+      validator(date) {
+        return true;
+      }
+    },
     scrollToPostion: {
       validator(obj) {
         const validX = isDef(obj.x) ? !Number.isNaN(obj.x) : true;
@@ -173,6 +180,12 @@ export default {
       if (process.client){
         const realWidth = window.innerWidth;
         return {width: `${realWidth}px`};
+      }
+    },
+    blockWidth () {
+      if (process.client){
+        const realWidth = window.innerWidth - 70;
+        return realWidth;
       }
     },
     rightContentStyle() {
@@ -405,11 +418,30 @@ export default {
     scrollToPostionHandle(newV) {
       return this.scrollToPositionHandle(newV);
     },
+    scrollToTimehandle(newV) {
+      if (!newV) {
+        return;
+      }
+
+      const offset = this.getPositonOffset(newV);
+      this.$nextTick(() => {
+        this.manualScroll(offset);
+      });
+    },
+    getPositonOffset(block) {
+      console.log(111);
+    },
     test(){
       this.drawerTest = true;
     }
   },
   watch: {
+    scrollToTime: {
+      handler(newV) {
+        this.scrollToTimehandle(newV);
+      },
+      immediate: true
+    },
     scrollToPostion: {
       handler(newV) {
         this.scrollToPositionHandle(newV);

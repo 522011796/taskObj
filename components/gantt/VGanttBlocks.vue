@@ -2,7 +2,12 @@
   <div class="gantt-blocks">
     <div class="gantt-block gantt-block-top-space" :style="{ height: topSpace + 'px' }"></div>
     <div class="gantt-block" v-for="(item, index) in showDatas" :style="{ height: `${cellHeight}px` }" @click="test">
-      <div v-for="(itemChild, indexChild) in item.children" class="gantt-block-item" :style="{left: `${ indexChild * cellWidth/10}px`, width: `${ itemChild.time * 6}px`}" style="height: 20px;background: #ddd;top:10px;">
+      <div v-for="(itemChild, indexChild) in item.children"
+           v-if="scrollLeft <= ((itemChild.start) / 100 * (cellWidth / 10)) && getPosition(itemChild) - scrollLeft < blockWidth"
+           class="gantt-block-item"
+           :style="{left: getPosition(itemChild) + 'px', width: `${ (itemChild.time/100) * (cellWidth/10)}px`,background: itemChild.type == 1 ? '#ddd' : '#434343'}"
+           style="height: 20px;top:10px;"
+            :test="blockWidth">
 
       </div>
     </div>
@@ -12,6 +17,7 @@
 <script>
 import mixins from "../../mixins/mixins";
 import dr from "../../utils/dynamic-render";
+import {isUndef} from "../../utils/utils";
 export default {
   layout: 'default',
   mixins: [mixins,dr],
@@ -25,6 +31,10 @@ export default {
     cellWidth: {
       type: Number,
       required: true
+    },
+    blockWidth: {
+      type: Number,
+      required: false
     },
     scale: {
       type: Number,
@@ -55,6 +65,18 @@ export default {
 
   },
   methods: {
+    /**
+     * 计算时间块偏移
+     *
+     * @param {{start:string}} block
+     * @returns {number}
+     */
+    getPosition(block) {
+      if (isUndef(block.start)) {
+        return 0;
+      }
+      return block.start / 100 * this.cellWidth / 10;
+    },
     test(){
       this.$emit("click");
     }
