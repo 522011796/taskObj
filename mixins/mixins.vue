@@ -1,6 +1,6 @@
 <script>
 import {common, commonConfig} from "../utils/api/url";
-import {deviceType, orderColor, sceneType, templateType} from "../utils/utils";
+import {deviceType, orderColor, orderValue, sceneType, templateType} from "../utils/utils";
 
     export default {
       name: "mixins",
@@ -15,6 +15,15 @@ import {deviceType, orderColor, sceneType, templateType} from "../utils/utils";
           globalDeviceType: '',
           userKey: '',
           globalDataKeys: [],
+          globalLightOrderTypeData: [
+            {name:this.$t('开/关灯控制'),value:'6'},
+            {name:this.$t('亮度控制'),value:'7'},
+            {name:this.$t('色温控制'),value:'8'},
+            {name:this.$t('色彩控制'),value:'9'},
+            {name:this.$t('循环操作'),value:'3'},
+            {name:this.$t('延时'),value:'2'},
+            {name:this.$t('空闲时段'),value:'1'}
+          ],
           contentDefaultStyle:{
             'height': '0px',
             'overflow-y': 'hiddle'
@@ -137,6 +146,9 @@ import {deviceType, orderColor, sceneType, templateType} from "../utils/utils";
         },
         orderColorInfo(type){
           return orderColor(type);
+        },
+        orderValueInfo(value, type){
+          return orderValue(type, value);
         },
         setPageStatus(value){
           /**

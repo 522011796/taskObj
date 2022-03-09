@@ -1,14 +1,12 @@
 <template>
   <div class="gantt-blocks">
     <div class="gantt-block gantt-block-top-space" :style="{ height: topSpace + 'px' }"></div>
-    <div class="gantt-block" v-for="(item, index) in showDatas" :style="{ height: `${cellHeight}px` }" @click="test">
+    <div class="gantt-block" v-for="(item, index) in showDatas" :style="{ height: `${cellHeight}px` }" @click="showBlock($event, item)">
       <div v-for="(itemChild, indexChild) in item.children"
-           v-if="scrollLeft <= ((itemChild.start) / 100 * (cellWidth / 10)) && getPosition(itemChild) - scrollLeft < blockWidth"
+           v-if="scrollLeft <= ((itemChild.start) / 100 * (cellWidth / 10)) + cellWidth && getPosition(itemChild) - scrollLeft < blockWidth"
            class="gantt-block-item"
            :style="{left: getPosition(itemChild) + 'px', width: `${ (itemChild.time/100) * (cellWidth/10)}px`,background: itemChild.type == 1 ? '#ddd' : '#434343'}"
-           style="height: 20px;top:10px;"
-            :test="blockWidth">
-
+           style="height: 20px;top:10px;">
       </div>
     </div>
   </div>
@@ -77,8 +75,8 @@ export default {
       }
       return block.start / 100 * this.cellWidth / 10;
     },
-    test(){
-      this.$emit("click");
+    showBlock(event, item){
+      this.$emit("showBlock", event, item);
     }
   }
 }

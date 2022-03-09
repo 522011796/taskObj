@@ -496,3 +496,9 @@ span,div,button,label{
 .header-right-block::-webkit-scrollbar{
   display: none;
 }
+.block-list-item{
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: #F2F6FC;
+  margin-bottom: 10px;
+}

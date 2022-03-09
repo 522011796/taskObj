@@ -43,7 +43,7 @@
                 :widthOfBlocksWrapper="widthOfBlocksWrapper"
                 :startTimeOfRenderArea="startTimeOfRenderArea"
                 :endTimeOfRenderArea="endTimeOfRenderArea"
-                @click="test">
+                @showBlock="showBlock">
 
               </v-gantt-blocks>
             </div>
@@ -59,12 +59,6 @@
         </div>
       </div>
     </div>
-
-    <el-drawer
-      :visible.sync="drawerTest"
-      direction="btt">
-      <span>我来啦!</span>
-    </el-drawer>
   </div>
 </template>
 
@@ -431,8 +425,8 @@ export default {
     getPositonOffset(block) {
       console.log(111);
     },
-    test(){
-      this.drawerTest = true;
+    showBlock(event, data){
+      this.$emit("showBlock", event, data);
     }
   },
   watch: {

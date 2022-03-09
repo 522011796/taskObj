@@ -8,9 +8,137 @@
       :gantt-col-data="ganttColData"
       :gantt-time-data="ganttTimeData"
       :scroll-to-postion="position"
-      @scrollLeft="scrollLeftA">
+      @scrollLeft="scrollLeftA"
+      @showBlock="showBlock">
 
     </v-gantt-pro>
+
+    <!--指令列表-->
+    <el-drawer
+      custom-class="drawer-block"
+      :show-close="false"
+      size="75%"
+      :visible.sync="drawerTaskList"
+      :direction="directionTaskList"
+      direction="btt"
+      @closed="closeDrawer">
+
+      <div slot="title">
+        <div class="block-opr-header">
+          <el-row>
+            <el-col :span="3">
+              <div class="textCenter">
+                <el-button size="mini" type="text" @click="cancelTask">
+                  <span class="color-666666">{{$t('取消')}}</span>
+                </el-button>
+              </div>
+            </el-col>
+            <el-col :span="18">
+              <div class="textCenter">
+                <span>{{$t('指令列表')}}</span>
+              </div>
+            </el-col>
+            <el-col :span="3">
+              <div class="textCenter">
+                <el-button size="mini" type="text" @click="okTask">{{$t('确定')}}</el-button>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+
+      <div class="padding-full10">
+        <div class="block-list-item" v-for="(item, index) in 20">
+          <el-row>
+            <el-col :span="16">
+              <div>
+                <el-tag size="mini" type="success">
+                  <span class="color-666666">1</span>
+                </el-tag>
+                <span class="color-666666">xxxxx</span>
+                <span class="color-disabled">1000</span>
+              </div>
+              <div class="font-size-12 color-bbbbbb">
+                <i class="fa fa-clock-o"></i>
+                <span>00:00:00</span>
+              </div>
+            </el-col>
+            <el-col :span="8" class="textRight marginTop5">
+              <el-button size="mini" type="text" @click="updateTask($event, item)">
+                <span class="color-warning">{{$t("修改")}}</span>
+              </el-button>
+              <el-button size="mini" type="text" @click="delTask($event, item)">
+                <span class="color-error">{{$t("删除")}}</span>
+              </el-button>
+              <el-button size="mini" type="text">
+                <span class="color-666666">{{$t("插入")}}</span>
+              </el-button>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+    </el-drawer>
+
+    <!--指令列表-->
+    <el-drawer
+      custom-class="drawer-block"
+      :show-close="false"
+      size="45%"
+      :visible.sync="drawerTaskSet"
+      :direction="directionTaskSet"
+      direction="btt"
+      @closed="closeDrawer">
+
+      <div slot="title">
+        <div class="block-opr-header">
+          <el-row>
+            <el-col :span="3">
+              <div class="textCenter">
+                <el-button size="mini" type="text" @click="cancelTaskSet">
+                  <span class="color-666666">{{$t('取消')}}</span>
+                </el-button>
+              </div>
+            </el-col>
+            <el-col :span="18">
+              <div class="textCenter">
+                <span>{{$t('指令设置')}}</span>
+              </div>
+            </el-col>
+            <el-col :span="3">
+              <div class="textCenter">
+                <el-button size="mini" type="text" @click="okTaskSet">{{$t('确定')}}</el-button>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+
+      <el-form class="custom-form" label-width="90px" ref="formOrder" :model="formOrder">
+        <el-form-item :label="$t('指令类型')">
+          <div class="textRight color-666666" @click="showOrderType">
+            <label>{{formOrder.type == '' ? $t("请选择") : orderValueInfo(formOrder.type, 'set')}}</label>
+            <label class="fa fa-chevron-right"></label>
+          </div>
+        </el-form-item>
+        <el-form-item :label="$t('开/关')">
+          <div class="textRight">
+            <el-switch
+              v-model="formOrder.open"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              @change="changeLightOpen">
+            </el-switch>
+          </div>
+        </el-form-item>
+        <el-form-item :label="$t('渐变时间')">
+          <div class="textRight color-666666">
+            <el-input-number size="medium" v-model="formOrder.changeTime" @change="handleChange($event, 'changeTime')" :min="0" :step="100" :step-strictly="true"></el-input-number>
+          </div>
+        </el-form-item>
+      </el-form>
+    </el-drawer>
+
+    <drawer-order-type-sheet :drawer-sheet="drawerOrderTypeSheet" :append-to-body="false" :data="orderTypeData" :device-type="orderDeviceType" @click="orderTypeItemClick" @handleClose="handleClose"></drawer-order-type-sheet>
   </div>
 </template>
 
@@ -19,10 +147,12 @@ import mixins from "../mixins/mixins";
 import VGanttBak from "../components/gantt/VGanttBak";
 import VGanttBase from "../components/gantt/VGanttBase";
 import VGanttPro from "../components/gantt/VGanttPro";
+import DrawerOrderTypeSheet from "../components/DrawerOrderTypeSheet";
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
+    DrawerOrderTypeSheet,
     VGanttPro,
     VGanttBase,
     VGanttBak
@@ -35,7 +165,34 @@ export default {
       ganttTimeData: [],
       position: 0,
       scrollToY: 0,
-      positionA: 0
+      positionA: 0,
+      orderDeviceType: '',
+      drawerOrderTypeSheet: false,
+      drawerTask: false,
+      drawerTaskList: false,
+      drawerTaskSet: false,
+      directionTask: 'btt',
+      directionTaskList: 'btt',
+      directionTaskSet: 'btt',
+      orderTypeData: [],
+      formOrder: {
+        type: '1',
+        light: 0,
+        color: '',
+        colorInt: '',
+        temp: 2000,
+        waitTime: 0,
+        changeTime: 0,
+        sence: '',
+        senceText: '',
+        senceRoom: '',
+        senceName: '',
+        open: '关灯',
+        startLoop: 0,
+        startOrder: '',
+        startOrderI: '',
+        emptyTime: 0
+      }
     }
   },
   computed: {
@@ -54,10 +211,10 @@ export default {
       let dataTime = [];
       for (let i = 0; i < 50; i++){
         let testBar = [];
-        for (let j = 0; j < i*20; j++){
-          let start = j * 100;
-          let end = (j+1) * 100;
-          testBar.push({start: start,end: end,time: 100,type: j % 2 == 0 ? 1 : 2});
+        for (let j = 0; j < i; j++){
+          let start = j * 500;
+          let end = (j+1) * 500;
+          testBar.push({start: start,end: end,time: 500,type: j % 2 == 0 ? 1 : 2});
         }
         data.push({
           time: i,
@@ -130,6 +287,77 @@ export default {
     },
     scrollLeftA(val) {
       this.position = { x: val };
+    },
+    showBlock(event, data){
+      this.orderDeviceType = 'light';
+      this.drawerTaskList = true;
+    },
+    showOrderType(){
+      if (this.orderDeviceType == 'light'){
+        this.orderTypeData = this.globalLightOrderTypeData;
+      }
+      this.drawerOrderTypeSheet = true;
+    },
+    changeLightOpen(data){
+      this.formOrder.open = data;
+    },
+    closeDrawer(event){
+      if (!event){
+
+      }
+    },
+    clearForm(){
+      this.formOrder = {
+        type: '1',
+        light: 0,
+        color: '',
+        colorInt: '',
+        temp: 2000,
+        waitTime: 0,
+        changeTime: 0,
+        sence: '',
+        senceText: '',
+        senceRoom: '',
+        senceName: '',
+        open: '关灯',
+        startLoop: 0,
+        startOrder: '',
+        startOrderI: '',
+        emptyTime: 0
+      }
+    },
+    cancelTask(){
+      this.drawerTaskList = false;
+    },
+    okTask(){
+
+    },
+    cancelTaskSet(){
+      this.clearForm();
+      this.drawerTaskSet = false;
+    },
+    okTaskSet(){
+
+    },
+    updateTask($event, item){
+      this.drawerTaskSet = true;
+    },
+    delTask($event, item){
+
+    },
+    orderTypeItemClick(data){
+      this.formOrder.type = data.value;
+      this.drawerOrderTypeSheet = false;
+    },
+    handleClose(done, type){
+      this.drawerOrderTypeSheet = false;
+      this.clearForm();
+      done();
+    },
+    handleChange(data, type) {
+      if (type == 'changeTime') {
+        this.formOrder.changeTime = data;
+      }
     }
   },
   watch: {
