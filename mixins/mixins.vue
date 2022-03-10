@@ -1,6 +1,6 @@
 <script>
 import {common, commonConfig} from "../utils/api/url";
-import {deviceType, keyType, orderColor, orderValue, sceneType, templateType} from "../utils/utils";
+import {deviceType, keyType, orderColor, orderValue, planType, sceneType, templateType} from "../utils/utils";
 
     export default {
       name: "mixins",
@@ -51,6 +51,14 @@ import {deviceType, keyType, orderColor, orderValue, sceneType, templateType} fr
             {name:this.$t('循环操作'),value:'3'},
             {name:this.$t('延时'),value:'2'},
             {name:this.$t('空闲时段'),value:'1'}
+          ],
+          globalDeviceTypeData: [
+            {name:this.$t('灯'),value:'1'},
+            {name:this.$t('开关'),value:'2'},
+            {name:this.$t('窗帘'),value:'3'},
+            {name:this.$t('音乐'),value:'5'},
+            {name:this.$t('串行器'),value:'6'},
+            {name:this.$t('场景'),value:'0'}
           ],
           contentDefaultStyle:{
             'height': '0px',
@@ -213,6 +221,9 @@ import {deviceType, keyType, orderColor, orderValue, sceneType, templateType} fr
         },
         returnDataKeys(data){
           return data;
+        },
+        planTypeInfo(value){
+          return planType('set', value);
         },
         concatArray(data) {
 

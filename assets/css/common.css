@@ -40,6 +40,16 @@ span,div,button,label{
 .clearfix{
   clear: both;
 }
+.moon-ellipsis-class{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: break-all;
+}
+.moon-noellipsis-class{
+  white-space: nowrap;
+  word-break: break-all;
+}
 .textCenter{
   text-align: center;
 }
@@ -516,7 +526,7 @@ span,div,button,label{
   width: 50px;
   position: absolute;
   right: 5px;
-  z-index: 9999;
+  z-index: 9;
   bottom: 30px;
   filter:alpha(opacity=95);
   -moz-opacity:0.95;
@@ -547,4 +557,10 @@ span,div,button,label{
   width: 6px;
   height: 100%;
   margin: 0 auto !important;
+}
+.layout-menu-icon{
+  width: 18px;
+  height: 18px;
+  position: relative;
+  top: 3px;
 }

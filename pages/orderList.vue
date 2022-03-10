@@ -6,7 +6,7 @@
     <!--操作-->
     <div class="opr-block-block-view">
       <div class="opr-block-add">
-        <el-button type="text" size="mini">
+        <el-button type="text" size="mini" @click="addTask">
           <i class="fa fa-plus"></i>
           {{$t("任务")}}
         </el-button>
@@ -15,7 +15,7 @@
         <div class="marginBottom10">
           <i class="fa fa-search-plus color-default"></i>
         </div>
-        <el-slider disabled class="opr-block-slider-v" vertical :show-tooltip="false" height="150px" style="margin:0 auto !important;" v-model="scaleValue"></el-slider>
+        <el-slider disabled class="opr-block-slider-v" vertical :show-tooltip="false" height="120px" style="margin:0 auto !important;" v-model="scaleValue"></el-slider>
         <div class="marginTop10">
           <i class="fa fa-search-minus color-default"></i>
         </div>
@@ -159,6 +159,65 @@
       </el-form>
     </el-drawer>
 
+    <!--添加任务-->
+    <el-drawer
+      custom-class="drawer-block"
+      :show-close="false"
+      size="45%"
+      :visible.sync="drawerTask"
+      :direction="directionTask"
+      direction="btt"
+      @closed="closeDrawer">
+
+      <div slot="title">
+        <div class="block-opr-header">
+          <el-row>
+            <el-col :span="3">
+              <div class="textCenter">
+                <el-button size="mini" type="text" @click="cancelSetTask">
+                  <span class="color-666666">{{$t('取消')}}</span>
+                </el-button>
+              </div>
+            </el-col>
+            <el-col :span="18">
+              <div class="textCenter">
+                <span>{{$t('任务设置')}}</span>
+              </div>
+            </el-col>
+            <el-col :span="3">
+              <div class="textCenter">
+                <el-button size="mini" type="text" @click="okSetTask">{{$t('确定')}}</el-button>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+
+      <div>
+        <el-form class="custom-form" label-width="90px" ref="formPlain" :model="formPlain">
+          <el-form-item :label="$t('任务类型')" @click.native="setTask">
+            <div class="textRight color-666666">
+              <label>{{formPlain.type === '' ? $t("请选择") : planTypeInfo(formPlain.type)}}</label>
+              <label class="fa fa-chevron-right"></label>
+            </div>
+          </el-form-item>
+          <el-form-item :label="$t('任务名称')" @click.native="showInput($event)">
+            <div class="textRight color-666666">
+              <label>{{formPlain.name === '' ? $t("请选择") : formPlain.name}}</label>
+              <label class="fa fa-chevron-right"></label>
+            </div>
+          </el-form-item>
+          <el-form-item :label="$t('添加设备')">
+            <div class="textRight color-666666">
+              <label>({{$t("已选择")}}{{formPlain.deviceSelDevice.length}}{{$t("台设备")}})</label>
+              <label class="fa fa-chevron-right"></label>
+            </div>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-drawer>
+
+    <!--指令类型-->
     <drawer-order-type-sheet
       :drawer-sheet="drawerOrderTypeSheet"
       :append-to-body="false"
@@ -169,6 +228,9 @@
       @inputColor="inputColor"
       @changeColor="changeColor">
     </drawer-order-type-sheet>
+
+    <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
+    <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
   </div>
 </template>
 
@@ -181,10 +243,13 @@ import DrawerOrderTypeSheet from "../components/DrawerOrderTypeSheet";
 import FormSwitch from "../components/FormSwitch";
 import FormSence from "../components/FormSence";
 import FormChangeDevice from "../components/FormChangeDevice";
+import {MessageCommonTips} from "../utils/utils";
+import DrawerDeviceTypeSheet from "../components/DrawerDeviceTypeSheet";
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
+    DrawerDeviceTypeSheet,
     FormChangeDevice,
     FormSence,
     FormSwitch,
@@ -203,6 +268,7 @@ export default {
       scrollToY: 0,
       positionA: 0,
       orderDeviceType: '',
+      drawerDeviceTypeSheet: false,
       drawerOrderTypeSheet: false,
       drawerTask: false,
       drawerTaskList: false,
@@ -212,6 +278,17 @@ export default {
       directionTaskSet: 'btt',
       orderTypeData: [],
       scaleValue: 0,
+      messageInput: '',
+      dialogInput: false,
+      title: '',
+      placeholder: '',
+      inputType: '',
+      formPlain: {
+        type: '',
+        name: '',
+        deviceList: [],
+        deviceSelDevice: []
+      },
       formOrder: {
         type: '2',
         light: 0,
@@ -361,6 +438,12 @@ export default {
       }
     },
     clearForm(){
+      this.formPlain = {
+        type: '',
+        name: '',
+        deviceList: [],
+        deviceSelDevice: []
+      };
       this.formOrder = {
         type: '2',
         light: 0,
@@ -389,6 +472,12 @@ export default {
         source: '',
       }
     },
+    cancelSetTask(){
+      this.drawerTask = false;
+    },
+    okSetTask(){
+
+    },
     cancelTask(){
       this.drawerTaskList = false;
     },
@@ -412,13 +501,20 @@ export default {
       this.formOrder.type = data.value;
       this.drawerOrderTypeSheet = false;
     },
+    deviceTypeItemClick(data){
+      this.formPlain.type = data.value;
+      this.drawerDeviceTypeSheet = false;
+    },
     handleClose(done, type){
       this.drawerOrderTypeSheet = false;
+      this.drawerDeviceTypeSheet = false;
       this.clearForm();
       done();
     },
     handleSheetClose(done, type){
       this.drawerOrderTypeSheet = false;
+      this.drawerDeviceTypeSheet = false;
+      this.clearForm();
       done();
     },
     inputColor(data){
@@ -454,6 +550,31 @@ export default {
           envKey: this.$route.query.envKey
         }
       });
+    },
+    addTask(){
+      this.drawerTask = true;
+    },
+    setTask(){
+      this.drawerDeviceTypeSheet = true;
+    },
+    showInput(event){
+      this.title = '';
+      this.placeholder = '';
+      this.messageInput = this.formPlain.name;
+      this.dialogInput = true;
+    },
+    cancelInputDialog(){
+      this.messageInput = '';
+      this.inputType = '';
+      this.dialogInput = false;
+    },
+    okInputDialog(data){
+      if (data == ""){
+        MessageCommonTips(this.$t("请输入信息！"));
+        return;
+      }
+      this.formPlain.name = data;
+      this.dialogInput = false;
     }
   },
   watch: {

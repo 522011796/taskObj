@@ -1,8 +1,13 @@
 <template>
   <div class="gantt-leftbar">
     <div class="gantt-leftbar-item gantt-block-top-space" :style="{ height: topSpace + 'px' }" ></div>
-    <div class="gantt-leftbar-item" :style="cellHeightStyle" v-for="(item, index) in showDatas">
-      {{item.menuTitle}}
+    <div class="gantt-leftbar-item padding-left10 moon-ellipsis-class" :style="cellHeightStyle" v-for="(item, index) in showDatas">
+      <span>
+        <img src="~/static/img/light.png" class="layout-menu-icon"/>
+      </span>
+      <span>
+        {{item.menuTitle}}
+      </span>
     </div>
   </div>
 </template>
@@ -26,7 +31,8 @@ export default {
   computed: {
     cellHeightStyle() {
       return {
-        height: `${this.cellHeight}px`
+        height: `${this.cellHeight}px`,
+        lineHeight: `${this.cellHeight}px`
       };
     }
   },
