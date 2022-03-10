@@ -163,7 +163,7 @@
     <el-drawer
       custom-class="drawer-block"
       :show-close="false"
-      size="45%"
+      size="40%"
       :visible.sync="drawerTask"
       :direction="directionTask"
       direction="btt"
@@ -207,7 +207,7 @@
               <label class="fa fa-chevron-right"></label>
             </div>
           </el-form-item>
-          <el-form-item :label="$t('添加设备')">
+          <el-form-item :label="$t('添加设备')" @click.native="addDevice($event)">
             <div class="textRight color-666666">
               <label>({{$t("已选择")}}{{formPlain.deviceSelDevice.length}}{{$t("台设备")}})</label>
               <label class="fa fa-chevron-right"></label>
@@ -231,6 +231,7 @@
 
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
     <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
+    <drawer-device-list-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceListSheet" @click="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
   </div>
 </template>
 
@@ -245,10 +246,14 @@ import FormSence from "../components/FormSence";
 import FormChangeDevice from "../components/FormChangeDevice";
 import {MessageCommonTips} from "../utils/utils";
 import DrawerDeviceTypeSheet from "../components/DrawerDeviceTypeSheet";
+import DrawerDeviceList from "../components/DrawerDeviceList";
+import DrawerDeviceListSheet from "../components/DrawerDeviceListSheet";
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
+    DrawerDeviceListSheet,
+    DrawerDeviceList,
     DrawerDeviceTypeSheet,
     FormChangeDevice,
     FormSence,
@@ -270,6 +275,7 @@ export default {
       orderDeviceType: '',
       drawerDeviceTypeSheet: false,
       drawerOrderTypeSheet: false,
+      drawerDeviceListSheet: false,
       drawerTask: false,
       drawerTaskList: false,
       drawerTaskSet: false,
@@ -315,7 +321,47 @@ export default {
         musicProcess: 0,
         musicVoice: 0,
         source: '',
-      }
+      },
+      deviceOptions: [{
+        value: 'zhinan',
+        label: '指南',
+        children: [{
+          value: 'shejiyuanze',
+          label: '设计原则',
+          children: [{
+            value: 'yizhi',
+            label: '一致'
+          }, {
+            value: 'fankui',
+            label: '反馈'
+          }, {
+            value: 'xiaolv',
+            label: '效率'
+          }, {
+            value: 'kekong',
+            label: '可控'
+          }, {
+            value: 'kekong',
+            label: '可控'
+          }, {
+            value: 'kekong',
+            label: '可控'
+          }, {
+            value: 'kekong',
+            label: '可控'
+          }]
+        }, {
+          value: 'daohang',
+          label: '导航',
+          children: [{
+            value: 'cexiangdaohang',
+            label: '侧向导航'
+          }, {
+            value: 'dingbudaohang',
+            label: '顶部导航'
+          }]
+        }]
+      }]
     }
   },
   computed: {
@@ -505,6 +551,9 @@ export default {
       this.formPlain.type = data.value;
       this.drawerDeviceTypeSheet = false;
     },
+    deviceListItemClick(data){
+
+    },
     handleClose(done, type){
       this.drawerOrderTypeSheet = false;
       this.drawerDeviceTypeSheet = false;
@@ -514,6 +563,7 @@ export default {
     handleSheetClose(done, type){
       this.drawerOrderTypeSheet = false;
       this.drawerDeviceTypeSheet = false;
+      this.drawerDeviceListSheet = false;
       this.clearForm();
       done();
     },
@@ -556,6 +606,9 @@ export default {
     },
     setTask(){
       this.drawerDeviceTypeSheet = true;
+    },
+    addDevice(){
+      this.drawerDeviceListSheet = true;
     },
     showInput(event){
       this.title = '';
