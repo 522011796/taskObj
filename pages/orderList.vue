@@ -120,25 +120,25 @@
             <label class="fa fa-chevron-right"></label>
           </div>
         </el-form-item>
-        <el-form-item :label="$t('开/关')">
-          <div class="textRight">
-            <el-switch
-              v-model="formOrder.open"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
-              @change="changeLightOpen">
-            </el-switch>
-          </div>
-        </el-form-item>
-        <el-form-item :label="$t('渐变时间')">
-          <div class="textRight color-666666">
-            <el-input-number size="medium" v-model="formOrder.changeTime" @change="handleChange($event, 'changeTime')" :min="0" :step="100" :step-strictly="true"></el-input-number>
-          </div>
-        </el-form-item>
+
+        <form-light v-if="orderDeviceType == 'light'" :form-data="formOrder" @changeLightOpen="changeLightOpen" @handleChange="handleChange"></form-light>
+        <form-switch v-if="orderDeviceType == 'switch'" :form-data="formOrder" @handleChange="handleChange"></form-switch>
+        <form-music v-if="orderDeviceType == 'music'" :form-data="formOrder" @handleChange="handleChange"></form-music>
+        <form-sence v-if="orderDeviceType == 'sence'" :form-data="formOrder" @handleChange="handleChange"></form-sence>
+        <form-change-device v-if="orderDeviceType == 'changeDevice'" :form-data="formOrder" @handleChange="handleChange"></form-change-device>
       </el-form>
     </el-drawer>
 
-    <drawer-order-type-sheet :drawer-sheet="drawerOrderTypeSheet" :append-to-body="false" :data="orderTypeData" :device-type="orderDeviceType" @click="orderTypeItemClick" @handleClose="handleClose"></drawer-order-type-sheet>
+    <drawer-order-type-sheet
+      :drawer-sheet="drawerOrderTypeSheet"
+      :append-to-body="false"
+      :data="orderTypeData"
+      :device-type="orderDeviceType"
+      @click="orderTypeItemClick"
+      @handleClose="handleSheetClose"
+      @inputColor="inputColor"
+      @changeColor="changeColor">
+    </drawer-order-type-sheet>
   </div>
 </template>
 
@@ -148,10 +148,16 @@ import VGanttBak from "../components/gantt/VGanttBak";
 import VGanttBase from "../components/gantt/VGanttBase";
 import VGanttPro from "../components/gantt/VGanttPro";
 import DrawerOrderTypeSheet from "../components/DrawerOrderTypeSheet";
+import FormSwitch from "../components/FormSwitch";
+import FormSence from "../components/FormSence";
+import FormChangeDevice from "../components/FormChangeDevice";
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
+    FormChangeDevice,
+    FormSence,
+    FormSwitch,
     DrawerOrderTypeSheet,
     VGanttPro,
     VGanttBase,
@@ -176,7 +182,7 @@ export default {
       directionTaskSet: 'btt',
       orderTypeData: [],
       formOrder: {
-        type: '1',
+        type: '2',
         light: 0,
         color: '',
         colorInt: '',
@@ -187,11 +193,20 @@ export default {
         senceText: '',
         senceRoom: '',
         senceName: '',
-        open: '关灯',
+        open: 0,
         startLoop: 0,
         startOrder: '',
         startOrderI: '',
-        emptyTime: 0
+        emptyTime: 0,
+        colors: '',
+        keyArr: [],
+        keyNoArr: [],
+        key: '',
+        keyOpr: '1',
+        musicName: '',
+        musicProcess: 0,
+        musicVoice: 0,
+        source: '',
       }
     }
   },
@@ -289,12 +304,20 @@ export default {
       this.position = { x: val };
     },
     showBlock(event, data){
-      this.orderDeviceType = 'light';
+      this.orderDeviceType = 'switch';
       this.drawerTaskList = true;
     },
     showOrderType(){
       if (this.orderDeviceType == 'light'){
         this.orderTypeData = this.globalLightOrderTypeData;
+      }else if (this.orderDeviceType == 'switch'){
+        this.orderTypeData = this.globalSwitchOrderTypeData;
+      }else if (this.orderDeviceType == 'music'){
+        this.orderTypeData = this.globalMusicOrderTypeData;
+      }else if (this.orderDeviceType == 'sence'){
+        this.orderTypeData = this.globalSenceOrderTypeData;
+      }else if (this.orderDeviceType == 'changeDevice'){
+        this.orderTypeData = this.globalChangeDeviceOrderTypeData;
       }
       this.drawerOrderTypeSheet = true;
     },
@@ -303,12 +326,12 @@ export default {
     },
     closeDrawer(event){
       if (!event){
-
+        this.clearForm();
       }
     },
     clearForm(){
       this.formOrder = {
-        type: '1',
+        type: '2',
         light: 0,
         color: '',
         colorInt: '',
@@ -319,11 +342,20 @@ export default {
         senceText: '',
         senceRoom: '',
         senceName: '',
-        open: '关灯',
+        open: 0,
         startLoop: 0,
         startOrder: '',
         startOrderI: '',
-        emptyTime: 0
+        emptyTime: 0,
+        colors: '',
+        keyArr: [],
+        keyNoArr: [],
+        key: '',
+        keyOpr: '1',
+        musicName: '',
+        musicProcess: 0,
+        musicVoice: 0,
+        source: '',
       }
     },
     cancelTask(){
@@ -354,9 +386,34 @@ export default {
       this.clearForm();
       done();
     },
-    handleChange(data, type) {
+    handleSheetClose(done, type){
+      this.drawerOrderTypeSheet = false;
+      done();
+    },
+    inputColor(data){
+      this.formOrder.color = data;
+    },
+    changeColor(data){
+      let rgb = this.hsltorgb(data, this.colors.saturation, this.colors.luminosity);
+      let color = this.colorRGBtoHex(rgb[0],rgb[1],rgb[2]);
+      this.formOrder.color = "#"+color;
+      this.formOrder.colorInt = Math.abs(this.converRgbToArgb(rgb[0],rgb[1],rgb[2]));
+    },
+    handleChange(type, data) {
       if (type == 'changeTime') {
         this.formOrder.changeTime = data;
+      }else if (type == 'temp') {
+        this.formOrder.temp = data;
+      }else if (type == 'light') {
+        this.formOrder.light = data;
+      }else if (type == 'waitTime') {
+        this.formOrder.waitTime = data;
+      }else if (type == 'emptyTime') {
+        this.formOrder.emptyTime = data;
+      }else if (type == 'startLoop') {
+        this.formOrder.startLoop = data;
+      }else if (type == 'musicVoice') {
+        this.formOrder.musicVoice = data;
       }
     }
   },

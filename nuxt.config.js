@@ -21,6 +21,7 @@ export default {
     'element-ui/lib/theme-chalk/index.css',
     'assets/css/common.css',
     '~assets/font-awesome-4.7.0/css/font-awesome.min.css',
+    '@radial-color-picker/vue-color-picker/dist/vue-color-picker.min.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

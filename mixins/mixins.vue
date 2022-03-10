@@ -1,6 +1,6 @@
 <script>
 import {common, commonConfig} from "../utils/api/url";
-import {deviceType, orderColor, orderValue, sceneType, templateType} from "../utils/utils";
+import {deviceType, keyType, orderColor, orderValue, sceneType, templateType} from "../utils/utils";
 
     export default {
       name: "mixins",
@@ -15,11 +15,39 @@ import {deviceType, orderColor, orderValue, sceneType, templateType} from "../ut
           globalDeviceType: '',
           userKey: '',
           globalDataKeys: [],
+          globalSwitchKeyTypeData: [
+            {name:this.$t('释放'),value:'0'},
+            {name:this.$t('按下'),value:'1'}
+          ],
           globalLightOrderTypeData: [
             {name:this.$t('开/关灯控制'),value:'6'},
             {name:this.$t('亮度控制'),value:'7'},
             {name:this.$t('色温控制'),value:'8'},
             {name:this.$t('色彩控制'),value:'9'},
+            {name:this.$t('循环操作'),value:'3'},
+            {name:this.$t('延时'),value:'2'},
+            {name:this.$t('空闲时段'),value:'1'}
+          ],
+          globalSwitchOrderTypeData: [
+            {name:this.$t('继电器'),value:'11'},
+            {name:this.$t('延时'),value:'2'},
+            {name:this.$t('空闲时段'),value:'1'}
+          ],
+          globalMusicOrderTypeData: [
+            {name:this.$t('音乐播放'),value:'13'},
+            {name:this.$t('音乐暂停'),value:'14'},
+            {name:this.$t('音乐音量'),value:'12'},
+            {name:this.$t('音乐进度'),value:'15'},
+            {name:this.$t('延时'),value:'2'}
+          ],
+          globalSenceOrderTypeData: [
+            {name:this.$t('循环操作'),value:'3'},
+            {name:this.$t('场景调用(勿使用2级以上嵌套)'),value:'4'},
+            {name:this.$t('延时'),value:'2'},
+            {name:this.$t('空闲时段'),value:'1'}
+          ],
+          globalChangeDeviceOrderTypeData: [
+            {name:this.$t('串行器数据'),value:'18'},
             {name:this.$t('循环操作'),value:'3'},
             {name:this.$t('延时'),value:'2'},
             {name:this.$t('空闲时段'),value:'1'}
@@ -117,6 +145,60 @@ import {deviceType, orderColor, orderValue, sceneType, templateType} from "../ut
             return hour + ':' + minute + ':' + second
           }
         },
+        converRgbToArgb(r,g,b){
+          var color = ((0xFF0000 << 24)|(r << 16)|(g << 8)|b);
+          return color;
+        },
+        converArgbToRgb(argb){
+          var rgb = [];
+          rgb[0] = (argb & 0xff0000) >> 16;
+          rgb[1] = (argb & 0xff00) >> 8;
+          rgb[2] = (argb & 0xff);
+          return "rgb("+rgb[0]+","+rgb[1]+","+rgb[2]+")";
+        },
+        hsltorgb(h,s,l) {
+          var h = h / 360;
+          var s = s / 100;
+          var l = l / 100;
+          var rgb = [];
+
+          if (s == 0) {
+            rgb = [Math.round(l * 255), Math.round(l * 255), Math.round(l * 255)];
+          } else {
+            var q = l >= 0.5 ? (l + s - l * s) : (l * (1 + s));
+            var p = 2 * l - q;
+            var tr = rgb[0] = h + 1 / 3;
+            var tg = rgb[1] = h;
+            var tb = rgb[2] = h - 1 / 3;
+            for (var i = 0; i < rgb.length; i++) {
+              var tc = rgb[i];
+              if (tc < 0) {
+                tc = tc + 1;
+              } else if (tc > 1) {
+                tc = tc - 1;
+              }
+              switch (true) {
+                case (tc < (1 / 6)):
+                  tc = p + (q - p) * 6 * tc;
+                  break;
+                case ((1 / 6) <= tc && tc < 0.5):
+                  tc = q;
+                  break;
+                case (0.5 <= tc && tc < (2 / 3)):
+                  tc = p + (q - p) * (4 - 6 * tc);
+                  break;
+                default:
+                  tc = p;
+                  break;
+              }
+              rgb[i] = Math.round(tc * 255);
+            }
+          }
+          return rgb;
+        },
+        colorRGBtoHex(r, g, b) {
+          return ("00000" + (r << 16 | g << 8 | b).toString(16)).slice(-6);
+        },
         compareValue(value1,value2){
           if (value1 < value2){
             return -1;
@@ -149,6 +231,9 @@ import {deviceType, orderColor, orderValue, sceneType, templateType} from "../ut
         },
         orderValueInfo(value, type){
           return orderValue(type, value);
+        },
+        keyTypeInfo(type){
+          return keyType(type);
         },
         setPageStatus(value){
           /**

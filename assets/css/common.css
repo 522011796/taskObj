@@ -502,3 +502,8 @@ span,div,button,label{
   background: #F2F6FC;
   margin-bottom: 10px;
 }
+.pop-custom.el-popover{
+  min-width: 80px;
+  outline: 0 !important;
+  font-size: 12px;
+}
