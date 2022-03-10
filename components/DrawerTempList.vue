@@ -35,7 +35,7 @@
       </div>
       <div class="padding-left10 padding-right10 padding-top5" :dataGroup_="dataGroup_">
         <template v-if="type == 1">
-          <div v-for="(item, index) in data_" :key="index" v-loading="item.loading" @click="itemClick($event, item)" class="item-light-block">
+          <div v-for="(item, index) in data_" :key="index" v-loading="item.loading" @click="itemClick($event, item, index)" class="item-light-block">
             <div>
               <span>{{ item.key }}</span>
               :
@@ -161,6 +161,7 @@ export default {
       groupChildList: [],
       dataDevieList: [],
       itemData: '',
+      itemIndex: '',
       editIndex: '',
       groupIndex: '',
       oprType: ''
@@ -196,8 +197,9 @@ export default {
         this.deviceType = false;
       }
     },
-    itemClick(event, item){
+    itemClick(event, item, index){
       this.itemData = item;
+      this.itemIndex = index;
       this.oprType = 'muti';
       this.getDeviceList(item.t);
       this.drawerDeviceList = true;
@@ -230,8 +232,8 @@ export default {
       this.$set(this.groupChildList[this.editIndex], 'sn', data.sn);
     },
     setMutiDevice(data){
-      this.$set(this.deviceList[this.index], 'value', data.name);
-      this.$set(this.deviceList[this.index], 'sn', data.sn);
+      this.$set(this.deviceList[this.itemIndex], 'value', data.name);
+      this.$set(this.deviceList[this.itemIndex], 'sn', data.sn);
 
       for (let i = 0; i < this.groupList.length; i++){
         let dExtra = this.groupList[i].dExtra;
