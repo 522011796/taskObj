@@ -317,6 +317,12 @@ import {deviceType, keyType, orderColor, orderValue, planType, sceneType, templa
                   }
                 });
               }
+              if (data['value'] == 100){//保存场景指令
+
+              }
+              if (data['value'] == 200){//添加任务
+                _self.addTask();
+              }
               if (data['value'] == 300){//任务列表
                 _self.setPageStatus(1);
                 _self.$router.push({

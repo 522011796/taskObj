@@ -5,7 +5,7 @@
 
     <!--操作-->
     <div class="opr-block-block-view">
-      <div class="opr-block-add">
+      <div class="opr-block-add" v-if="globalDeviceType != 'ios'">
         <el-button type="text" size="mini" @click="addTask">
           <i class="fa fa-plus"></i>
           {{$t("任务")}}
@@ -20,7 +20,7 @@
           <i class="fa fa-search-minus color-default"></i>
         </div>
       </div>
-      <div class="opr-block-save">
+      <div class="opr-block-save" v-if="globalDeviceType != 'ios'">
         <el-button type="text" size="mini">
           <i class="fa fa-file"></i>
           {{$t("保存")}}
@@ -412,7 +412,7 @@ export default {
       this.position = { x: val };
     },
     showBlock(event, data){
-      this.orderDeviceType = 'switch';
+      this.orderDeviceType = 'light';
       this.drawerTaskList = true;
     },
     showOrderType(){
