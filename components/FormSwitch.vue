@@ -73,14 +73,23 @@ export default {
       this.drawerKeySheet = false;
     },
     typeArrKeyItemClick(data){
-      this._formData.keyNoArr.push(data.value);
-      this.drawerKeyArrSheet = false;
+      let dataValue = data.value;
+      if (this._formData.keyArr.indexOf(dataValue) == -1){
+        this._formData.keyArr.push(dataValue);
+        this._formData.keyNoArr.push(dataValue+1);
+      }else{
+        let indexItem = this._formData.keyArr.indexOf(dataValue);
+        this._formData.keyArr.splice(indexItem, 1);
+        this._formData.keyNoArr.splice(indexItem, 1);
+      }
+
+      //this.drawerKeyArrSheet = false;
     },
     setKeyType(){
       this.drawerKeySheet = true;
     },
     setKeyArr(){
-      this.drawerKeyArr = [{name: 1, value:1},{name: 2, value:2}];
+      this.drawerKeyArr = [{name: 0, value:0},{name: 1, value:1}];
       this.drawerKeyArrSheet = true;
     },
     handleClose(done, type){
