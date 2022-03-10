@@ -4,7 +4,7 @@
       <div class="gantt-container" :style="[areaStyleObj, blockStyle]">
         <div class="gantt-header" :style="{ width: `calc(100% + ${scrollYBarWidth}px)` }">
           <div class="gantt-header-title" :style="{ 'line-height': titleHeight + 'px', height: titleHeight + 'px', width: titleWidth + 'px'}">
-            title
+            <slot name="title"></slot>
           </div>
           <div ref="headerTimeline" class="gantt-header-timeline">
             <div class="gantt-timeline-wrapper" :style="{ width: totalWidth + scrollYBarWidth + 'px' }">

@@ -2,6 +2,32 @@
   <div class="container">
 <!--    <v-gantt-base :gantt-data="dataTest" :gantt-col-data="ganttColData"></v-gantt-base>-->
 <!--    <v-gantt-bak></v-gantt-bak>-->
+
+    <!--操作-->
+    <div class="opr-block-block-view">
+      <div class="opr-block-add">
+        <el-button type="text" size="mini">
+          <i class="fa fa-plus"></i>
+          {{$t("任务")}}
+        </el-button>
+      </div>
+      <div class="opr-block-scale textCenter">
+        <div class="marginBottom10">
+          <i class="fa fa-search-plus color-default"></i>
+        </div>
+        <el-slider disabled class="opr-block-slider-v" vertical :show-tooltip="false" height="150px" style="margin:0 auto !important;" v-model="scaleValue"></el-slider>
+        <div class="marginTop10">
+          <i class="fa fa-search-minus color-default"></i>
+        </div>
+      </div>
+      <div class="opr-block-save">
+        <el-button type="text" size="mini">
+          <i class="fa fa-file"></i>
+          {{$t("保存")}}
+        </el-button>
+      </div>
+    </div>
+    <!--图标-->
     <v-gantt-pro
       :datas="dataTest"
       :gantt-data="dataTest"
@@ -11,6 +37,10 @@
       @scrollLeft="scrollLeftA"
       @showBlock="showBlock">
 
+      <div slot="title" class="textCenter" @click="globalDeviceType != 'ios' ? returnMain() : ''">
+        <i v-if="globalDeviceType != 'ios'" class="fa fa-chevron-left font-size-12"></i>
+        <span class="font-size-12 color-F2F6FC">{{$t("任务")}}</span>
+      </div>
     </v-gantt-pro>
 
     <!--指令列表-->
@@ -181,6 +211,7 @@ export default {
       directionTaskList: 'btt',
       directionTaskSet: 'btt',
       orderTypeData: [],
+      scaleValue: 0,
       formOrder: {
         type: '2',
         light: 0,
@@ -227,9 +258,9 @@ export default {
       for (let i = 0; i < 50; i++){
         let testBar = [];
         for (let j = 0; j < i; j++){
-          let start = j * 500;
-          let end = (j+1) * 500;
-          testBar.push({start: start,end: end,time: 500,type: j % 2 == 0 ? 1 : 2});
+          let start = j * 1000;
+          let end = (j+1) * 1000;
+          testBar.push({start: start,end: end,time: 1000,type: j % 2 == 0 ? 1 : 2});
         }
         data.push({
           time: i,
@@ -415,6 +446,14 @@ export default {
       }else if (type == 'musicVoice') {
         this.formOrder.musicVoice = data;
       }
+    },
+    returnMain(){
+      this.$router.push({
+        path: '/',
+        query: {
+          envKey: this.$route.query.envKey
+        }
+      });
     }
   },
   watch: {

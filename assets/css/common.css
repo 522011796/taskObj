@@ -147,6 +147,9 @@ span,div,button,label{
 .padding-top5{
   padding-top: 5px;
 }
+.padding-top10{
+  padding-top: 10px;
+}
 .padding-right10{
   padding-right: 10px;
 }
@@ -506,4 +509,42 @@ span,div,button,label{
   min-width: 80px;
   outline: 0 !important;
   font-size: 12px;
+}
+.opr-block-block-view{
+  background: #000000;
+  border-radius:  5px;
+  width: 50px;
+  position: absolute;
+  right: 5px;
+  z-index: 9999;
+  bottom: 30px;
+  filter:alpha(opacity=95);
+  -moz-opacity:0.95;
+  -khtml-opacity: 0.95;
+  opacity: 0.95;
+  font-size: 12px;
+}
+.opr-block-add{
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-bottom: 1px solid #434343;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.opr-block-save{
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-top: 1px solid #434343;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.opr-block-scale{
+  padding: 5px 0px;
+}
+.opr-block-slider-v .el-slider__runway {
+  width: 6px;
+  height: 100%;
+  margin: 0 auto !important;
 }
