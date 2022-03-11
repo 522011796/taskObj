@@ -66,7 +66,7 @@
     <el-drawer
       custom-class="drawer-block"
       :show-close="false"
-      size="35%"
+      :size="globalDrawerHeight"
       :visible.sync="drawerTemp"
       :direction="directionEdit"
       @close="closeDialog">

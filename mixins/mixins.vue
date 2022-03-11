@@ -6,6 +6,9 @@ import {deviceType, keyType, orderColor, orderValue, planType, sceneType, templa
       name: "mixins",
       data(){
         return {
+          globalDrawerHeight: '40%',
+          globalDrawerSheetHeight: '50%',
+          globalDrawerBottomHeight: '45%',
           globalTest: '0',
           minxinsScroll: false,
           baseUrl: '',
@@ -72,6 +75,19 @@ import {deviceType, keyType, orderColor, orderValue, planType, sceneType, templa
       },
       mounted() {
         this.initBridage();
+        window.addEventListener('orientationchange', (e) => {
+          if (process.browser) {
+            if (window.orientation == 0 || window.orientation == 180){
+              this.globalDrawerHeight = '40%';
+              this.globalDrawerSheetHeight = '50%';
+              this.globalDrawerBottomHeight = '45%';
+            }else if (window.orientation == 90 || window.orientation == -90){
+              this.globalDrawerHeight = '60%';
+              this.globalDrawerSheetHeight = '70%';
+              this.globalDrawerBottomHeight = '70%';
+            }
+          }
+        });
       },
       created() {
         this.getUrl();

@@ -18,10 +18,10 @@
           </div>
         </div>
         <div class="gantt-body"
-             :style="{ height: `calc(100% - ${actualHeaderHeight}px)` }" >
+          :style="{ height: `calc(100% - ${actualHeaderHeight}px)` }" >
           <div class="gantt-table">
             <div ref="leftbarWrapper" class="gantt-leftbar-wrapper"
-                 :style="{ width: titleWidth + 'px', height: `calc(100% + ${0}px)`}">
+              :style="{ width: titleWidth + 'px', height: `calc(100% + ${0}px)`}">
 
               <v-gantt-left-bar
                 :datas="ganttData"

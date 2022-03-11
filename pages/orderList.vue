@@ -113,7 +113,7 @@
     <el-drawer
       custom-class="drawer-block"
       :show-close="false"
-      size="45%"
+      :size="globalDrawerBottomHeight"
       :visible.sync="drawerTaskSet"
       :direction="directionTaskSet"
       direction="btt"
@@ -163,7 +163,7 @@
     <el-drawer
       custom-class="drawer-block"
       :show-close="false"
-      size="40%"
+      :size="globalDrawerHeight"
       :visible.sync="drawerTask"
       :direction="directionTask"
       direction="btt"
@@ -369,6 +369,15 @@ export default {
   },
   mounted() {
     this.height = window.innerHeight // 动态设置高度
+
+    if (window.history && window.history.pushState) {
+      // 向历史记录中插入了当前页
+      history.pushState(null, null, document.URL);
+      window.addEventListener('popstate', this.goBack, false);
+    }
+  },
+  destroyed() {
+    window.removeEventListener('popstate', this.goBack, false);
   },
   created() {
     this.init();
@@ -596,6 +605,7 @@ export default {
     returnMain(){
       this.$router.push({
         path: '/',
+        replace: true,
         query: {
           envKey: this.$route.query.envKey
         }
@@ -628,6 +638,10 @@ export default {
       }
       this.formPlain.name = data;
       this.dialogInput = false;
+    },
+    goBack () {
+      // console.log("点击了浏览器的返回按钮");
+      history.pushState(null, null, document.URL);
     }
   },
   watch: {

@@ -3,7 +3,7 @@
     <el-drawer
       custom-class="drawer-block"
       :show-close="false"
-      size="47%"
+      :size="globalDrawerSheetHeight"
       :append-to-body="appendToBody"
       :visible.sync="drawer_"
       direction="btt"
@@ -29,7 +29,10 @@
 </template>
 
 <script>
+import mixins from "../mixins/mixins";
+
 export default {
+  mixins: [mixins],
   props:{
     drawerSheet: {
       type: Boolean,

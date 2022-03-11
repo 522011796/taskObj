@@ -19,7 +19,14 @@
         }
       },
       mounted() {
-
+        document.addEventListener('touchstart', function(e) {
+          if (e.touches.length > 1) {
+            e.preventDefault()
+          }
+        });
+        document.addEventListener('gesturestart', function(e) {
+          e.preventDefault()
+        });
       },
       beforeMount() {
 

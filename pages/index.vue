@@ -73,7 +73,7 @@
     <el-drawer
       custom-class="drawer-block"
       :show-close="false"
-      size="40%"
+      :size="globalDrawerHeight"
       :visible.sync="drawerEdit"
       :direction="directionEdit"
       @close="closeDialog">
@@ -151,7 +151,7 @@
     <el-drawer
       custom-class="drawer-block"
       :show-close="false"
-      size="40%"
+      :size="globalDrawerHeight"
       :visible.sync="drawerTemp"
       :direction="directionEdit"
       @close="closeDialog">
@@ -470,6 +470,7 @@ export default {
       if (type == 1){
         this.$router.push({
           path: '/orderList',
+          replace: true,
           query: {
             envKey: this.$route.query.envKey,
             sessionId: this.$route.query.sessionId,
@@ -482,6 +483,7 @@ export default {
       }else if (type == 2){
         this.$router.push({
           path: '/envList',
+          replace: true,
           query: {
             envKey: this.$route.query.envKey,
             sessionId: this.$route.query.sessionId,
@@ -495,6 +497,7 @@ export default {
         this.setPageStatus(2);
         this.$router.push({
           path: '/templateList',
+          replace: true,
           query: {
             envKey: this.$route.query.envKey,
             sessionId: this.$route.query.sessionId,
