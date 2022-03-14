@@ -564,3 +564,20 @@ span,div,button,label{
   position: relative;
   top: 3px;
 }
+.el-scrollbar .el-scrollbar__bar {
+  opacity: 1 !important;
+}
+.drawer-other-block .el-drawer__body {
+  flex: 1;
+  overflow: auto;
+  margin: 0 auto !important;
+}
+.drawer-other-block .custom-el-drawer-cascader .el-cascader-menu {
+  min-width: 100px;
+  box-sizing: border-box;
+  color: #606266;
+  border-right: solid 1px #E4E7ED;
+}
+.drawer-other-block .custom-el-drawer-cascader .el-cascader-menu:last-child {
+  border-right: solid 0px #E4E7ED;
+}

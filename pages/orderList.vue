@@ -231,7 +231,7 @@
 
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
     <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
-    <drawer-device-list-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceListSheet" @click="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
+    <drawer-device-list-sheet :data="deviceOptions" :drawer-sheet="drawerDeviceListSheet" @click="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
   </div>
 </template>
 
@@ -337,15 +337,6 @@ export default {
           }, {
             value: 'xiaolv',
             label: '效率'
-          }, {
-            value: 'kekong',
-            label: '可控'
-          }, {
-            value: 'kekong',
-            label: '可控'
-          }, {
-            value: 'kekong',
-            label: '可控'
           }, {
             value: 'kekong',
             label: '可控'

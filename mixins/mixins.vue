@@ -70,6 +70,10 @@ import {deviceType, keyType, orderColor, orderValue, planType, sceneType, templa
           contentStyle:{
             'height': '0px',
             'overflow-y': 'auto'
+          },
+          contentWidthStyle:{
+            'width': '0px',
+            'overflow-y': 'auto'
           }
         }
       },
@@ -86,6 +90,7 @@ import {deviceType, keyType, orderColor, orderValue, planType, sceneType, templa
               this.globalDrawerSheetHeight = '70%';
               this.globalDrawerBottomHeight = '70%';
             }
+            this.mainStyle();
           }
         });
       },
@@ -106,6 +111,7 @@ import {deviceType, keyType, orderColor, orderValue, planType, sceneType, templa
             let screenWidth = window.innerWidth;
             let headHeight = this.appType == "app" ? 0 : 40;
             this.contentStyle.height = window.innerHeight - headHeight + 'px';
+            this.contentWidthStyle.width = window.innerWidth + 'px';
           }
         },
         getUrl(){

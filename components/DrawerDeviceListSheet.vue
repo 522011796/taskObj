@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-drawer
-      custom-class="drawer-block"
+      custom-class="drawer-block drawer-other-block"
       :show-close="false"
-      size="50%"
+      size="70%"
       :append-to-body="appendToBody"
       :visible.sync="drawer_"
       direction="btt"
@@ -19,15 +19,17 @@
           </el-row>
         </div>
       </div>
-      <div>
-
+      <div class="custom-el-drawer-cascader">
+        <el-cascader-panel :props="{ multiple: true }" :options="data" :style="contentWidthStyle"></el-cascader-panel>
       </div>
     </el-drawer>
   </div>
 </template>
 
 <script>
+import mixins from "../mixins/mixins";
 export default {
+  mixins: [mixins],
   props:{
     drawerSheet: {
       type: Boolean,
