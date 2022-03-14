@@ -91,6 +91,7 @@ export default {
 }
 .gantt-block {
   position: relative;
+  outline: 1px solid #606060;
 }
 .gantt-block-item {
   position: absolute;

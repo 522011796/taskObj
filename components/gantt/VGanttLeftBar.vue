@@ -6,7 +6,7 @@
         <img src="~/static/img/light.png" class="layout-menu-icon"/>
       </span>
       <span>
-        {{item.menuTitle}}
+        {{item.n}}
       </span>
     </div>
   </div>

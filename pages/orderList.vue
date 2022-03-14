@@ -30,7 +30,7 @@
     <!--图标-->
     <v-gantt-pro
       :datas="dataTest"
-      :gantt-data="dataTest"
+      :gantt-data="ganttData"
       :gantt-col-data="ganttColData"
       :gantt-time-data="ganttTimeData"
       :scroll-to-postion="position"
@@ -267,6 +267,7 @@ export default {
   data() {
     return {
       dataTest: [],
+      ganttData: [],
       ganttColData: [],
       ganttTimeData: [],
       position: 0,
@@ -372,8 +373,39 @@ export default {
   },
   created() {
     this.init();
+    this.initTask();
   },
   methods: {
+    initTask(){
+      let sourceUrl = this.$route.query.sourceUrl;
+      let timeCount = 0;
+      let ruleList = [];
+      this.$axios.get(sourceUrl).then(res => {
+        console.log(res.data.tasks);
+        let taskList = res.data.tasks;
+        this.ganttData = taskList;
+
+        //最大时长
+        for (let i = 0; i < taskList.length; i++){
+          timeCount = 0;
+          for (let j = 0; j < taskList[i]['i'].length; j++){
+            let aNumber = 0;
+            if (taskList[i]['i'][j].i == 1 || taskList[i]['i'][j].i == 2 || taskList[i]['i'][j].i == 3 || taskList[i]['i'][j].i == 0){
+              aNumber = taskList[i]['i'][j].v;
+            }
+            let result = Math.floor(aNumber);
+            timeCount += result;
+          }
+          ruleList.push(timeCount);
+        }
+
+        let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
+        let ruleTime = ruleMax / 1000;
+
+        this.ganttTimeData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
+        this.ganttColData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
+      });
+    },
     init(){
       let data = [];
       let dataCol = [];
@@ -403,19 +435,18 @@ export default {
           time: i
         });
       }
-      this.dataTest = data;
-      this.ganttColData = dataCol;
-      this.ganttTimeData = dataTime;
+      //this.dataTest = data;
+      //this.ganttColData = dataCol;
+      //this.ganttTimeData = dataTime;
     },
-    dateGanttType(date, item) {
-      let start = item.start;
-      let end = item.end;
-      if (!start || !end){
-        return;
+    dateGanttTime(data) {
+      let dataTime = [];
+      for (let i = 0; i < data; i++){
+        dataTime.push({
+          time: i
+        });
       }
-      if (start && end) {
-        return "wl-item-on wl-item-full"
-      }
+      return dataTime;
     },
     changeTime(time, num) {
       let hour = 0

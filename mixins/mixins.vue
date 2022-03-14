@@ -18,6 +18,8 @@ import {deviceType, keyType, orderColor, orderValue, planType, sceneType, templa
           globalDeviceType: '',
           userKey: '',
           globalDataKeys: [],
+          globalCellWidth: 60,
+          globalScal: 1,
           globalSwitchKeyTypeData: [
             {name:this.$t('释放'),value:'0'},
             {name:this.$t('按下'),value:'1'}

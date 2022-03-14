@@ -34,7 +34,7 @@
       </el-row>
     </div>
     <div class="padding-left10 padding-right10 padding-top5" :style="contentStyle">
-      <div v-for="(item, index) in tableData" :key="index" class="block-item bg-333333 marginBottom10 border-radius-5" @click="test">
+      <div v-for="(item, index) in tableData" :key="index" class="block-item bg-333333 marginBottom10 border-radius-5" @click="showTaskList($event, item)">
         <div>
           <el-row>
             <el-col :span="12">
@@ -468,6 +468,7 @@ export default {
     oprItem(event, type, value){
       this.oprTitle = value;
       if (type == 1){
+        this.setPageStatus(1);
         this.$router.push({
           path: '/orderList',
           replace: true,
@@ -805,6 +806,22 @@ export default {
       this.deviceSetCount = deviceSetCount;
       this.deviceListCount = deviceListCount;
       this.templateLoading = false;
+    },
+    showTaskList(event, item){
+      this.setPageStatus(1);
+      this.$router.push({
+        path: '/orderList',
+        replace: true,
+        query: {
+          envKey: this.$route.query.envKey,
+          sessionId: this.$route.query.sessionId,
+          role: this.$route.query.role,
+          userKey: this.$route.query.userKey,
+          appType: this.$route.query.appType,
+          deviceType: this.$route.query.deviceType,
+          sourceUrl: item.sourceUrl
+        }
+      });
     },
     test(){
       this.$router.push({
