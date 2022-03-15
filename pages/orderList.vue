@@ -78,19 +78,21 @@
       </div>
 
       <div class="padding-full10">
-        <div class="block-list-item" v-for="(item, index) in 20">
+        <div class="block-list-item" v-for="(item, index) in dataTaskList">
           <el-row>
             <el-col :span="16">
               <div>
-                <el-tag size="mini" type="success">
-                  <span class="color-666666">1</span>
-                </el-tag>
-                <span class="color-666666">xxxxx</span>
-                <span class="color-disabled">1000</span>
-              </div>
-              <div class="font-size-12 color-bbbbbb">
-                <i class="fa fa-clock-o"></i>
-                <span>00:00:00</span>
+                <div class="floatLeft">
+                  <el-tag size="mini" type="success">
+                    <span class="color-666666">{{index + 1}}</span>
+                  </el-tag>
+                </div>
+                <div class="floatLeft marginLeft5">
+                  <div>
+                    <task-list-item :item="item"></task-list-item>
+                  </div>
+                </div>
+                <div class="clearfix"></div>
               </div>
             </el-col>
             <el-col :span="8" class="textRight marginTop5">
@@ -248,10 +250,12 @@ import {MessageCommonTips} from "../utils/utils";
 import DrawerDeviceTypeSheet from "../components/DrawerDeviceTypeSheet";
 import DrawerDeviceList from "../components/DrawerDeviceList";
 import DrawerDeviceListSheet from "../components/DrawerDeviceListSheet";
+import TaskListItem from "../components/TaskListItem";
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
+    TaskListItem,
     DrawerDeviceListSheet,
     DrawerDeviceList,
     DrawerDeviceTypeSheet,
@@ -270,6 +274,7 @@ export default {
       ganttData: [],
       ganttColData: [],
       ganttTimeData: [],
+      dataTaskList: [],
       position: 0,
       scrollToY: 0,
       positionA: 0,
@@ -381,27 +386,44 @@ export default {
       let timeCount = 0;
       let ruleList = [];
       this.$axios.get(sourceUrl).then(res => {
-        console.log(res.data.tasks);
         let taskList = res.data.tasks;
-        this.ganttData = taskList;
 
-        //最大时长
+        //最大时长和子项
         for (let i = 0; i < taskList.length; i++){
           timeCount = 0;
+          let childBar = [];
+          let childTime = 0;
+          let childTempTime = 0;
           for (let j = 0; j < taskList[i]['i'].length; j++){
             let aNumber = 0;
             if (taskList[i]['i'][j].i == 1 || taskList[i]['i'][j].i == 2 || taskList[i]['i'][j].i == 3 || taskList[i]['i'][j].i == 0){
               aNumber = taskList[i]['i'][j].v;
+              let start = 0;
+              let end = 0;
+
+              if(j == 0) {
+                childTime = 0;
+              }else {
+                childTime += taskList[i]['i'][j-1].v;
+              }
+              start = taskList[i]['i'][j].v;
+              childBar.push({
+                time: taskList[i]['i'][j].v,
+                start: childTime,
+                end: end,
+                type: taskList[i]['i'][j].i,
+              });
             }
             let result = Math.floor(aNumber);
             timeCount += result;
           }
+          taskList[i]['children'] = childBar;
           ruleList.push(timeCount);
         }
-
         let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
         let ruleTime = ruleMax / 1000;
 
+        this.ganttData = taskList;
         this.ganttTimeData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
         this.ganttColData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
       });
@@ -489,7 +511,11 @@ export default {
       this.position = { x: val };
     },
     showBlock(event, data){
-      this.orderDeviceType = 'light';
+      console.log(data);
+      if (data.t == 1){
+        this.orderDeviceType = 'light';
+      }
+      this.dataTaskList = data.i;
       this.drawerTaskList = true;
     },
     showOrderType(){

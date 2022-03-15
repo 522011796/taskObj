@@ -1,6 +1,6 @@
 <script>
 import {common, commonConfig} from "../utils/api/url";
-import {deviceType, keyType, orderColor, orderValue, planType, sceneType, templateType} from "../utils/utils";
+import {deviceType, keyType, openType, orderColor, orderValue, planType, sceneType, templateType} from "../utils/utils";
 
     export default {
       name: "mixins",
@@ -248,6 +248,9 @@ import {deviceType, keyType, orderColor, orderValue, planType, sceneType, templa
         },
         planTypeInfo(value){
           return planType('set', value);
+        },
+        openTypeInfo(value){
+          return openType(value);
         },
         concatArray(data) {
 

@@ -2,11 +2,19 @@
   <div class="gantt-blocks">
     <div class="gantt-block gantt-block-top-space" :style="{ height: topSpace + 'px' }"></div>
     <div class="gantt-block" v-for="(item, index) in showDatas" :style="{ height: `${cellHeight}px` }" @click="showBlock($event, item)">
+
       <div v-for="(itemChild, indexChild) in item.children"
            v-if="scrollLeft <= ((itemChild.start) / 100 * (cellWidth / 10)) + cellWidth && getPosition(itemChild) - scrollLeft < blockWidth"
            class="gantt-block-item"
-           :style="{left: getPosition(itemChild) + 'px', width: `${ (itemChild.time/100) * (cellWidth/10)}px`,background: itemChild.type == 1 ? '#ddd' : '#434343'}"
-           style="height: 20px;top:10px;">
+           :style="{left: getPosition(itemChild) + 'px', width: `${ (itemChild.time/100) * (cellWidth/10)}px`,background: orderColorInfo(itemChild.type)}"
+           style="height: 35px;top:2px;">
+
+        <div class="moon-ellipsis-class font-size-12 textCenter">
+          {{ orderValueInfo(itemChild.type, 'set') }}
+        </div>
+        <div class="moon-ellipsis-class font-size-12 textCenter">
+          {{changeTime(itemChild.time)}}
+        </div>
       </div>
     </div>
   </div>
@@ -96,6 +104,7 @@ export default {
 .gantt-block-item {
   position: absolute;
   height: 100%;
+  box-shadow: #808080 0px 0px 0px 1px;
 }
 .gantt-scroll-y{
   overflow-y: scroll;

@@ -59,6 +59,12 @@ span,div,button,label{
 .textRight{
   text-align: right;
 }
+.floatLeft{
+  float: left
+}
+.floatRight{
+  float: right
+}
 .container{
   padding: 0px 0px;
 }
@@ -118,6 +124,9 @@ span,div,button,label{
 }
 .marginTop5{
   margin-top: 5px;
+}
+.marginLeft5{
+  margin-left: 5px;
 }
 .marginLeft10{
   margin-left: 10px;
