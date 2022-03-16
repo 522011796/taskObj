@@ -91,12 +91,6 @@ export default {
   },
   data() {
     return {
-      colors: {
-        hue: 50,
-        saturation: 100,
-        luminosity: 50,
-        alpha: 1
-      },
       drawerSheet: false,
       loopData: []
     }

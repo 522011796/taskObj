@@ -71,6 +71,12 @@ import {deviceType, keyType, openType, orderColor, orderValue, planType, sceneTy
             {name:this.$t('串行器'),value:'6'},
             {name:this.$t('场景'),value:'0'}
           ],
+          colors: {
+            hue: 50,
+            saturation: 100,
+            luminosity: 50,
+            alpha: 1
+          },
           contentDefaultStyle:{
             'height': '0px',
             'overflow-y': 'hiddle'

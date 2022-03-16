@@ -96,10 +96,10 @@
               </div>
             </el-col>
             <el-col :span="8" class="textRight marginTop5">
-              <el-button size="mini" type="text" @click="updateTask($event, item)">
+              <el-button size="mini" type="text" @click="updateTask($event, item, index)">
                 <span class="color-warning">{{$t("修改")}}</span>
               </el-button>
-              <el-button size="mini" type="text" @click="delTask($event, item)">
+              <el-button size="mini" type="text" @click="delTask($event, item, index)">
                 <span class="color-error">{{$t("删除")}}</span>
               </el-button>
               <el-button size="mini" type="text">
@@ -637,10 +637,31 @@ export default {
     okTaskSet(){
 
     },
-    updateTask($event, item){
+    updateTask($event, item, index){
+      console.log(item);
+      this.formOrder.type = item.i;
+      if (this.orderDeviceType == 'light'){
+        if (item.i == 1){
+          this.formOrder.emptyTime = item.v;
+        }else if (item.i == 2){
+          this.formOrder.waitTime = item.v;
+        }else if (item.i == 3){
+          this.formOrder.startLoop = item.t;
+          this.formOrder.startOrderI = this.dataTaskList[item.v].i;
+        }else if (item.i == 6){
+          this.formOrder.open = item.v;
+          this.formOrder.changeTime = item.t;
+        }else if (item.i == 7){
+          this.formOrder.light = item.v;
+        }else if (item.i == 8){
+          this.formOrder.temp = item.v;
+        }else if (item.i == 9){
+          this.formOrder.color = this.converArgbToRgb(item.v);
+        }
+      }
       this.drawerTaskSet = true;
     },
-    delTask($event, item){
+    delTask($event, item, index){
 
     },
     orderTypeItemClick(data){
