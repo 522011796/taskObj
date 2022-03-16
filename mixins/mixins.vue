@@ -57,6 +57,12 @@ import {deviceType, keyType, openType, orderColor, orderValue, planType, sceneTy
             {name:this.$t('延时'),value:'2'},
             {name:this.$t('空闲时段'),value:'1'}
           ],
+          globalCurtainsDeviceOrderTypeData: [
+            {name:this.$t('行程控制'),value:'10'},
+            {name:this.$t('循环操作'),value:'3'},
+            {name:this.$t('延时'),value:'2'},
+            {name:this.$t('空闲时段'),value:'1'}
+          ],
           globalDeviceTypeData: [
             {name:this.$t('灯'),value:'1'},
             {name:this.$t('开关'),value:'2'},

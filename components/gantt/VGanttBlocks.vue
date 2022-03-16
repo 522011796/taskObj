@@ -12,8 +12,15 @@
         <div class="moon-ellipsis-class font-size-12 textCenter">
           {{ orderValueInfo(itemChild.type, 'set') }}
         </div>
-        <div class="moon-ellipsis-class font-size-12 textCenter">
-          {{changeTime(itemChild.time)}}
+        <div class="moon-ellipsis-class font-size-10 textCenter">
+          <span v-if="itemChild.type == 3 && itemChild.end == 0" class="color-666666">
+            <i class="fa fa-refresh fa-spin" style="font-size: 12px"></i>
+            {{ $t("无限") }}
+          </span>
+          <span v-else-if="itemChild.type == 3 && itemChild.end != 0" class="color-666666">
+            {{ $t("重复") }}:{{ itemChild.end }}
+          </span>
+          <span v-else>{{changeTime(itemChild.time)}}</span>
         </div>
       </div>
     </div>

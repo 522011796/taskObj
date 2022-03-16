@@ -3,7 +3,12 @@
     <div class="gantt-leftbar-item gantt-block-top-space" :style="{ height: topSpace + 'px' }" ></div>
     <div class="gantt-leftbar-item padding-left10 moon-ellipsis-class" :style="cellHeightStyle" v-for="(item, index) in showDatas">
       <span>
-        <img src="~/static/img/light.png" class="layout-menu-icon"/>
+        <img v-if="item.t == 1" src="~/static/img/light.png" class="layout-menu-icon"/>
+        <img v-if="item.t == 2" src="~/static/img/switch.png" class="layout-menu-icon"/>
+        <img v-if="item.t == 3" src="~/static/img/curtains.png" class="layout-menu-icon"/>
+        <img v-if="item.t == 5" src="~/static/img/music.png" class="layout-menu-icon"/>
+        <img v-if="item.t == 6" src="~/static/img/changedevice.png" class="layout-menu-icon"/>
+        <img v-if="item.t == 0" src="~/static/img/sence.png" class="layout-menu-icon"/>
       </span>
       <span>
         {{item.n}}

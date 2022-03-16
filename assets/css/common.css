@@ -573,6 +573,12 @@ span,div,button,label{
   position: relative;
   top: 3px;
 }
+.layout-menu-other-icon{
+  width: 18px;
+  height: 18px;
+  position: relative;
+  top: 2px;
+}
 .el-scrollbar .el-scrollbar__bar {
   opacity: 1 !important;
 }

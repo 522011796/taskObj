@@ -157,6 +157,7 @@
         <form-switch v-if="orderDeviceType == 'switch'" :form-data="formOrder" @handleChange="handleChange"></form-switch>
         <form-music v-if="orderDeviceType == 'music'" :form-data="formOrder" @handleChange="handleChange"></form-music>
         <form-sence v-if="orderDeviceType == 'sence'" :form-data="formOrder" @handleChange="handleChange"></form-sence>
+        <form-curtains v-if="orderDeviceType == 'curtains'" :form-data="formOrder" @handleChange="handleChange"></form-curtains>
         <form-change-device v-if="orderDeviceType == 'changeDevice'" :form-data="formOrder" @handleChange="handleChange"></form-change-device>
       </el-form>
     </el-drawer>
@@ -251,10 +252,12 @@ import DrawerDeviceTypeSheet from "../components/DrawerDeviceTypeSheet";
 import DrawerDeviceList from "../components/DrawerDeviceList";
 import DrawerDeviceListSheet from "../components/DrawerDeviceListSheet";
 import TaskListItem from "../components/TaskListItem";
+import FormCurtains from "../components/FormCurtains";
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
+    FormCurtains,
     TaskListItem,
     DrawerDeviceListSheet,
     DrawerDeviceList,
@@ -386,31 +389,59 @@ export default {
       let timeCount = 0;
       let ruleList = [];
       this.$axios.get(sourceUrl).then(res => {
-        let taskList = res.data.tasks;
-
-        //最大时长和子项
+        //格式化数据
+        let taskList = JSON.parse(JSON.stringify(res.data.tasks));
         for (let i = 0; i < taskList.length; i++){
           timeCount = 0;
           let childBar = [];
           let childTime = 0;
           let childTempTime = 0;
+          let taskIndex = 0;
+          let intNum = 0;
           for (let j = 0; j < taskList[i]['i'].length; j++){
             let aNumber = 0;
-            if (taskList[i]['i'][j].i == 1 || taskList[i]['i'][j].i == 2 || taskList[i]['i'][j].i == 3 || taskList[i]['i'][j].i == 0){
+            taskList[i]['i'][j]['vLoop'] = -1;
+            if (taskList[i]['i'][j].i == 1 || taskList[i]['i'][j].i == 2 || taskList[i]['i'][j].i == 0){
               aNumber = taskList[i]['i'][j].v;
               let start = 0;
               let end = 0;
 
-              if(j == 0) {
+              if(intNum == 0) {
                 childTime = 0;
+                taskIndex = j;
+                intNum++;
               }else {
-                childTime += taskList[i]['i'][j-1].v;
+                childTime += parseInt(taskList[i]['i'][taskIndex].vLoop != -1 ? taskList[i]['i'][taskIndex].vLoop : taskList[i]['i'][taskIndex].v);
+                taskIndex = j;
               }
               start = taskList[i]['i'][j].v;
               childBar.push({
                 time: taskList[i]['i'][j].v,
                 start: childTime,
                 end: end,
+                type: taskList[i]['i'][j].i,
+              });
+            }else if (taskList[i]['i'][j].i == 3){
+              let index = taskList[i]['i'][j].v;
+              let indexV = taskList[i]['i'][index].v * (taskList[i]['i'][j].t == 0 ? 1 : taskList[i]['i'][j].t);
+              taskList[i]['i'][j]['vLoop'] = indexV;
+              aNumber = indexV;
+              let start = 0;
+              let end = 0;
+
+              if(intNum == 0) {
+                childTime = 0;
+                taskIndex = j;
+                intNum++;
+              }else {
+                childTime += parseInt(indexV);
+                taskIndex = j;
+              }
+              start = indexV;
+              childBar.push({
+                time: indexV,
+                start: childTime,
+                end: taskList[i]['i'][j].t == 0 ? 0 : taskList[i]['i'][j].t,
                 type: taskList[i]['i'][j].i,
               });
             }
@@ -514,6 +545,16 @@ export default {
       console.log(data);
       if (data.t == 1){
         this.orderDeviceType = 'light';
+      }else if (data.t == 2){
+        this.orderDeviceType = 'switch';
+      }else if (data.t == 3){
+        this.orderDeviceType = 'curtains';
+      }else if (data.t == 5){
+        this.orderDeviceType = 'music';
+      }else if (data.t == 6){
+        this.orderDeviceType = 'changeDevice';
+      }else if (data.t == 0){
+        this.orderDeviceType = 'sence';
       }
       this.dataTaskList = data.i;
       this.drawerTaskList = true;
@@ -529,6 +570,8 @@ export default {
         this.orderTypeData = this.globalSenceOrderTypeData;
       }else if (this.orderDeviceType == 'changeDevice'){
         this.orderTypeData = this.globalChangeDeviceOrderTypeData;
+      }else if (this.orderDeviceType == 'curtains'){
+        this.orderTypeData = this.globalCurtainsDeviceOrderTypeData;
       }
       this.drawerOrderTypeSheet = true;
     },
