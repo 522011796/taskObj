@@ -26,7 +26,7 @@
         </span>
         <span v-if="item.i == 7" class="font-size-12 color-disabled">
           <label>{{ $t("亮度") }}</label>
-          <label>{{ item.v.toFixed(2) * 100 }}%</label>
+          <label>{{ item.v.toFixed(4) * 100 }}%</label>
           |
           <label class="moon-ellipsis-class">{{ $t("渐变") }}: {{ item.t }}</label>
         </span>
@@ -47,7 +47,7 @@
         <span v-if="item.i == 10" size="mini" class="font-size-12 color-disabled">
           <label>{{ $t("行程") }}</label>
 
-          <label>{{ item.v.toFixed(2) * 100 }}%</label>
+          <label>{{ (item.v * 100).toFixed(0) }}%</label>
         </span>
         <span v-if="item.i == 11" size="mini" class="font-size-12 color-disabled">
           <label>{{ $t("继电器") }}</label>

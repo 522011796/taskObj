@@ -3,7 +3,7 @@
     <el-form-item v-if="_formData.type == 10" label="开合百分比">
       <div class="textRight color-666666 padding-left10 padding-right10">
         <span slot="reference">
-          <el-slider v-model="_formData.curtainsOpenClose" :step="0.0001" :max="1" :format-tooltip="curtainsFormatTooltip" @change="handleChange($event, 'light')"></el-slider>
+          <el-slider v-model="_formData.curtainsOpenClose" :step="0.01" :max="1" :format-tooltip="curtainsFormatTooltip" @change="handleChange($event, 'light')"></el-slider>
         </span>
       </div>
     </el-form-item>

@@ -6,6 +6,8 @@
           v-model="_formData.open"
           active-color="#13ce66"
           inactive-color="#ff4949"
+          :active-value="1"
+          :inactive-value="0"
           @change="changeLightOpen">
         </el-switch>
       </div>
@@ -20,7 +22,7 @@
         <el-slider v-model="_formData.temp" :min="2700" :max="6500" @change="handleChange($event, 'temp')"></el-slider>
       </div>
     </el-form-item>
-    <el-form-item v-if="_formData.type == 6 || _formData.type == 9" :label="$t('渐变时间')">
+    <el-form-item v-if="_formData.type == 6 || _formData.type == 7 || _formData.type == 8 || _formData.type == 9" :label="$t('渐变时间')">
       <div class="textRight color-666666">
         <el-input-number size="medium" v-model="_formData.changeTime" @change="handleChange($event, 'changeTime')" :min="0" :step="100" :step-strictly="true"></el-input-number>
       </div>
@@ -59,6 +61,15 @@
       <el-form-item label="重复次数">
         <div class="textRight color-666666">
           <el-input-number size="medium" v-model="_formData.startLoop" @change="handleChange($event, 'startLoop')" :min="0" :step="1" :step-strictly="true"></el-input-number>
+        </div>
+      </el-form-item>
+    </template>
+
+    <template v-if="_formData.insertArea != ''">
+      <el-form-item :label="$t('插入位置')">
+        <div class="textRight color-666666">
+          <label>{{_formData.insertArea == 'up' ? $t("上一行") : $t("下一行")}}</label>
+          <label class="fa fa-chevron-right"></label>
         </div>
       </el-form-item>
     </template>
@@ -103,7 +114,7 @@ export default {
       this.$emit("handleChange", type, data);
     },
     inputColor(data){
-      this.$emit("inputColor", data);
+      //this.$emit("inputColor", data);
     },
     changeColor(data){
       let rgb = this.hsltorgb(data, this.colors.saturation, this.colors.luminosity);

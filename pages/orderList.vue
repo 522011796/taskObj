@@ -102,7 +102,7 @@
               <el-button size="mini" type="text" @click="delTask($event, item, index)">
                 <span class="color-error">{{$t("删除")}}</span>
               </el-button>
-              <el-button size="mini" type="text">
+              <el-button size="mini" type="text" @click="insertTask($event, item, index)">
                 <span class="color-666666">{{$t("插入")}}</span>
               </el-button>
             </el-col>
@@ -111,7 +111,7 @@
       </div>
     </el-drawer>
 
-    <!--指令列表-->
+    <!--指令设置-->
     <el-drawer
       custom-class="drawer-block"
       :show-close="false"
@@ -153,7 +153,7 @@
           </div>
         </el-form-item>
 
-        <form-light v-if="orderDeviceType == 'light'" :form-data="formOrder" @changeLightOpen="changeLightOpen" @handleChange="handleChange"></form-light>
+        <form-light v-if="orderDeviceType == 'light'" :form-data="formOrder" @changeColor="changeColor" @changeLightOpen="changeLightOpen" @handleChange="handleChange"></form-light>
         <form-switch v-if="orderDeviceType == 'switch'" :form-data="formOrder" @handleChange="handleChange"></form-switch>
         <form-music v-if="orderDeviceType == 'music'" :form-data="formOrder" @handleChange="handleChange"></form-music>
         <form-sence v-if="orderDeviceType == 'sence'" :form-data="formOrder" @handleChange="handleChange"></form-sence>
@@ -227,9 +227,7 @@
       :data="orderTypeData"
       :device-type="orderDeviceType"
       @click="orderTypeItemClick"
-      @handleClose="handleSheetClose"
-      @inputColor="inputColor"
-      @changeColor="changeColor">
+      @handleClose="handleSheetClose">
     </drawer-order-type-sheet>
 
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
@@ -332,6 +330,7 @@ export default {
         musicProcess: 0,
         musicVoice: 0,
         source: '',
+        insertArea: ''
       },
       deviceOptions: [{
         value: 'zhinan',
@@ -595,7 +594,7 @@ export default {
       }else if (data.t == 0){
         this.orderDeviceType = 'sence';
       }
-      this.dataTaskList = data.i;
+      this.dataTaskList = JSON.parse(JSON.stringify(data.i));
       this.drawerTaskList = true;
     },
     showOrderType(){
@@ -623,6 +622,7 @@ export default {
       }
     },
     clearForm(){
+      console.log(11);
       this.editOrderIndex = 0;
       this.formPlain = {
         type: '',
@@ -657,6 +657,7 @@ export default {
         musicProcess: 0,
         musicVoice: 0,
         source: '',
+        insertArea: ''
       }
     },
     cancelSetTask(){
@@ -676,9 +677,47 @@ export default {
       this.drawerTaskSet = false;
     },
     okTaskSet(){
+      this.$set(this.dataTaskList[this.editOrderIndex],'i', this.formOrder.type);
+      if (this.formOrder.type == 1){
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.emptyTime);
+      }else if (this.formOrder.type == 2){
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.waitTime);
+      }else if (this.formOrder.type == 3){
+        this.$set(this.dataTaskList[this.editOrderIndex],'t', this.formOrder.startLoop);
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.startOrderI);
+      }else if (this.formOrder.type == 4){
 
+      }else if (this.formOrder.type == 6){
+        this.$set(this.dataTaskList[this.editOrderIndex],'t', this.formOrder.changeTime);
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.open);
+      }else if (this.formOrder.type == 7){
+        this.$set(this.dataTaskList[this.editOrderIndex],'t', this.formOrder.changeTime);
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.light);
+      }else if (this.formOrder.type == 8){
+        this.$set(this.dataTaskList[this.editOrderIndex],'t', this.formOrder.changeTime);
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.temp);
+      }else if (this.formOrder.type == 9){
+        this.$set(this.dataTaskList[this.editOrderIndex],'t', this.formOrder.changeTime);
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.colorInt);
+      }else if (this.formOrder.type == 10){
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.curtainsOpenClose);
+      }else if (this.formOrder.type == 11){
+        for (let i = 0; i < this.formOrder.keyNoArr.length; i++){
+          this.formOrder.keyNoArr[i] = this.formOrder.keyNoArr[i]-1;
+        }
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.keyNoArr);
+        this.$set(this.dataTaskList[this.editOrderIndex],'s', this.formOrder.keyOpr);
+      }else if (this.formOrder.type == 12){
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.musicVoice);
+      }else if (this.formOrder.type == 13){
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.musicName);
+      }else if (this.formOrder.type == 15){
+        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.musicProcess);
+      }
+      this.drawerTaskSet = false;
     },
     updateTask($event, item, index){
+      this.editOrderIndex = index;
       this.formOrder.type = item.i;
       if (item.i == 1){
         this.formOrder.emptyTime = item.v;
@@ -694,8 +733,10 @@ export default {
         this.formOrder.changeTime = item.t;
       }else if (item.i == 7){
         this.formOrder.light = item.v;
+        this.formOrder.changeTime = item.t;
       }else if (item.i == 8){
         this.formOrder.temp = item.v;
+        this.formOrder.changeTime = item.t;
       }else if (item.i == 9){
         this.formOrder.changeTime = item.t;
         this.formOrder.color = this.converArgbToRgb(item.v);
@@ -720,6 +761,10 @@ export default {
     },
     delTask($event, item, index){
       this.dataTaskList.splice(index, 1);
+    },
+    insertTask($event, item, index){
+      this.formOrder.insertArea = 'down';
+      this.drawerTaskSet = true;
     },
     orderTypeItemClick(data){
       this.formOrder.type = data.value;
