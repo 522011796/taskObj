@@ -22,6 +22,10 @@ import {deviceType, keyType, openType, orderColor, orderValue, planType, sceneTy
           globalCellWidth: 60,
           globalScal: 1,
           scnenDuration: '',
+          globalInsertTypeData: [
+            {name:this.$t('上一行'),value:'up'},
+            {name:this.$t('下一行'),value:'down'}
+          ],
           globalSwitchKeyTypeData: [
             {name:this.$t('释放'),value:'0'},
             {name:this.$t('按下'),value:'1'}

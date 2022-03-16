@@ -622,7 +622,6 @@ export default {
       }
     },
     clearForm(){
-      console.log(11);
       this.editOrderIndex = 0;
       this.formPlain = {
         type: '',
