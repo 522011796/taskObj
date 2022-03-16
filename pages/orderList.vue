@@ -414,7 +414,6 @@ export default {
                 intNum++;
               }else {
                 childTime += parseInt(taskList[i]['i'][taskIndex].vLoop != -1 ? taskList[i]['i'][taskIndex].vLoop : taskList[i]['i'][taskIndex].v);
-                console.log(taskList[i]['i'][taskIndex]);
                 taskIndex = j;
               }
               start = taskList[i]['i'][j].v;
@@ -720,7 +719,7 @@ export default {
       this.drawerTaskSet = true;
     },
     delTask($event, item, index){
-
+      this.dataTaskList.splice(index, 1);
     },
     orderTypeItemClick(data){
       this.formOrder.type = data.value;
