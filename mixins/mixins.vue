@@ -18,8 +18,10 @@ import {deviceType, keyType, openType, orderColor, orderValue, planType, sceneTy
           globalDeviceType: '',
           userKey: '',
           globalDataKeys: [],
+          globalSenceListData: [],
           globalCellWidth: 60,
           globalScal: 1,
+          scnenDuration: '',
           globalSwitchKeyTypeData: [
             {name:this.$t('释放'),value:'0'},
             {name:this.$t('按下'),value:'1'}
@@ -151,6 +153,11 @@ import {deviceType, keyType, openType, orderColor, orderValue, planType, sceneTy
               localStorage.setItem("accountRole", 'ROLE_ADMIN');
             }
           }
+        },
+        async getAsyncSourceUrl(sourceUrl){
+          await this.$axios.get(sourceUrl).then(res => {
+            this.scnenDuration = res.data.duration;
+          });
         },
         changeTime(time, num) {
           let hour = 0

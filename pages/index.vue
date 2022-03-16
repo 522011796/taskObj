@@ -316,17 +316,30 @@ export default {
   created() {
   },
   methods: {
-    init(){
+    async init(){
       let params = {
         envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey")
       };
       this.pagLoading = true;
-      this.$axios.get(this.baseUrl + common.senceList, {params: params, sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+      await this.$axios.get(this.baseUrl + common.senceList, {params: params, sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
         if (res.data.code == 200){
           this.tableData = res.data.data;
+
+          this.initJson(res.data.data);
         }
-        this.pagLoading = false;
       });
+    },
+    async initJson(data){
+      let jsonData = [];
+      for (let i = 0; i < data.length; i++){
+        await this.getAsyncSourceUrl(data[i].sourceUrl);
+        jsonData.push({
+          sceneId: data[i].sceneId,
+          duration: this.scnenDuration,
+        });
+      }
+      localStorage.setItem("senceListData", JSON.stringify(jsonData));
+      this.pagLoading = false;
     },
     senceInfo(senceId){
       let params = {

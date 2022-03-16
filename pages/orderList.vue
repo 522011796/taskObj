@@ -282,6 +282,7 @@ export default {
       scrollToY: 0,
       positionA: 0,
       orderDeviceType: '',
+      editOrderIndex: 0,
       drawerDeviceTypeSheet: false,
       drawerOrderTypeSheet: false,
       drawerDeviceListSheet: false,
@@ -381,7 +382,7 @@ export default {
     window.removeEventListener('popstate', this.goBack, false);
   },
   created() {
-    this.init();
+    //this.init();
     this.initTask();
   },
   methods: {
@@ -402,7 +403,7 @@ export default {
           for (let j = 0; j < taskList[i]['i'].length; j++){
             let aNumber = 0;
             taskList[i]['i'][j]['vLoop'] = -1;
-            if (taskList[i]['i'][j].i == 1 || taskList[i]['i'][j].i == 2 || taskList[i]['i'][j].i == 0){
+            if (taskList[i]['i'][j].i == 1 || taskList[i]['i'][j].i == 2){
               aNumber = taskList[i]['i'][j].v;
               let start = 0;
               let end = 0;
@@ -413,6 +414,7 @@ export default {
                 intNum++;
               }else {
                 childTime += parseInt(taskList[i]['i'][taskIndex].vLoop != -1 ? taskList[i]['i'][taskIndex].vLoop : taskList[i]['i'][taskIndex].v);
+                console.log(taskList[i]['i'][taskIndex]);
                 taskIndex = j;
               }
               start = taskList[i]['i'][j].v;
@@ -423,19 +425,28 @@ export default {
                 type: taskList[i]['i'][j].i,
               });
             }else if (taskList[i]['i'][j].i == 3){
+              let loopTimeCount = 0;
               let index = taskList[i]['i'][j].v;
-              let indexV = taskList[i]['i'][index].v * (taskList[i]['i'][j].t == 0 ? 1 : taskList[i]['i'][j].t);
-              taskList[i]['i'][j]['vLoop'] = indexV;
+              //匹配起始位置到当前位置的时间
+              for (let z = index; z < j; z++){
+                if (taskList[i]['i'][z].i == 1 || taskList[i]['i'][z].i == 2){
+                  loopTimeCount += taskList[i]['i'][z].v;
+                }else if(taskList[i]['i'][z].i == 3 || taskList[i]['i'][z].i == 4){//循环和场景去自定义vloop，用于区分v的数据
+                  loopTimeCount += taskList[i]['i'][z]['vLoop'];
+                }
+              }
+              let indexV = loopTimeCount * (taskList[i]['i'][j].t == 0 ? 1 : taskList[i]['i'][j].t);
               aNumber = indexV;
               let start = 0;
               let end = 0;
 
+              taskList[i]['i'][j]['vLoop'] = indexV;
               if(intNum == 0) {
                 childTime = 0;
                 taskIndex = j;
                 intNum++;
               }else {
-                childTime += parseInt(indexV);
+                childTime = parseInt(loopTimeCount);
                 taskIndex = j;
               }
               start = indexV;
@@ -445,6 +456,33 @@ export default {
                 end: taskList[i]['i'][j].t == 0 ? 0 : taskList[i]['i'][j].t,
                 type: taskList[i]['i'][j].i,
               });
+            }else if(taskList[i]['i'][j].i == 4){
+              let senceListData = JSON.parse(localStorage.getItem("senceListData"));
+              let start = 0;
+              let end = 0;
+              let scnenDuration = 0;
+              for (let l = 0; l < senceListData.length; l++){
+                if (senceListData[l].sceneId == taskList[i]['i'][j].v){
+                  scnenDuration = senceListData[l].duration;
+                  aNumber = scnenDuration;
+                  taskList[i]['i'][j]['vLoop'] = scnenDuration;
+                  if(intNum == 0) {
+                    childTime = 0;
+                    taskIndex = j;
+                    intNum++;
+                  }else {
+                    childTime += parseInt(taskList[i]['i'][taskIndex].vLoop != -1 ? taskList[i]['i'][taskIndex].vLoop : taskList[i]['i'][taskIndex].v);
+                    taskIndex = j;
+                  }
+                  start = scnenDuration;
+                  childBar.push({
+                    time: scnenDuration,
+                    start: childTime,
+                    end: end,
+                    type: taskList[i]['i'][j].i,
+                  });
+                }
+              }
             }
             let result = Math.floor(aNumber);
             timeCount += result;
@@ -455,6 +493,7 @@ export default {
         let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
         let ruleTime = ruleMax / 1000;
 
+        console.log(taskList);
         this.ganttData = taskList;
         this.ganttTimeData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
         this.ganttColData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
@@ -585,6 +624,7 @@ export default {
       }
     },
     clearForm(){
+      this.editOrderIndex = 0;
       this.formPlain = {
         type: '',
         name: '',
@@ -640,7 +680,6 @@ export default {
 
     },
     updateTask($event, item, index){
-      console.log(item);
       this.formOrder.type = item.i;
       if (item.i == 1){
         this.formOrder.emptyTime = item.v;
@@ -649,6 +688,8 @@ export default {
       }else if (item.i == 3){
         this.formOrder.startLoop = item.t;
         this.formOrder.startOrderI = this.dataTaskList[item.v].i;
+      }else if (item.i == 4){
+        this.formOrder.senceText = item.n;
       }else if (item.i == 6){
         this.formOrder.open = item.v;
         this.formOrder.changeTime = item.t;
