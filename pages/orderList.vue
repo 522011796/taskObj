@@ -317,6 +317,7 @@ export default {
         senceRoom: '',
         senceName: '',
         open: 0,
+        curtainsOpenClose: 0,
         startLoop: 0,
         startOrder: '',
         startOrderI: '',
@@ -603,6 +604,7 @@ export default {
         senceRoom: '',
         senceName: '',
         open: 0,
+        curtainsOpenClose: 0,
         startLoop: 0,
         startOrder: '',
         startOrderI: '',
@@ -640,25 +642,40 @@ export default {
     updateTask($event, item, index){
       console.log(item);
       this.formOrder.type = item.i;
-      if (this.orderDeviceType == 'light'){
-        if (item.i == 1){
-          this.formOrder.emptyTime = item.v;
-        }else if (item.i == 2){
-          this.formOrder.waitTime = item.v;
-        }else if (item.i == 3){
-          this.formOrder.startLoop = item.t;
-          this.formOrder.startOrderI = this.dataTaskList[item.v].i;
-        }else if (item.i == 6){
-          this.formOrder.open = item.v;
-          this.formOrder.changeTime = item.t;
-        }else if (item.i == 7){
-          this.formOrder.light = item.v;
-        }else if (item.i == 8){
-          this.formOrder.temp = item.v;
-        }else if (item.i == 9){
-          this.formOrder.color = this.converArgbToRgb(item.v);
+      if (item.i == 1){
+        this.formOrder.emptyTime = item.v;
+      }else if (item.i == 2){
+        this.formOrder.waitTime = item.v;
+      }else if (item.i == 3){
+        this.formOrder.startLoop = item.t;
+        this.formOrder.startOrderI = this.dataTaskList[item.v].i;
+      }else if (item.i == 6){
+        this.formOrder.open = item.v;
+        this.formOrder.changeTime = item.t;
+      }else if (item.i == 7){
+        this.formOrder.light = item.v;
+      }else if (item.i == 8){
+        this.formOrder.temp = item.v;
+      }else if (item.i == 9){
+        this.formOrder.changeTime = item.t;
+        this.formOrder.color = this.converArgbToRgb(item.v);
+      }else if (item.i == 11){
+        let arr = [];
+        for (let i = 0; i < item.v.length; i++){
+          arr.push(item.v[i]+1);
         }
+        this.formOrder.keyNoArr = arr;
+        this.formOrder.keyOpr = item.s;
+      }else if (item.i == 10){
+        this.formOrder.curtainsOpenClose = item.v;
+      }else if (item.i == 12){
+        this.formOrder.musicVoice = item.v;
+      }else if (item.i == 13){
+        this.formOrder.musicName = item.v;
+      }else if (item.i == 15){
+        this.formOrder.musicProcess = item.v;
       }
+
       this.drawerTaskSet = true;
     },
     delTask($event, item, index){

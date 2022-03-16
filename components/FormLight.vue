@@ -20,7 +20,7 @@
         <el-slider v-model="_formData.temp" :min="2700" :max="6500" @change="handleChange($event, 'temp')"></el-slider>
       </div>
     </el-form-item>
-    <el-form-item v-if="_formData.type == 6" :label="$t('渐变时间')">
+    <el-form-item v-if="_formData.type == 6 || _formData.type == 9" :label="$t('渐变时间')">
       <div class="textRight color-666666">
         <el-input-number size="medium" v-model="_formData.changeTime" @change="handleChange($event, 'changeTime')" :min="0" :step="100" :step-strictly="true"></el-input-number>
       </div>
@@ -43,7 +43,7 @@
       </el-form-item>
       <el-form-item>
         <div class="textCenter">
-          <color-picker v-bind="colors" style="height: 180px; width: 180px;margin: 0 auto;" @input="inputColor" @change="changeColor"></color-picker>
+          <color-picker v-bind="colors" style="height: 130px; width: 130px;margin: 0 auto;" @input="inputColor" @change="changeColor"></color-picker>
         </div>
       </el-form-item>
     </template>
@@ -140,5 +140,6 @@ export default {
   width: 25px;
   border-radius: 5px;
   display: inline-block;
+  margin-top: 10px;
 }
 </style>
