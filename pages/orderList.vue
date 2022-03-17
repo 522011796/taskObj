@@ -336,37 +336,7 @@ export default {
         source: '',
         insertArea: ''
       },
-      deviceOptions: [{
-        value: 'zhinan',
-        label: '指南',
-        children: [{
-          value: 'shejiyuanze',
-          label: '设计原则',
-          children: [{
-            value: 'yizhi',
-            label: '一致'
-          }, {
-            value: 'fankui',
-            label: '反馈'
-          }, {
-            value: 'xiaolv',
-            label: '效率'
-          }, {
-            value: 'kekong',
-            label: '可控'
-          }]
-        }, {
-          value: 'daohang',
-          label: '导航',
-          children: [{
-            value: 'cexiangdaohang',
-            label: '侧向导航'
-          }, {
-            value: 'dingbudaohang',
-            label: '顶部导航'
-          }]
-        }]
-      }]
+      deviceOptions: []
     }
   },
   computed: {
@@ -695,8 +665,45 @@ export default {
       this.clearForm();
       this.drawerTaskSet = false;
     },
+    validateForm(){
+      let bool = true;
+      let num = 0;
+      if (this.formOrder.type == 3){
+        if(this.formOrder.startOrderI == ""){
+          bool = false;
+        }
+      }else if (this.formOrder.type == 9){
+        if(this.formOrder.colorInt == ""){
+          bool = false;
+        }
+      }else if (this.formOrder.type == 11){
+        if(this.formOrder.keyArr.length == 0){
+          bool = false;
+        }
+      }else if (this.formOrder.type == 13){
+        if(this.formOrder.musicName == ""){
+          bool = false;
+        }
+      }else if (this.formOrder.type == 15){
+        if(this.formOrder.musicProcess == ""){
+          bool = false;
+        }
+      }else if (this.formOrder.type == 18){
+        if(this.formOrder.source == ""){
+          bool = false;
+        }
+      }
+      if (bool == false){
+        MessageCommonTips(this.$t("请设置指令信息"));
+      }
+      return bool;
+    },
     okTaskSet(){
       let obj = {};
+      let validateForm = this.validateForm();
+      if (!validateForm){
+        return;
+      }
       if (this.oprTaskType == "modi"){
         this.setModiTaskList(this.editOrderIndex);
       }else if (this.oprTaskType == "insert"){
