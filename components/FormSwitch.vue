@@ -27,8 +27,18 @@
       </div>
     </el-form-item>
 
+    <template v-if="_formData.insertArea != ''">
+      <el-form-item :label="$t('插入位置')" @click.native="handleInsert">
+        <div class="textRight color-666666">
+          <label>{{_formData.insertArea == 'up' ? $t("上一行") : $t("下一行")}}</label>
+          <label class="fa fa-chevron-right"></label>
+        </div>
+      </el-form-item>
+    </template>
+
     <drawer-key-type-sheet :drawer-sheet="drawerKeySheet" :data="globalSwitchKeyTypeData" :append-to-body="true" @click="typeKeyItemClick" @handleClose="handleClose"></drawer-key-type-sheet>
     <drawer-key-arr-sheet :drawer-sheet="drawerKeyArrSheet" :data="drawerKeyArr" :append-to-body="true" @click="typeArrKeyItemClick" @handleClose="handleClose"></drawer-key-arr-sheet>
+    <drawer-insert-area-type-sheet :data="globalInsertTypeData" :drawer-sheet="drawerInsertAreaSheet" :append-to-body="true" @click="insertAreaItemClick" @handleClose="handleClose"></drawer-insert-area-type-sheet>
   </div>
 </template>
 
@@ -61,16 +71,24 @@ export default {
     return {
       drawerKeySheet: false,
       drawerKeyArrSheet: false,
-      drawerKeyArr: []
+      drawerKeyArr: [],
+      drawerInsertAreaSheet: false
     }
   },
   methods: {
     handleChange(data, type) {
       this.$emit("handleChange", type, data);
     },
+    handleInsert(){
+      this.drawerInsertAreaSheet = true;
+    },
     typeKeyItemClick(data){
       this._formData.keyOpr = data.value;
       this.drawerKeySheet = false;
+    },
+    insertAreaItemClick(data){
+      this._formData.insertArea = data.value;
+      this.drawerInsertAreaSheet = false;
     },
     typeArrKeyItemClick(data){
       let dataValue = data.value;
@@ -95,6 +113,7 @@ export default {
     handleClose(done, type){
       this.drawerKeySheet = false;
       this.drawerKeyArrSheet = false;
+      this.drawerInsertAreaSheet = false;
       done();
     }
   }

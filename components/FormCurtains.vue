@@ -33,8 +33,18 @@
       </el-form-item>
     </template>
 
+    <template v-if="_formData.insertArea != ''">
+      <el-form-item :label="$t('插入位置')" @click.native="handleInsert">
+        <div class="textRight color-666666">
+          <label>{{_formData.insertArea == 'up' ? $t("上一行") : $t("下一行")}}</label>
+          <label class="fa fa-chevron-right"></label>
+        </div>
+      </el-form-item>
+    </template>
+
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelDialog" @okClick="okDialog"></dialog-input>
     <drawer-loop-order-sheet :drawer-sheet="drawerSheet" :data="loopData" :append-to-body="true" @click="typeItemClick" @handleClose="handleClose"></drawer-loop-order-sheet>
+    <drawer-insert-area-type-sheet :data="globalInsertTypeData" :drawer-sheet="drawerInsertAreaSheet" :append-to-body="true" @click="insertAreaItemClick" @handleClose="handleClose"></drawer-insert-area-type-sheet>
   </div>
 </template>
 
@@ -70,12 +80,16 @@ export default {
       title: '',
       placeholder: '',
       drawerSheet: false,
-      loopData: []
+      loopData: [],
+      drawerInsertAreaSheet: false
     }
   },
   methods: {
     handleChange(data, type) {
       this.$emit("handleChange", type, data);
+    },
+    handleInsert(){
+      this.drawerInsertAreaSheet = true;
     },
     cancelDialog(){
       this.messageInput = '';
@@ -105,6 +119,7 @@ export default {
     },
     handleClose(done, type){
       this.drawerSheet = false;
+      this.drawerInsertAreaSheet = false;
       done();
     },
     curtainsFormatTooltip(val){
@@ -112,6 +127,10 @@ export default {
         let num = (val * 100).toFixed(0) + "%";
         return num;
       }
+    },
+    insertAreaItemClick(data){
+      this._formData.insertArea = data.value;
+      this.drawerInsertAreaSheet = false;
     }
   }
 }

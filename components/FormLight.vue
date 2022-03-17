@@ -66,7 +66,7 @@
     </template>
 
     <template v-if="_formData.insertArea != ''">
-      <el-form-item :label="$t('插入位置')">
+      <el-form-item :label="$t('插入位置')" @click.native="handleInsert">
         <div class="textRight color-666666">
           <label>{{_formData.insertArea == 'up' ? $t("上一行") : $t("下一行")}}</label>
           <label class="fa fa-chevron-right"></label>
@@ -75,6 +75,7 @@
     </template>
 
     <drawer-loop-order-sheet :drawer-sheet="drawerSheet" :data="loopData" :append-to-body="true" @click="typeItemClick" @handleClose="handleClose"></drawer-loop-order-sheet>
+    <drawer-insert-area-type-sheet :data="globalInsertTypeData" :drawer-sheet="drawerInsertAreaSheet" :append-to-body="true" @click="insertAreaItemClick" @handleClose="handleClose"></drawer-insert-area-type-sheet>
   </div>
 </template>
 
@@ -103,7 +104,8 @@ export default {
   data() {
     return {
       drawerSheet: false,
-      loopData: []
+      loopData: [],
+      drawerInsertAreaSheet: false
     }
   },
   methods: {
@@ -112,6 +114,9 @@ export default {
     },
     handleChange(data, type) {
       this.$emit("handleChange", type, data);
+    },
+    handleInsert(){
+      this.drawerInsertAreaSheet = true;
     },
     inputColor(data){
       //this.$emit("inputColor", data);
@@ -136,8 +141,14 @@ export default {
       this._formData.startOrderI = data.value;
       this.drawerSheet = false;
     },
+    insertAreaItemClick(data){
+      this._formData.insertArea = data.value;
+      this.drawerInsertAreaSheet = false;
+    },
     handleClose(done, type){
+      this._formData.insertArea = 'down';
       this.drawerSheet = false;
+      this.drawerInsertAreaSheet = false;
       done();
     }
   }

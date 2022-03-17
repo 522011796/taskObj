@@ -27,7 +27,17 @@
       </div>
     </el-form-item>
 
+    <template v-if="_formData.insertArea != ''">
+      <el-form-item :label="$t('插入位置')" @click.native="handleInsert">
+        <div class="textRight color-666666">
+          <label>{{_formData.insertArea == 'up' ? $t("上一行") : $t("下一行")}}</label>
+          <label class="fa fa-chevron-right"></label>
+        </div>
+      </el-form-item>
+    </template>
+
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelDialog" @okClick="okDialog"></dialog-input>
+    <drawer-insert-area-type-sheet :data="globalInsertTypeData" :drawer-sheet="drawerInsertAreaSheet" :append-to-body="true" @click="insertAreaItemClick" @handleClose="handleClose"></drawer-insert-area-type-sheet>
   </div>
 </template>
 
@@ -60,12 +70,20 @@ export default {
       dialogInput: false,
       title: '',
       placeholder: '',
-      inputType: ''
+      inputType: '',
+      drawerInsertAreaSheet: false
     }
   },
   methods: {
     handleChange(data, type) {
       this.$emit("handleChange", type, data);
+    },
+    handleInsert(){
+      this.drawerInsertAreaSheet = true;
+    },
+    insertAreaItemClick(data){
+      this._formData.insertArea = data.value;
+      this.drawerInsertAreaSheet = false;
     },
     musicVoiceFormatTooltip(val){
       if (val){
@@ -112,6 +130,11 @@ export default {
         this.messageInput = ""+this._formData.musicProcess;
       }
       this.dialogInput = true;
+    },
+    handleClose(done, type){
+      this._formData.insertArea = 'down';
+      this.drawerInsertAreaSheet = false;
+      done();
     }
   }
 }

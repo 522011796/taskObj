@@ -338,7 +338,9 @@ export default {
           duration: this.scnenDuration,
         });
       }
-      localStorage.setItem("senceListData", JSON.stringify(jsonData));
+      if (process.client){
+        localStorage.setItem("senceListData", JSON.stringify(jsonData));
+      }
       this.pagLoading = false;
     },
     senceInfo(senceId){

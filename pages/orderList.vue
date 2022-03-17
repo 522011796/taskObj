@@ -251,10 +251,12 @@ import DrawerDeviceList from "../components/DrawerDeviceList";
 import DrawerDeviceListSheet from "../components/DrawerDeviceListSheet";
 import TaskListItem from "../components/TaskListItem";
 import FormCurtains from "../components/FormCurtains";
+import DrawerInsertAreaTypeSheet from "../components/DrawerInsertAreaTypeSheet";
 export default {
   layout: 'default',
   mixins: [mixins],
   components: {
+    DrawerInsertAreaTypeSheet,
     FormCurtains,
     TaskListItem,
     DrawerDeviceListSheet,
@@ -280,10 +282,12 @@ export default {
       scrollToY: 0,
       positionA: 0,
       orderDeviceType: '',
-      editOrderIndex: 0,
+      editOrderIndex: '',
+      oprTaskType: '',
       drawerDeviceTypeSheet: false,
       drawerOrderTypeSheet: false,
       drawerDeviceListSheet: false,
+      drawerInsertAreaSheet: false,
       drawerTask: false,
       drawerTaskList: false,
       drawerTaskSet: false,
@@ -622,7 +626,8 @@ export default {
       }
     },
     clearForm(){
-      this.editOrderIndex = 0;
+      this.editOrderIndex = '';
+      this.oprTaskType = '';
       this.formPlain = {
         type: '',
         name: '',
@@ -676,48 +681,149 @@ export default {
       this.drawerTaskSet = false;
     },
     okTaskSet(){
-      this.$set(this.dataTaskList[this.editOrderIndex],'i', this.formOrder.type);
+      let obj = {};
+      if (this.oprTaskType == "modi"){
+        this.setModiTaskList(this.editOrderIndex);
+      }else if (this.oprTaskType == "insert"){
+        obj = this.setAddTaskList();
+        if(this.formOrder.insertArea == 'up'){
+          this.dataTaskList.splice(this.editOrderIndex, 0, obj);
+        }else if(this.formOrder.insertArea == 'down'){
+          this.dataTaskList.splice(this.editOrderIndex + 1, 0, obj);
+        }
+      }
+      this.drawerTaskSet = false;
+    },
+    setAddTaskList(){
+      let obj = {};
       if (this.formOrder.type == 1){
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.emptyTime);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.emptyTime
+        };
       }else if (this.formOrder.type == 2){
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.waitTime);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.waitTime
+        };
       }else if (this.formOrder.type == 3){
-        this.$set(this.dataTaskList[this.editOrderIndex],'t', this.formOrder.startLoop);
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.startOrderI);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.startOrderI,
+          t: this.formOrder.startLoop
+        };
       }else if (this.formOrder.type == 4){
 
       }else if (this.formOrder.type == 6){
-        this.$set(this.dataTaskList[this.editOrderIndex],'t', this.formOrder.changeTime);
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.open);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.open,
+          t: this.formOrder.changeTime
+        };
       }else if (this.formOrder.type == 7){
-        this.$set(this.dataTaskList[this.editOrderIndex],'t', this.formOrder.changeTime);
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.light);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.light,
+          t: this.formOrder.changeTime
+        };
       }else if (this.formOrder.type == 8){
-        this.$set(this.dataTaskList[this.editOrderIndex],'t', this.formOrder.changeTime);
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.temp);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.temp,
+          t: this.formOrder.changeTime
+        };
       }else if (this.formOrder.type == 9){
-        this.$set(this.dataTaskList[this.editOrderIndex],'t', this.formOrder.changeTime);
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.colorInt);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.colorInt,
+          t: this.formOrder.changeTime
+        };
       }else if (this.formOrder.type == 10){
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.curtainsOpenClose);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.curtainsOpenClose
+        };
       }else if (this.formOrder.type == 11){
         for (let i = 0; i < this.formOrder.keyNoArr.length; i++){
           this.formOrder.keyNoArr[i] = this.formOrder.keyNoArr[i]-1;
         }
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.keyNoArr);
-        this.$set(this.dataTaskList[this.editOrderIndex],'s', this.formOrder.keyOpr);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.keyNoArr,
+          s: this.formOrder.curtainsOpenClose
+        };
       }else if (this.formOrder.type == 12){
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.musicVoice);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.musicVoice
+        };
       }else if (this.formOrder.type == 13){
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.musicName);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.musicName
+        };
+      }else if (this.formOrder.type == 14){
+        obj = {
+          i: this.formOrder.type
+        };
       }else if (this.formOrder.type == 15){
-        this.$set(this.dataTaskList[this.editOrderIndex],'v', this.formOrder.musicProcess);
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.musicProcess
+        };
+      }else if (this.formOrder.type == 18){
+        obj = {
+          i: this.formOrder.type,
+          v: this.formOrder.source
+        };
       }
-      this.drawerTaskSet = false;
+      return obj;
+    },
+    setModiTaskList(editIndex){
+      this.$set(this.dataTaskList[editIndex],'i', this.formOrder.type);
+      if (this.formOrder.type == 1){
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.emptyTime);
+      }else if (this.formOrder.type == 2){
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.waitTime);
+      }else if (this.formOrder.type == 3){
+        this.$set(this.dataTaskList[editIndex],'t', this.formOrder.startLoop);
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.startOrderI);
+      }else if (this.formOrder.type == 4){
+
+      }else if (this.formOrder.type == 6){
+        this.$set(this.dataTaskList[editIndex],'t', this.formOrder.changeTime);
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.open);
+      }else if (this.formOrder.type == 7){
+        this.$set(this.dataTaskList[editIndex],'t', this.formOrder.changeTime);
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.light);
+      }else if (this.formOrder.type == 8){
+        this.$set(this.dataTaskList[editIndex],'t', this.formOrder.changeTime);
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.temp);
+      }else if (this.formOrder.type == 9){
+        this.$set(this.dataTaskList[editIndex],'t', this.formOrder.changeTime);
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.colorInt);
+      }else if (this.formOrder.type == 10){
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.curtainsOpenClose);
+      }else if (this.formOrder.type == 11){
+        for (let i = 0; i < this.formOrder.keyNoArr.length; i++){
+          this.formOrder.keyNoArr[i] = this.formOrder.keyNoArr[i]-1;
+        }
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.keyNoArr);
+        this.$set(this.dataTaskList[editIndex],'s', this.formOrder.keyOpr);
+      }else if (this.formOrder.type == 12){
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.musicVoice);
+      }else if (this.formOrder.type == 13){
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.musicName);
+      }else if (this.formOrder.type == 15){
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.musicProcess);
+      }else if (this.formOrder.type == 18){
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.source);
+      }
     },
     updateTask($event, item, index){
       this.editOrderIndex = index;
       this.formOrder.type = item.i;
+      this.oprTaskType = 'modi';
       if (item.i == 1){
         this.formOrder.emptyTime = item.v;
       }else if (item.i == 2){
@@ -763,6 +869,8 @@ export default {
     },
     insertTask($event, item, index){
       this.formOrder.insertArea = 'down';
+      this.editOrderIndex = index;
+      this.oprTaskType = 'insert';
       this.drawerTaskSet = true;
     },
     orderTypeItemClick(data){
@@ -786,6 +894,7 @@ export default {
       this.drawerOrderTypeSheet = false;
       this.drawerDeviceTypeSheet = false;
       this.drawerDeviceListSheet = false;
+      this.insertAreaItemClick = false;
       this.clearForm();
       done();
     },

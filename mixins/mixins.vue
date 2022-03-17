@@ -9,6 +9,7 @@ import {deviceType, keyType, openType, orderColor, orderValue, planType, sceneTy
           globalDrawerHeight: '40%',
           globalDrawerSheetHeight: '50%',
           globalDrawerBottomHeight: '45%',
+          globalDrawerSubSheetHeight: '40%',
           globalTest: '0',
           minxinsScroll: false,
           baseUrl: '',
@@ -105,10 +106,12 @@ import {deviceType, keyType, openType, orderColor, orderValue, planType, sceneTy
               this.globalDrawerHeight = '40%';
               this.globalDrawerSheetHeight = '50%';
               this.globalDrawerBottomHeight = '45%';
+              this.globalDrawerSubSheetHeight = '40%';
             }else if (window.orientation == 90 || window.orientation == -90){
               this.globalDrawerHeight = '60%';
               this.globalDrawerSheetHeight = '70%';
               this.globalDrawerBottomHeight = '70%';
+              this.globalDrawerSubSheetHeight = '40%';
             }
             this.mainStyle();
           }
