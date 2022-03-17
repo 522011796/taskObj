@@ -153,7 +153,7 @@
           </div>
         </el-form-item>
 
-        <form-light v-if="orderDeviceType == 'light'" :form-data="formOrder" @changeColor="changeColor" @changeLightOpen="changeLightOpen" @handleChange="handleChange"></form-light>
+        <form-light v-if="orderDeviceType == 'light'" :form-data="formOrder" :data-task-list="dataTaskList" @changeColor="changeColor" @changeLightOpen="changeLightOpen" @handleChange="handleChange"></form-light>
         <form-switch v-if="orderDeviceType == 'switch'" :form-data="formOrder" @handleChange="handleChange"></form-switch>
         <form-music v-if="orderDeviceType == 'music'" :form-data="formOrder" @handleChange="handleChange"></form-music>
         <form-sence v-if="orderDeviceType == 'sence'" :form-data="formOrder" @handleChange="handleChange"></form-sence>
@@ -625,6 +625,9 @@ export default {
         this.clearForm();
       }
     },
+    clearSheet(){
+
+    },
     clearForm(){
       this.editOrderIndex = '';
       this.oprTaskType = '';
@@ -786,6 +789,7 @@ export default {
       }else if (this.formOrder.type == 2){
         this.$set(this.dataTaskList[editIndex],'v', this.formOrder.waitTime);
       }else if (this.formOrder.type == 3){
+        console.log(this.formOrder);
         this.$set(this.dataTaskList[editIndex],'t', this.formOrder.startLoop);
         this.$set(this.dataTaskList[editIndex],'v', this.formOrder.startOrderI);
       }else if (this.formOrder.type == 4){
@@ -830,7 +834,8 @@ export default {
         this.formOrder.waitTime = item.v;
       }else if (item.i == 3){
         this.formOrder.startLoop = item.t;
-        this.formOrder.startOrderI = this.dataTaskList[item.v].i;
+        this.formOrder.startOrderI = item.v;
+        this.formOrder.startOrder = this.dataTaskList[item.v].i
       }else if (item.i == 4){
         this.formOrder.senceText = item.n;
       }else if (item.i == 6){
@@ -887,7 +892,7 @@ export default {
     handleClose(done, type){
       this.drawerOrderTypeSheet = false;
       this.drawerDeviceTypeSheet = false;
-      this.clearForm();
+      this.clearSheet();
       done();
     },
     handleSheetClose(done, type){
@@ -895,7 +900,7 @@ export default {
       this.drawerDeviceTypeSheet = false;
       this.drawerDeviceListSheet = false;
       this.insertAreaItemClick = false;
-      this.clearForm();
+      this.clearSheet();
       done();
     },
     inputColor(data){

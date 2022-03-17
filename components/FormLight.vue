@@ -38,7 +38,6 @@
       </div>
     </el-form-item>
 
-
     <template v-if="_formData.insertArea != ''">
       <el-form-item :label="$t('插入位置')" @click.native="handleInsert">
         <div class="textRight color-666666">
@@ -63,7 +62,7 @@
       <el-form-item label="循环起始" @click.native="setLoop">
         <div class="textRight color-666666">
           <span>
-            <label>{{_formData.startOrderI == '' ? $t("请选择") : orderValueInfo(_formData.startOrderI, 'set')}}</label>
+            <label>{{_formData.startOrder == '' ? $t("请选择") : orderValueInfo(_formData.startOrder, 'set')}}</label>
             <label class="fa fa-chevron-right"></label>
           </span>
         </div>
@@ -89,6 +88,12 @@ export default {
       type: Object,
       default: function (){
         return {}
+      }
+    },
+    dataTaskList: {
+      type: Array,
+      default: function (){
+        return []
       }
     }
   },
@@ -135,11 +140,15 @@ export default {
       }
     },
     setLoop(){
-      this.loopData = [{name:1, value: 1},{name:2, value: 2}];
+      this.loopData = [];
+      for (let i = 0; i < this.dataTaskList.length; i++){
+        this.loopData.push({name:this.orderValueInfo(this.dataTaskList[i].i, 'set'), type: this.dataTaskList[i].i, value: i});
+      }
       this.drawerSheet = true;
     },
     typeItemClick(data){
       this._formData.startOrderI = data.value;
+      this._formData.startOrder = data.type;
       this.drawerSheet = false;
     },
     insertAreaItemClick(data){
@@ -147,7 +156,7 @@ export default {
       this.drawerInsertAreaSheet = false;
     },
     handleClose(done, type){
-      this._formData.insertArea = 'down';
+      //this._formData.insertArea = this._formData.insertArea;
       this.drawerSheet = false;
       this.drawerInsertAreaSheet = false;
       done();
