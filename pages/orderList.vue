@@ -429,14 +429,18 @@ export default {
             }else if (taskList[i]['i'][j].i == 3){
               let loopTimeCount = 0;
               let index = taskList[i]['i'][j].v;
+
               //匹配起始位置到当前位置的时间
               for (let z = index; z < j; z++){
                 if (taskList[i]['i'][z].i == 1 || taskList[i]['i'][z].i == 2){
                   loopTimeCount += taskList[i]['i'][z].v;
-                }else if(taskList[i]['i'][z].i == 3 || taskList[i]['i'][z].i == 4){//循环和场景去自定义vloop，用于区分v的数据
+                }else if(taskList[i]['i'][z].i == 3){//循环和场景去自定义vloop，用于区分v的数据
+                  loopTimeCount += taskList[i]['i'][z]['vLoop'];
+                }else if(taskList[i]['i'][z].i == 4){//循环和场景去自定义vloop，用于区分v的数据
                   loopTimeCount += taskList[i]['i'][z]['vLoop'];
                 }
               }
+
               let indexV = loopTimeCount * (taskList[i]['i'][j].t == 0 ? 1 : taskList[i]['i'][j].t);
               aNumber = indexV;
               let start = 0;
@@ -459,14 +463,23 @@ export default {
                 type: taskList[i]['i'][j].i,
               });
             }else if(taskList[i]['i'][j].i == 4){
-              let senceListData = JSON.parse(localStorage.getItem("senceListData"));
+              let senceListData = [];
+              if (process.client){
+                senceListData = JSON.parse(localStorage.getItem("senceListData"));
+              }
               let start = 0;
               let end = 0;
               let scnenDuration = 0;
               for (let l = 0; l < senceListData.length; l++){
                 if (senceListData[l].sceneId == taskList[i]['i'][j].v){
                   scnenDuration = senceListData[l].duration;
-                  aNumber = scnenDuration;
+                  if (scnenDuration == Number.MAX_SAFE_INTEGER){
+                    aNumber = 1000;
+                    scnenDuration = 2000;
+                  }else {
+                    aNumber = scnenDuration;
+                    end = scnenDuration;
+                  }
                   taskList[i]['i'][j]['vLoop'] = scnenDuration;
                   if(intNum == 0) {
                     childTime = 0;
@@ -584,7 +597,6 @@ export default {
       this.position = { x: val };
     },
     showBlock(event, data){
-      console.log(data);
       if (data.t == 1){
         this.orderDeviceType = 'light';
       }else if (data.t == 2){
@@ -789,11 +801,11 @@ export default {
       }else if (this.formOrder.type == 2){
         this.$set(this.dataTaskList[editIndex],'v', this.formOrder.waitTime);
       }else if (this.formOrder.type == 3){
-        console.log(this.formOrder);
         this.$set(this.dataTaskList[editIndex],'t', this.formOrder.startLoop);
         this.$set(this.dataTaskList[editIndex],'v', this.formOrder.startOrderI);
       }else if (this.formOrder.type == 4){
-
+        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.sence);
+        this.$set(this.dataTaskList[editIndex],'n', this.formOrder.senceText);
       }else if (this.formOrder.type == 6){
         this.$set(this.dataTaskList[editIndex],'t', this.formOrder.changeTime);
         this.$set(this.dataTaskList[editIndex],'v', this.formOrder.open);
@@ -838,6 +850,7 @@ export default {
         this.formOrder.startOrder = this.dataTaskList[item.v].i
       }else if (item.i == 4){
         this.formOrder.senceText = item.n;
+        this.formOrder.sence = item.v;
       }else if (item.i == 6){
         this.formOrder.open = item.v;
         this.formOrder.changeTime = item.t;
@@ -856,6 +869,7 @@ export default {
           arr.push(item.v[i]+1);
         }
         this.formOrder.keyNoArr = arr;
+        this.formOrder.keyArr = JSON.parse(JSON.stringify(item.v));
         this.formOrder.keyOpr = item.s;
       }else if (item.i == 10){
         this.formOrder.curtainsOpenClose = item.v;

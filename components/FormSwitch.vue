@@ -37,7 +37,7 @@
     </template>
 
     <drawer-key-type-sheet :drawer-sheet="drawerKeySheet" :data="globalSwitchKeyTypeData" :append-to-body="true" @click="typeKeyItemClick" @handleClose="handleClose"></drawer-key-type-sheet>
-    <drawer-key-arr-sheet :drawer-sheet="drawerKeyArrSheet" :data="drawerKeyArr" :append-to-body="true" @click="typeArrKeyItemClick" @handleClose="handleClose"></drawer-key-arr-sheet>
+    <drawer-key-arr-sheet :drawer-sheet="drawerKeyArrSheet" :data="drawerKeyArr" :key-no-arr="_formData.keyArr" :append-to-body="true" @click="typeArrKeyItemClick" @handleClose="handleClose"></drawer-key-arr-sheet>
     <drawer-insert-area-type-sheet :data="globalInsertTypeData" :drawer-sheet="drawerInsertAreaSheet" :append-to-body="true" @click="insertAreaItemClick" @handleClose="handleClose"></drawer-insert-area-type-sheet>
   </div>
 </template>
@@ -91,15 +91,13 @@ export default {
       this.drawerInsertAreaSheet = false;
     },
     typeArrKeyItemClick(data){
-      let dataValue = data.value;
-      if (this._formData.keyArr.indexOf(dataValue) == -1){
-        this._formData.keyArr.push(dataValue);
-        this._formData.keyNoArr.push(dataValue+1);
-      }else{
-        let indexItem = this._formData.keyArr.indexOf(dataValue);
-        this._formData.keyArr.splice(indexItem, 1);
-        this._formData.keyNoArr.splice(indexItem, 1);
+      let arr = [];
+      this._formData.keyArr = data;
+      for (let i = 0; i < data.length; i++){
+        arr.push(data[i]+1);
       }
+      this._formData.keyNoArr = arr;
+      console.log(this._formData.keyNoArr);
 
       //this.drawerKeyArrSheet = false;
     },
@@ -107,7 +105,7 @@ export default {
       this.drawerKeySheet = true;
     },
     setKeyArr(){
-      this.drawerKeyArr = [{name: 0, value:0},{name: 1, value:1}];
+      this.drawerKeyArr = [{name: 1, value:0},{name: 2, value:1},{name: 3, value:2},{name: 4, value:3}];
       this.drawerKeyArrSheet = true;
     },
     handleClose(done, type){

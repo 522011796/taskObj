@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form-item v-if="_formData.type == 4" label="场景名称" @click.native="showInput">
+    <el-form-item v-if="_formData.type == 4" label="场景名称" @click.native="setSence">
       <div class="textRight color-666666">
         <span slot="reference" size="mini">
           <label>{{_formData.senceText == '' ? $t("请选择") : _formData.senceText}}</label>
@@ -45,6 +45,7 @@
 
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelDialog" @okClick="okDialog"></dialog-input>
     <drawer-loop-order-sheet :drawer-sheet="drawerSheet" :data="loopData" :append-to-body="true" @click="typeItemClick" @handleClose="handleClose"></drawer-loop-order-sheet>
+    <drawer-sence-sheet :drawer-sheet="drawerSenceSheet" :data="senceListData" :append-to-body="true" @click="senceItemClick" @handleClose="handleClose"></drawer-sence-sheet>
     <drawer-insert-area-type-sheet :data="globalInsertTypeData" :drawer-sheet="drawerInsertAreaSheet" :append-to-body="true" @click="insertAreaItemClick" @handleClose="handleClose"></drawer-insert-area-type-sheet>
   </div>
 </template>
@@ -53,8 +54,9 @@
 import mixins from "../mixins/mixins";
 import DialogInput from "./DialogInput";
 import {MessageCommonTips} from "../utils/utils";
+import DrawerSenceSheet from "./DrawerSenceSheet";
 export default {
-  components: {DialogInput},
+  components: {DrawerSenceSheet, DialogInput},
   mixins: [mixins],
   props:{
     formData: {
@@ -88,7 +90,9 @@ export default {
       placeholder: '',
       drawerSheet: false,
       loopData: [],
-      drawerInsertAreaSheet: false
+      drawerInsertAreaSheet: false,
+      drawerSenceSheet: false,
+      senceListData: []
     }
   },
   methods: {
@@ -97,6 +101,12 @@ export default {
     },
     handleInsert(){
       this.drawerInsertAreaSheet = true;
+    },
+    setSence(){
+      if (process.client){
+        this.senceListData = JSON.parse(localStorage.getItem("senceListData"));
+      }
+      this.drawerSenceSheet = true;
     },
     cancelDialog(){
       this.messageInput = '';
@@ -128,9 +138,15 @@ export default {
       this._formData.startOrder = data.type;
       this.drawerSheet = false;
     },
+    senceItemClick(data){
+      this._formData.senceText = data.name;
+      this._formData.sence = data.value;
+      this.drawerSenceSheet = false;
+    },
     handleClose(done, type){
       this.drawerSheet = false;
       this.drawerInsertAreaSheet = false;
+      this.drawerSenceSheet = false;
       done();
     },
     insertAreaItemClick(data){

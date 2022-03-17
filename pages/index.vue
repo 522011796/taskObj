@@ -336,6 +336,8 @@ export default {
         jsonData.push({
           sceneId: data[i].sceneId,
           duration: this.scnenDuration,
+          name: data[i].sceneName,
+          value: data[i].sceneId
         });
       }
       if (process.client){
