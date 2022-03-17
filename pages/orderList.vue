@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="opr-block-save" v-if="globalDeviceType != 'ios'">
-        <el-button type="text" size="mini">
+        <el-button type="text" size="mini" @click="saveTask">
           <i class="fa fa-file"></i>
           {{$t("保存")}}
         </el-button>
@@ -302,6 +302,7 @@ export default {
       title: '',
       placeholder: '',
       inputType: '',
+      formSence: {},
       formPlain: {
         type: '',
         name: '',
@@ -356,8 +357,9 @@ export default {
     window.removeEventListener('popstate', this.goBack, false);
   },
   created() {
-    //this.init();
-    this.initTask();
+    if (this.$route.query.globalEditStatus == "1"){
+      this.initTask();
+    }
   },
   methods: {
     initTask(){
@@ -957,6 +959,7 @@ export default {
       }
     },
     returnMain(){
+      this.globalEditStatus = false;
       this.$router.push({
         path: '/',
         replace: true,
@@ -996,6 +999,44 @@ export default {
     goBack () {
       // console.log("点击了浏览器的返回按钮");
       history.pushState(null, null, document.URL);
+    },
+    saveTask(){
+      let globalEditStatus = this.$route.query.globalEditStatus;
+      let ganttDataJson = JSON.parse(JSON.stringify(this.ganttData));
+      if (globalEditStatus == '1'){
+        let sourceUrl = this.$route.query.sourceUrl;
+        let editTaskList = [];
+        this.$axios.get(sourceUrl).then(res => {
+          this.formSence = {
+            id: res.data.id,
+            envKey: '',
+            name: res.data.name,
+            iconId:  res.data.icon,
+            internal: res.data.internal == 1 ? true : false,
+            roomId: res.data.room,
+            sceneId: res.data.id,
+            sceneName: res.data.name,
+            sceneType: 1,
+            sourceCode: '',
+            openSource: true,
+            img: '',
+            duration: res.data.duration,
+          };
+          editTaskList = res.data.tasks;
+          for (let i = 0; i < ganttDataJson.length; i++){
+            if (ganttDataJson[i]['children']){
+              ganttDataJson[i].children = undefined;
+            }
+            for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
+              if (ganttDataJson[i]['i'][j].vLoop){
+                ganttDataJson[i]['i'][j].vLoop = undefined;
+              }
+            }
+          }
+          //console.log(JSON.parse(JSON.stringify(ganttDataJson)));
+          this.okScene(this.formSence, JSON.parse(JSON.stringify(ganttDataJson)), this.initTask);
+        });
+      }
     }
   },
   watch: {

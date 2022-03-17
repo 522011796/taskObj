@@ -1,6 +1,16 @@
 <script>
 import {common, commonConfig} from "../utils/api/url";
-import {deviceType, keyType, openType, orderColor, orderValue, planType, sceneType, templateType} from "../utils/utils";
+import {
+  deviceType,
+  keyType,
+  MessageCommonTips,
+  openType,
+  orderColor,
+  orderValue,
+  planType,
+  sceneType,
+  templateType
+} from "../utils/utils";
 
     export default {
       name: "mixins",
@@ -23,6 +33,7 @@ import {deviceType, keyType, openType, orderColor, orderValue, planType, sceneTy
           globalCellWidth: 60,
           globalScal: 1,
           scnenDuration: '',
+          globalEditStatus: false,
           globalInsertTypeData: [
             {name:this.$t('上一行'),value:'up'},
             {name:this.$t('下一行'),value:'down'}
@@ -298,6 +309,61 @@ import {deviceType, keyType, openType, orderColor, orderValue, planType, sceneTy
         },
         keyTypeInfo(type){
           return keyType(type);
+        },
+        okScene(form,sceneList, func){
+          //源码用
+          let dataObj = {
+            id:form.id,
+            room: form.roomId,
+            name: form.name,
+            icon: 1,
+            enable: 1,
+            internal: form.internal == false ? 0 : 1,
+            duration: form.duration,
+            tasks: sceneList
+          };
+          //云端用
+          let codeData = {
+            envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey"),
+            iconId: 1,
+            internal: form.internal,
+            openSource: false,
+            roomId: form.roomId,
+            sceneName: form.name,
+            sceneType: 1,
+            sourceCode: JSON.stringify(dataObj)
+          };
+          if (form.id != ""){
+            codeData['sceneId'] = form.id;
+          }
+          codeData = this.$qs.stringify(codeData);
+
+          let url = common.editSence;
+
+          this.$axios.post(this.baseUrl + url, codeData, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+            if (res.data.code == 200){
+              this.installSence(res.data.data.sceneId, dataObj.tasks, func);
+              this.drawerEdit = false;
+            }else {
+              MessageCommonTips(res.data.msg);
+            }
+            this.drawerEdit = false;
+          });
+        },
+        installSence(senceId, tasks, func){
+          let params = {
+            envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey"),
+            sceneId: senceId
+          };
+          params = this.$qs.stringify(params);
+          this.$axios.post(this.baseUrl + common.installSence, params, {sessionId: this.sessionId, userKey: this.userKey}).then(res => {
+            if (res.data.code == 200){
+              MessageCommonTips(res.data.msg);
+              func();
+            }else {
+              MessageCommonTips(res.data.msg);
+            }
+          });
         },
         setPageStatus(value){
           /**

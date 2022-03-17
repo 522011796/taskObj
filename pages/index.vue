@@ -70,82 +70,19 @@
     </div>
 
     <!--场景管理-->
-    <el-drawer
-      custom-class="drawer-block"
-      :show-close="false"
-      :size="globalDrawerHeight"
-      :visible.sync="drawerEdit"
-      :direction="directionEdit"
-      @close="closeDialog">
-      <div slot="title">
-        <div class="block-opr-header">
-          <el-row>
-            <el-col :span="3">
-              <div class="textCenter">
-                <el-button size="mini" type="text" class="color-666666" @click="cancelScene">{{$t('取消')}}</el-button>
-              </div>
-            </el-col>
-            <el-col :span="18">
-              <div class="textCenter">
-                <span>{{$t('场景管理')}}</span>
-              </div>
-            </el-col>
-            <el-col :span="3">
-              <div class="textCenter">
-                <el-button size="mini" type="text" @click="okScene">{{$t('确定')}}</el-button>
-              </div>
-            </el-col>
-          </el-row>
-        </div>
-      </div>
-      <div>
-        <el-form class="custom-form" label-width="90px" ref="formSence" :model="formSence">
-          <el-form-item :label="$t('场景名称')" prop="pass" @click.native="showInput('scene')">
-            <div class="textRight color-666666">
-              <label>{{ formSence.name != '' ?  formSence.name : $t('请设置')}}</label>
-              <label class="fa fa-chevron-right"></label>
-            </div>
-          </el-form-item>
-          <el-form-item :label="$t('房间')" prop="pass" @click.native="showRoom">
-            <div class="textRight color-666666">
-              <label>{{ formSence.roomId != '' ?  globalRoomObj[formSence.roomId] : $t('请设置')}}</label>
-              <label class="fa fa-chevron-right"></label>
-            </div>
-          </el-form-item>
-          <el-form-item :label="$t('场景类型')" prop="pass">
-            <div class="textRight">
-              <div class="textRight">
-                <label>{{ formSence.sceneType != '' ?  sceneTypeInfo(formSence.sceneType) : $t('请设置')}}</label>
-                <label class="fa fa-chevron-right"></label>
-              </div>
-            </div>
-          </el-form-item>
-          <el-form-item :label="$t('场景开源')" prop="pass">
-            <div class="textRight">
-              <el-switch
-                disabled
-                v-model="formSence.openSource"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                @change="changeOpenSource">
-              </el-switch>
-            </div>
-          </el-form-item>
-          <el-form-item :label="$t('内部调用')" prop="pass">
-            <div class="textRight">
-              <el-switch
-                v-model="formSence.internal"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                @change="changeInternal">
-              </el-switch>
-            </div>
-          </el-form-item>
-        </el-form>
-
-        <drawer-type-sheet :drawer-sheet="drawerSheet" :append-to-body="true" :data="typeData" @click="typeItemClick" @handleClose="handleClose"></drawer-type-sheet>
-      </div>
-    </el-drawer>
+    <drawer-sence-manage
+      :form-data="formSence"
+      :dialog-edit="drawerEdit"
+      @showInput="showInput"
+      @cancelScene="cancelScene"
+      @okScene="okIndexScene"
+      @typeItemClick="typeItemClick"
+      @closeDialog="closeDialog"
+      @handleClose="handleClose"
+      @changeInternal="changeInternal"
+      @showRoom="showRoom"
+      @changeOpenSource="changeOpenSource"
+    ></drawer-sence-manage>
 
     <!--模版管理-->
     <el-drawer
@@ -246,10 +183,12 @@ import mixins from "../mixins/mixins";
 import {common} from "../utils/api/url";
 import {inArray, MessageCommonTips, templateType} from "../utils/utils";
 import mixinsData from "../mixins/mixinsData";
+import DrawerSenceManage from "../components/DrawerSenceManage";
 export default {
   layout: 'default',
   mixins: [mixins,mixinsData],
   components: {
+    DrawerSenceManage,
     DialogMessage,
     DrawerDeviceGroup,
     DrawerRoom,
@@ -549,61 +488,62 @@ export default {
     cancelScene(){
       this.drawerEdit = false;
     },
-    okScene(){
+    okIndexScene(data){
+      this.okScene(this.formSence, this.editSceneList, this.init);
       //源码用
-      let dataObj = {
-        id:this.formSence.id,
-        room: this.formSence.roomId,
-        name: this.formSence.name,
-        icon: 1,
-        enable: 1,
-        internal: this.formSence.internal == false ? 0 : 1,
-        duration: this.formSence.duration,
-        tasks: this.editSceneList
-      };
-      //云端用
-      let codeData = {
-        envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey"),
-        iconId: 1,
-        internal: this.formSence.internal,
-        openSource: false,
-        roomId: this.formSence.roomId,
-        sceneName: this.formSence.name,
-        sceneType: 1,
-        sourceCode: JSON.stringify(dataObj)
-      };
-      if (this.formSence.id != ""){
-        codeData['sceneId'] = this.formSence.id;
-      }
-      codeData = this.$qs.stringify(codeData);
-
-      let url = common.editSence;
-
-      this.$axios.post(this.baseUrl + url, codeData, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
-        if (res.data.code == 200){
-          this.installSence(res.data.data.sceneId, dataObj.tasks);
-          this.drawerEdit = false;
-        }else {
-          MessageCommonTips(res.data.msg);
-        }
-        this.drawerEdit = false;
-      });
+      // let dataObj = {
+      //   id:this.formSence.id,
+      //   room: this.formSence.roomId,
+      //   name: this.formSence.name,
+      //   icon: 1,
+      //   enable: 1,
+      //   internal: this.formSence.internal == false ? 0 : 1,
+      //   duration: this.formSence.duration,
+      //   tasks: this.editSceneList
+      // };
+      // //云端用
+      // let codeData = {
+      //   envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey"),
+      //   iconId: 1,
+      //   internal: this.formSence.internal,
+      //   openSource: false,
+      //   roomId: this.formSence.roomId,
+      //   sceneName: this.formSence.name,
+      //   sceneType: 1,
+      //   sourceCode: JSON.stringify(dataObj)
+      // };
+      // if (this.formSence.id != ""){
+      //   codeData['sceneId'] = this.formSence.id;
+      // }
+      // codeData = this.$qs.stringify(codeData);
+      //
+      // let url = common.editSence;
+      //
+      // this.$axios.post(this.baseUrl + url, codeData, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+      //   if (res.data.code == 200){
+      //     this.installSence(res.data.data.sceneId, dataObj.tasks);
+      //     this.drawerEdit = false;
+      //   }else {
+      //     MessageCommonTips(res.data.msg);
+      //   }
+      //   this.drawerEdit = false;
+      // });
     },
-    installSence(senceId, tasks){
-      let params = {
-        envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey"),
-        sceneId: senceId
-      };
-      params = this.$qs.stringify(params);
-      this.$axios.post(this.baseUrl + common.installSence, params, {sessionId: this.sessionId, userKey: this.userKey}).then(res => {
-        if (res.data.code == 200){
-          MessageCommonTips(res.data.msg);
-          this.init();
-        }else {
-          MessageCommonTips(res.data.msg);
-        }
-      });
-    },
+    // installSence(senceId, tasks){
+    //   let params = {
+    //     envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey"),
+    //     sceneId: senceId
+    //   };
+    //   params = this.$qs.stringify(params);
+    //   this.$axios.post(this.baseUrl + common.installSence, params, {sessionId: this.sessionId, userKey: this.userKey}).then(res => {
+    //     if (res.data.code == 200){
+    //       MessageCommonTips(res.data.msg);
+    //       this.init();
+    //     }else {
+    //       MessageCommonTips(res.data.msg);
+    //     }
+    //   });
+    // },
     cancelTemp(){
       this.drawerTemp = false;
     },
@@ -830,6 +770,7 @@ export default {
         path: '/orderList',
         replace: true,
         query: {
+          globalEditStatus: 1,
           envKey: this.$route.query.envKey,
           sessionId: this.$route.query.sessionId,
           role: this.$route.query.role,
