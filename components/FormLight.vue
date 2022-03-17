@@ -37,6 +37,16 @@
         <el-input-number size="medium" v-model="_formData.emptyTime" @change="handleChange($event, 'emptyTime')" :min="100" :step="100" :step-strictly="true"></el-input-number>
       </div>
     </el-form-item>
+
+
+    <template v-if="_formData.insertArea != ''">
+      <el-form-item :label="$t('插入位置')" @click.native="handleInsert">
+        <div class="textRight color-666666">
+          <label>{{_formData.insertArea == 'up' ? $t("上一行") : $t("下一行")}}</label>
+          <label class="fa fa-chevron-right"></label>
+        </div>
+      </el-form-item>
+    </template>
     <template v-if="_formData.type == 9">
       <el-form-item label="色彩">
         <div class="textRight color-666666">
@@ -61,15 +71,6 @@
       <el-form-item label="重复次数">
         <div class="textRight color-666666">
           <el-input-number size="medium" v-model="_formData.startLoop" @change="handleChange($event, 'startLoop')" :min="0" :step="1" :step-strictly="true"></el-input-number>
-        </div>
-      </el-form-item>
-    </template>
-
-    <template v-if="_formData.insertArea != ''">
-      <el-form-item :label="$t('插入位置')" @click.native="handleInsert">
-        <div class="textRight color-666666">
-          <label>{{_formData.insertArea == 'up' ? $t("上一行") : $t("下一行")}}</label>
-          <label class="fa fa-chevron-right"></label>
         </div>
       </el-form-item>
     </template>
