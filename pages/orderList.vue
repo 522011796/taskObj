@@ -1107,6 +1107,7 @@ export default {
     saveTask(){
       let globalEditStatus = this.$route.query.globalEditStatus;
       let ganttDataJson = JSON.parse(JSON.stringify(this.ganttData));
+
       if (globalEditStatus == '1'){
         let sourceUrl = this.$route.query.sourceUrl;
         let editTaskList = [];
@@ -1138,6 +1139,12 @@ export default {
             }
           }
           //console.log(JSON.parse(JSON.stringify(ganttDataJson)));
+          let bool = this.validateTaskList(ganttDataJson);
+          if (!bool){
+            MessageCommonTips(this.$t("请设置场景中的任务和指令！"));
+            return;
+          }
+
           this.okScene(this.formSence, JSON.parse(JSON.stringify(ganttDataJson)), this.initTask);
         });
       }else{
@@ -1152,10 +1159,31 @@ export default {
             }
           }
         }
+
+        let bool = this.validateTaskList(ganttDataJson);
+        if (!bool){
+          MessageCommonTips(this.$t("请设置场景中的任务和指令！"));
+          return;
+        }
+
         this.editSceneList = JSON.parse(JSON.stringify(ganttDataJson));
         this.globalOprType = 'add';
         this.drawerEdit = true;
       }
+    },
+    validateTaskList(data){
+      let errorNum = 0;
+      let bool = true;
+      for (let i = 0; i < data.length; i++){
+        if (data[i]['i'].length == 0){
+          errorNum++;
+          break;
+        }
+      }
+      if (errorNum > 0 || data.length == 0){
+        bool = false;
+      }
+      return bool;
     },
     cancelScene(){
       this.drawerEdit = false;
