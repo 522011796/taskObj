@@ -34,6 +34,7 @@ import {
           globalScal: 1,
           scnenDuration: '',
           globalEditStatus: false,
+          globalOprType: '',
           globalInsertTypeData: [
             {name:this.$t('上一行'),value:'up'},
             {name:this.$t('下一行'),value:'down'}
@@ -338,11 +339,12 @@ import {
           }
           codeData = this.$qs.stringify(codeData);
 
-          let url = common.editSence;
+          let url = this.globalOprType == 'add' ? common.createSence : common.editSence;
 
           this.$axios.post(this.baseUrl + url, codeData, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
             if (res.data.code == 200){
               this.installSence(res.data.data.sceneId, dataObj.tasks, func);
+              this.globalOprType = '';
               this.drawerEdit = false;
             }else {
               MessageCommonTips(res.data.msg);

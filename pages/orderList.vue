@@ -242,6 +242,22 @@
       @handleClose="handleSheetClose">
     </drawer-order-type-sheet>
 
+    <!--场景管理-->
+    <drawer-sence-manage
+      :form-data="formSence"
+      :dialog-edit="drawerEdit"
+      @showInput="showSenceInput"
+      @cancelScene="cancelScene"
+      @okScene="okIndexScene"
+      @typeItemClick="typeItemClick"
+      @closeDialog="closeDialog"
+      @handleClose="handleClose"
+      @changeInternal="changeInternal"
+      @showRoom="showRoom"
+      @changeOpenSource="changeOpenSource"
+    ></drawer-sence-manage>
+
+    <drawer-room :drawer-room="drawerRoom" :data="globalRoomList" @click="roomItemClick" @handleClose="handleClose"></drawer-room>
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
     <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
     <drawer-device-list-sheet :data="deviceOptions" :drawer-sheet="drawerDeviceListSheet" @change="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
@@ -302,6 +318,7 @@ export default {
       drawerOrderTypeSheet: false,
       drawerDeviceListSheet: false,
       drawerInsertAreaSheet: false,
+      drawerRoom: false,
       drawerTask: false,
       drawerTaskList: false,
       drawerTaskSet: false,
@@ -312,10 +329,27 @@ export default {
       scaleValue: 0,
       messageInput: '',
       dialogInput: false,
+      drawerEdit: false,
       title: '',
       placeholder: '',
       inputType: '',
-      formSence: {},
+      editSceneList: [],
+      oprType: '',
+      formSence:{
+        id: '',
+        envKey: '',
+        name: '',
+        iconId: 1,
+        internal: true,
+        roomId: '',
+        sceneId: '',
+        sceneName: '',
+        sceneType: 1,
+        sourceCode: '',
+        openSource: true,
+        img: '',
+        duration: 0
+      },
       formPlain: {
         type: '',
         name: '',
@@ -963,6 +997,7 @@ export default {
     handleClose(done, type){
       this.drawerOrderTypeSheet = false;
       this.drawerDeviceTypeSheet = false;
+      this.drawerEdit = false;
       this.clearSheet();
       done();
     },
@@ -1022,9 +1057,15 @@ export default {
       this.drawerDeviceListSheet = true;
     },
     showInput(event){
+      this.inputType = '';
       this.title = '';
       this.placeholder = '';
       this.messageInput = this.formPlain.name;
+      this.dialogInput = true;
+    },
+    showSenceInput(type){
+      this.inputType = 'addScene';
+      this.messageInput = this.formSence.name;
       this.dialogInput = true;
     },
     cancelInputDialog(){
@@ -1037,7 +1078,11 @@ export default {
         MessageCommonTips(this.$t("请输入信息！"));
         return;
       }
-      this.formPlain.name = data;
+      if (this.inputType == 'addScene'){
+        this.formSence.name = data;
+      }else {
+        this.formPlain.name = data;
+      }
       this.dialogInput = false;
     },
     goBack () {
@@ -1080,6 +1125,51 @@ export default {
           //console.log(JSON.parse(JSON.stringify(ganttDataJson)));
           this.okScene(this.formSence, JSON.parse(JSON.stringify(ganttDataJson)), this.initTask);
         });
+      }else{
+        let ganttDataJson = JSON.parse(JSON.stringify(this.ganttData));
+        for (let i = 0; i < ganttDataJson.length; i++){
+          if (ganttDataJson[i]['children']){
+            ganttDataJson[i].children = undefined;
+          }
+          for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
+            if (ganttDataJson[i]['i'][j].vLoop){
+              ganttDataJson[i]['i'][j].vLoop = undefined;
+            }
+          }
+        }
+        this.editSceneList = JSON.parse(JSON.stringify(ganttDataJson));
+        this.globalOprType = 'add';
+        this.drawerEdit = true;
+      }
+    },
+    cancelScene(){
+      this.drawerEdit = false;
+    },
+    okIndexScene(data){
+      this.okScene(this.formSence, this.editSceneList, this.init);
+    },
+    typeItemClick(data){
+      if (data != 'cancel'){
+        this.formSence.sceneType = data.value;
+      }
+      this.drawerSheet = false;
+    },
+    roomItemClick(data){
+      this.formSence.roomId = data.id;
+      this.drawerRoom = false;
+    },
+    changeInternal(data){
+      this.formSence.internal = data;
+    },
+    showRoom(){
+      this.drawerRoom = true;
+    },
+    changeOpenSource(data){
+      this.formSence.openSource = data;
+    },
+    closeDialog(event){
+      if (!event){
+        this.dismissDialogStatus();
       }
     }
   },
