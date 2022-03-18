@@ -35,7 +35,8 @@
       :gantt-time-data="ganttTimeData"
       :scroll-to-postion="position"
       @scrollLeft="scrollLeftA"
-      @showBlock="showBlock">
+      @showBlock="showBlock"
+      @addBlock="addBlock">
 
       <div slot="title" class="textCenter" @click="globalDeviceType != 'ios' ? returnMain() : ''">
         <i v-if="globalDeviceType != 'ios'" class="fa fa-chevron-left font-size-12"></i>
@@ -69,9 +70,20 @@
               </div>
             </el-col>
             <el-col :span="3">
-              <div class="textCenter">
-                <el-button size="mini" type="text" @click="okTask">{{$t('确定')}}</el-button>
-              </div>
+              <el-row>
+                <el-col :span="12">
+                  <div class="textCenter">
+                    <el-button size="mini" type="text" @click="addOnlyTask">
+                      <i class="fa fa-plus color-success"></i>
+                    </el-button>
+                  </div>
+                </el-col>
+                <el-col :span="12">
+                  <div class="textCenter">
+                    <el-button size="mini" type="text" @click="okTask">{{$t('保存')}}</el-button>
+                  </div>
+                </el-col>
+              </el-row>
             </el-col>
           </el-row>
         </div>
@@ -571,6 +583,10 @@ export default {
     scrollLeftA(val) {
       this.position = { x: val };
     },
+    addBlock(data, index){
+      this.taskBlockIndex = index;
+      this.drawerTaskList = true;
+    },
     showBlock(data, index){
       if (data.t == 1){
         this.orderDeviceType = 'light';
@@ -712,15 +728,18 @@ export default {
       if (!validateForm){
         return;
       }
-      if (this.oprTaskType == "modi"){
+      if (this.oprTaskType == "modi"){//修改
         this.setModiTaskList(this.editOrderIndex);
-      }else if (this.oprTaskType == "insert"){
+      }else if (this.oprTaskType == "insert"){//插入
         obj = this.setAddTaskList();
         if(this.formOrder.insertArea == 'up'){
           this.dataTaskList.splice(this.editOrderIndex, 0, obj);
         }else if(this.formOrder.insertArea == 'down'){
           this.dataTaskList.splice(this.editOrderIndex + 1, 0, obj);
         }
+      }else {//单独添加
+        obj = this.setAddTaskList();
+        this.dataTaskList.splice(this.dataTaskList.length + 1, 0, obj);
       }
       this.drawerTaskSet = false;
     },
@@ -905,6 +924,9 @@ export default {
       this.formOrder.insertArea = 'down';
       this.editOrderIndex = index;
       this.oprTaskType = 'insert';
+      this.drawerTaskSet = true;
+    },
+    addOnlyTask(){
       this.drawerTaskSet = true;
     },
     orderTypeItemClick(data){

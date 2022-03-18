@@ -22,6 +22,10 @@
           </span>
           <span v-else>{{changeTime(itemChild.time)}}</span>
         </div>
+
+        <div v-if="item.children.length - 1 == indexChild" class="block-item-plus" @click="addBlock(item, index)">
+          <span class="fa fa-plus" style="font-size: 14px"></span>
+        </div>
       </div>
     </div>
   </div>
@@ -92,6 +96,9 @@ export default {
     },
     showBlock(item, index){
       this.$emit("showBlock", item, index);
+    },
+    addBlock(item, index){
+      this.$emit("addBlock", item, index);
     }
   }
 }
@@ -126,5 +133,10 @@ export default {
   z-index: 1000;
   bottom: 0;
   left: 0;
+}
+.block-item-plus{
+  position: absolute;
+  top: 8px;
+  right: -20px;
 }
 </style>
