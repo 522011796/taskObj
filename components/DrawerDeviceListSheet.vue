@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="custom-el-drawer-cascader">
-        <el-cascader-panel :props="{ multiple: true }" :options="data" :style="contentWidthStyle"></el-cascader-panel>
+        <el-cascader-panel ref="cascaderPanel" :props="{ multiple: true }" :options="data" :style="contentWidthStyle" @change="itemClick"></el-cascader-panel>
       </div>
     </el-drawer>
   </div>
@@ -66,8 +66,9 @@ export default {
     }
   },
   methods: {
-    itemClick(event, item){
-      this.$emit('click', item);
+    itemClick(item){
+      let data = this.$refs.cascaderPanel.getCheckedNodes();
+      this.$emit('change', data);
     },
     handleClose(done) {
       this.$emit('handleClose', done);

@@ -23,9 +23,13 @@
           <span v-else>{{changeTime(itemChild.time)}}</span>
         </div>
 
-        <div v-if="item.children.length - 1 == indexChild" class="block-item-plus" @click="addBlock(item, index)">
+        <div v-if="item.children.length - 1 == indexChild && item.children.length > 0" class="block-item-plus" @click="addBlock(item, index)">
           <span class="fa fa-plus" style="font-size: 14px"></span>
         </div>
+      </div>
+
+      <div v-if="item.children.length == 0" class="block-item-empty-plus" @click="addBlock(item, index)">
+        <span class="fa fa-plus" style="font-size: 14px"></span>
       </div>
     </div>
   </div>
@@ -138,5 +142,10 @@ export default {
   position: absolute;
   top: 8px;
   right: -20px;
+}
+.block-item-empty-plus{
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 </style>

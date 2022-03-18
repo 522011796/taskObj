@@ -244,7 +244,7 @@
 
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
     <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
-    <drawer-device-list-sheet :data="deviceOptions" :drawer-sheet="drawerDeviceListSheet" @click="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
+    <drawer-device-list-sheet :data="deviceOptions" :drawer-sheet="drawerDeviceListSheet" @change="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
   </div>
 </template>
 
@@ -264,9 +264,10 @@ import DrawerDeviceListSheet from "../components/DrawerDeviceListSheet";
 import TaskListItem from "../components/TaskListItem";
 import FormCurtains from "../components/FormCurtains";
 import DrawerInsertAreaTypeSheet from "../components/DrawerInsertAreaTypeSheet";
+import mixinsData from "../mixins/mixinsData";
 export default {
   layout: 'default',
-  mixins: [mixins],
+  mixins: [mixins,mixinsData],
   components: {
     DrawerInsertAreaTypeSheet,
     FormCurtains,
@@ -675,7 +676,20 @@ export default {
       this.drawerTask = false;
     },
     okSetTask(){
-
+      let obj = [];
+      if (this.formPlain.type === "" || this.formPlain.name == "" || this.formPlain.deviceSelDevice.length == 0){
+        MessageCommonTips(this.$t("请设置信息"));
+        return;
+      }
+      obj = {
+        t: parseInt(this.formPlain.type),
+        i: [],
+        d: this.formPlain.deviceSelDevice,
+        n: this.formPlain.name
+      };
+      this.ganttData.push(obj);
+      this.formatTaskList(this.ganttData);
+      this.drawerTask = false;
     },
     cancelTask(){
       this.drawerTaskList = false;
@@ -747,17 +761,17 @@ export default {
       let obj = {};
       if (this.formOrder.type == 1){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.emptyTime
         };
       }else if (this.formOrder.type == 2){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.waitTime
         };
       }else if (this.formOrder.type == 3){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.startOrderI,
           t: this.formOrder.startLoop
         };
@@ -765,31 +779,31 @@ export default {
 
       }else if (this.formOrder.type == 6){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.open,
           t: this.formOrder.changeTime
         };
       }else if (this.formOrder.type == 7){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.light,
           t: this.formOrder.changeTime
         };
       }else if (this.formOrder.type == 8){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.temp,
           t: this.formOrder.changeTime
         };
       }else if (this.formOrder.type == 9){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.colorInt,
           t: this.formOrder.changeTime
         };
       }else if (this.formOrder.type == 10){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.curtainsOpenClose
         };
       }else if (this.formOrder.type == 11){
@@ -797,61 +811,61 @@ export default {
           this.formOrder.keyNoArr[i] = this.formOrder.keyNoArr[i]-1;
         }
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.keyNoArr,
-          s: this.formOrder.curtainsOpenClose
+          s: parseInt(this.formOrder.curtainsOpenClose)
         };
       }else if (this.formOrder.type == 12){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.musicVoice
         };
       }else if (this.formOrder.type == 13){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.musicName
         };
       }else if (this.formOrder.type == 14){
         obj = {
-          i: this.formOrder.type
+          i: parseInt(this.formOrder.type),
         };
       }else if (this.formOrder.type == 15){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.musicProcess
         };
       }else if (this.formOrder.type == 18){
         obj = {
-          i: this.formOrder.type,
+          i: parseInt(this.formOrder.type),
           v: this.formOrder.source
         };
       }
       return obj;
     },
     setModiTaskList(editIndex){
-      this.$set(this.dataTaskList[editIndex],'i', this.formOrder.type);
+      this.$set(this.dataTaskList[editIndex],'i', parseInt(this.formOrder.type));
       if (this.formOrder.type == 1){
-        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.emptyTime);
+        this.$set(this.dataTaskList[editIndex],'v', parseInt(this.formOrder.emptyTime));
       }else if (this.formOrder.type == 2){
-        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.waitTime);
+        this.$set(this.dataTaskList[editIndex],'v', parseInt(this.formOrder.waitTime));
       }else if (this.formOrder.type == 3){
-        this.$set(this.dataTaskList[editIndex],'t', this.formOrder.startLoop);
-        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.startOrderI);
+        this.$set(this.dataTaskList[editIndex],'t', parseInt(this.formOrder.startLoop));
+        this.$set(this.dataTaskList[editIndex],'v', parseInt(this.formOrder.startOrderI));
       }else if (this.formOrder.type == 4){
         this.$set(this.dataTaskList[editIndex],'v', this.formOrder.sence);
         this.$set(this.dataTaskList[editIndex],'n', this.formOrder.senceText);
       }else if (this.formOrder.type == 6){
-        this.$set(this.dataTaskList[editIndex],'t', this.formOrder.changeTime);
-        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.open);
+        this.$set(this.dataTaskList[editIndex],'t', parseInt(this.formOrder.changeTime));
+        this.$set(this.dataTaskList[editIndex],'v', parseInt(this.formOrder.open));
       }else if (this.formOrder.type == 7){
-        this.$set(this.dataTaskList[editIndex],'t', this.formOrder.changeTime);
+        this.$set(this.dataTaskList[editIndex],'t', parseInt(this.formOrder.changeTime));
         this.$set(this.dataTaskList[editIndex],'v', this.formOrder.light);
       }else if (this.formOrder.type == 8){
-        this.$set(this.dataTaskList[editIndex],'t', this.formOrder.changeTime);
+        this.$set(this.dataTaskList[editIndex],'t', parseInt(this.formOrder.changeTime));
         this.$set(this.dataTaskList[editIndex],'v', this.formOrder.temp);
       }else if (this.formOrder.type == 9){
-        this.$set(this.dataTaskList[editIndex],'t', this.formOrder.changeTime);
-        this.$set(this.dataTaskList[editIndex],'v', this.formOrder.colorInt);
+        this.$set(this.dataTaskList[editIndex],'t', parseInt(this.formOrder.changeTime));
+        this.$set(this.dataTaskList[editIndex],'v', parseInt(this.formOrder.colorInt));
       }else if (this.formOrder.type == 10){
         this.$set(this.dataTaskList[editIndex],'v', this.formOrder.curtainsOpenClose);
       }else if (this.formOrder.type == 11){
@@ -859,7 +873,7 @@ export default {
           this.formOrder.keyNoArr[i] = this.formOrder.keyNoArr[i]-1;
         }
         this.$set(this.dataTaskList[editIndex],'v', this.formOrder.keyNoArr);
-        this.$set(this.dataTaskList[editIndex],'s', this.formOrder.keyOpr);
+        this.$set(this.dataTaskList[editIndex],'s', parseInt(this.formOrder.keyOpr));
       }else if (this.formOrder.type == 12){
         this.$set(this.dataTaskList[editIndex],'v', this.formOrder.musicVoice);
       }else if (this.formOrder.type == 13){
@@ -872,7 +886,7 @@ export default {
     },
     updateTask($event, item, index){
       this.editOrderIndex = index;
-      this.formOrder.type = item.i;
+      this.formOrder.type = parseInt(item.i);
       this.oprTaskType = 'modi';
       if (item.i == 1){
         this.formOrder.emptyTime = item.v;
@@ -904,7 +918,7 @@ export default {
         }
         this.formOrder.keyNoArr = arr;
         this.formOrder.keyArr = JSON.parse(JSON.stringify(item.v));
-        this.formOrder.keyOpr = item.s;
+        this.formOrder.keyOpr = parseInt(item.s);
       }else if (item.i == 10){
         this.formOrder.curtainsOpenClose = item.v;
       }else if (item.i == 12){
@@ -938,7 +952,13 @@ export default {
       this.drawerDeviceTypeSheet = false;
     },
     deviceListItemClick(data){
-
+      let sns = [];
+      for (let i = 0; i < data.length; i++){
+        if (data[i].data.sn){
+          sns.push(data[i].data.sn);
+        }
+      }
+      this.formPlain.deviceSelDevice = sns;
     },
     handleClose(done, type){
       this.drawerOrderTypeSheet = false;
@@ -996,7 +1016,9 @@ export default {
     setTask(){
       this.drawerDeviceTypeSheet = true;
     },
-    addDevice(){
+    async addDevice(){
+      await this.getGroupDeviceList(this.formPlain.type);
+      this.deviceOptions = this.globalGroupDeviceList
       this.drawerDeviceListSheet = true;
     },
     showInput(event){
