@@ -27,7 +27,7 @@
             </el-col>
             <el-col :span="4">
               <div class="textRight">
-                <el-button size="mini" type="text" @click="saveTplDevice">{{$t('确认')}}</el-button>
+                <el-button size="mini" type="text" :loading="tplLoading" @click="saveTplDevice">{{$t('确认')}}</el-button>
               </div>
             </el-col>
           </el-row>
@@ -156,6 +156,7 @@ export default {
       type: 1,
       deviceType: false,
       drawerDeviceList: false,
+      tplLoading: false,
       groupList: [],
       deviceList: [],
       groupChildList: [],
@@ -280,11 +281,30 @@ export default {
           }
         }
       }
-      this.tplLoading = false;
       if (num > 0){
         MessageCommonTips(this.$t("存在未设置的设备，请检查！"));
         return;
       }
+
+      this.tplLoading = true;
+      let groupList = JSON.parse(JSON.stringify(this.groupList));
+      for (let i = 0; i < groupList.length; i++){
+        if (groupList[i]['dExtra']){
+          groupList[i].dExtra = undefined;
+        }
+        if (groupList[i]['dExtraCount']){
+          groupList[i].dExtraCount = undefined;
+        }
+        for (let j = 0; j < groupList[i]['i'].length; j++){
+          if (groupList[i]['i'][j]['sec'] != undefined){
+            groupList[i]['i'][j]['sec'] = undefined;
+          }
+        }
+      }
+      let editSceneList = JSON.parse(JSON.stringify(groupList));
+      this.tplLoading = false;
+
+      this.$emit("saveTplDevice", editSceneList);
     }
   }
 }

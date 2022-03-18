@@ -41,25 +41,21 @@ export default function({store, redirect, req, router, $axios }) {
      */
     response => {
       const res = response;
-      if(response.config.url.indexOf(".json") != -1){
-        return res
-      }else{
-        if (res.data.code === 200) {
-          return res;
-        } else if (res.data.code === 3022) {
-          return res;
-        } else if (res.data.code === 401) {
-          redirect('/login');
-          return res;
-        } else if (res.data.code === 403) {
-          //redirect('/noPermission');
-          return res;
-        } else if (res.data.code === 404) {
-          //redirect('/404');
-          return res;
-        }else {
-          return res;
-        }
+      if (res.data.code === 200) {
+        return res;
+      } else if (res.data.code === 3022) {
+        return res;
+      } else if (res.data.code === 401) {
+        redirect('/login');
+        return res;
+      } else if (res.data.code === 403) {
+        //redirect('/noPermission');
+        return res;
+      } else if (res.data.code === 404) {
+        //redirect('/404');
+        return res;
+      }else {
+        return res;
       }
       //return Promise.reject(new Error(res.msg || 'Error'))
       return response;

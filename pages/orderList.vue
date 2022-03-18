@@ -407,6 +407,10 @@ export default {
     if (this.$route.query.globalEditStatus == "1"){
       this.initTask();
     }
+    if (process.client && this.$route.query.type == 'tpl'){
+      let taskList = localStorage.getItem('taskTempList');
+      this.formatTaskList(JSON.parse(taskList));
+    }
   },
   methods: {
     initTask(){
@@ -419,6 +423,7 @@ export default {
       let timeCount = 0;
       let ruleList = [];
       //格式化数据
+      console.log(1,data);
       let taskList = JSON.parse(JSON.stringify(data));
       for (let i = 0; i < taskList.length; i++){
         timeCount = 0;
@@ -1041,7 +1046,12 @@ export default {
         path: '/',
         replace: true,
         query: {
-          envKey: this.$route.query.envKey
+          envKey: this.$route.query.envKey,
+          sessionId: this.$route.query.sessionId,
+          role: this.$route.query.role,
+          userKey: this.$route.query.userKey,
+          appType: this.$route.query.appType,
+          deviceType: this.$route.query.deviceType,
         }
       });
     },

@@ -112,7 +112,7 @@
 
     <dialog-input :title="title" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelDialog" @okClick="okDialog"></dialog-input>
 
-    <drawer-temp-list :drawer-temp-list="drawerTempList" :data="dataList" :data-group="dataGroupList" :index="editIndex" @handleClose="handleClose"></drawer-temp-list>
+    <drawer-temp-list :drawer-temp-list="drawerTempList" :data="dataList" :data-group="dataGroupList" :index="editIndex" @saveTplDevice="saveTplDevice" @handleClose="handleClose"></drawer-temp-list>
   </div>
 </template>
 
@@ -415,6 +415,21 @@ export default {
       if (!event){
         this.dismissDialogStatus();
       }
+    },
+    saveTplDevice(data){
+      this.globalOprType = 'add';
+      this.drawerTempList = false;
+      if (process.client){
+        localStorage.setItem('taskTempList',JSON.stringify(data))
+      }
+      this.setPageStatus(1);
+      this.$router.push({
+        path: '/orderList',
+        replace: true,
+        query: {
+          type: 'tpl'
+        }
+      });
     }
   }
 }

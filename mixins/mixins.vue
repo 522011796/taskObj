@@ -343,9 +343,24 @@ import {
 
           this.$axios.post(this.baseUrl + url, codeData, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
             if (res.data.code == 200){
-              this.installSence(res.data.data.sceneId, dataObj.tasks, func);
+              this.installSence(res.data.data.sceneId, dataObj.tasks);
               this.globalOprType = '';
               this.drawerEdit = false;
+              if (process.client){
+                localStorage.removeItem('taskTempList');
+              }
+              this.$router.push({
+                path: '/',
+                replace: true,
+                query: {
+                  envKey: this.$route.query.envKey,
+                  sessionId: this.$route.query.sessionId,
+                  role: this.$route.query.role,
+                  userKey: this.$route.query.userKey,
+                  appType: this.$route.query.appType,
+                  deviceType: this.$route.query.deviceType,
+                }
+              });
             }else {
               MessageCommonTips(res.data.msg);
             }
@@ -361,7 +376,7 @@ import {
           this.$axios.post(this.baseUrl + common.installSence, params, {sessionId: this.sessionId, userKey: this.userKey}).then(res => {
             if (res.data.code == 200){
               MessageCommonTips(res.data.msg);
-              func();
+              //func();
             }else {
               MessageCommonTips(res.data.msg);
             }
@@ -439,7 +454,8 @@ import {
                 });
               }
               if (data['value'] == 100){//保存场景指令
-
+                alert();
+                _self.saveTask();
               }
               if (data['value'] == 200){//添加任务
                 _self.addTask();
