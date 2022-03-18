@@ -1107,8 +1107,8 @@ export default {
     saveTask(){
       let globalEditStatus = this.$route.query.globalEditStatus;
       let ganttDataJson = JSON.parse(JSON.stringify(this.ganttData));
-
       if (globalEditStatus == '1'){
+        this.saveLoading = true;
         let sourceUrl = this.$route.query.sourceUrl;
         let editTaskList = [];
         this.$axios.get(sourceUrl).then(res => {
@@ -1142,12 +1142,14 @@ export default {
           let bool = this.validateTaskList(ganttDataJson);
           if (!bool){
             MessageCommonTips(this.$t("请设置场景中的任务和指令！"));
+            this.saveLoading = false;
             return;
           }
 
           this.okScene(this.formSence, JSON.parse(JSON.stringify(ganttDataJson)), this.initTask);
         });
       }else{
+        this.saveLoading = true;
         let ganttDataJson = JSON.parse(JSON.stringify(this.ganttData));
         for (let i = 0; i < ganttDataJson.length; i++){
           if (ganttDataJson[i]['children']){
@@ -1163,6 +1165,7 @@ export default {
         let bool = this.validateTaskList(ganttDataJson);
         if (!bool){
           MessageCommonTips(this.$t("请设置场景中的任务和指令！"));
+          this.saveLoading = false;
           return;
         }
 

@@ -23,6 +23,7 @@ import {
           globalDrawerSubSheetHeight: '40%',
           globalTest: '0',
           minxinsScroll: false,
+          saveLoading: false,
           baseUrl: '',
           envKey: '',
           sessionId: '',
@@ -347,6 +348,7 @@ import {
               this.installSence(res.data.data.sceneId, dataObj.tasks);
               this.globalOprType = '';
               this.drawerEdit = false;
+              this.saveLoading = false;
               if (process.client){
                 localStorage.removeItem('taskTempList');
               }
