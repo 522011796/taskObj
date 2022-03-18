@@ -423,11 +423,18 @@ export default {
         localStorage.setItem('taskTempList',JSON.stringify(data))
       }
       this.setPageStatus(1);
+      this.dismissDialogStatus();
       this.$router.push({
         path: '/orderList',
         replace: true,
         query: {
-          type: 'tpl'
+          type: 'tpl',
+          envKey: this.$route.query.envKey,
+          sessionId: this.$route.query.sessionId,
+          role: this.$route.query.role,
+          userKey: this.$route.query.userKey,
+          appType: this.$route.query.appType,
+          deviceType: this.$route.query.deviceType,
         }
       });
     }

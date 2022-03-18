@@ -5,7 +5,7 @@
 
     <!--操作-->
     <div class="opr-block-block-view">
-      <div class="opr-block-add" v-if="globalDeviceType != 'ios'">
+      <div class="opr-block-add">
         <el-button type="text" size="mini" @click="addTask">
           <i class="fa fa-plus"></i>
           {{$t("任务")}}
@@ -15,12 +15,12 @@
         <div class="marginBottom10">
           <i class="fa fa-search-plus color-default"></i>
         </div>
-        <el-slider disabled class="opr-block-slider-v" vertical :show-tooltip="false" height="120px" style="margin:0 auto !important;" v-model="scaleValue"></el-slider>
+        <el-slider disabled class="opr-block-slider-v" vertical :show-tooltip="false" height="80px" style="margin:0 auto !important;" v-model="scaleValue"></el-slider>
         <div class="marginTop10">
           <i class="fa fa-search-minus color-default"></i>
         </div>
       </div>
-      <div class="opr-block-save" v-if="globalDeviceType != 'ios'">
+      <div class="opr-block-save">
         <el-button type="text" size="mini" @click="saveTask">
           <i class="fa fa-file"></i>
           {{$t("保存")}}
@@ -281,6 +281,7 @@ import TaskListItem from "../components/TaskListItem";
 import FormCurtains from "../components/FormCurtains";
 import DrawerInsertAreaTypeSheet from "../components/DrawerInsertAreaTypeSheet";
 import mixinsData from "../mixins/mixinsData";
+import mixinsBrige from "../mixins/mixinsBrige";
 export default {
   layout: 'default',
   mixins: [mixins,mixinsData],
@@ -624,6 +625,7 @@ export default {
       this.position = { x: val };
     },
     addBlock(data, index){
+      this.showDialogStatus();
       this.taskBlockIndex = index;
       this.drawerTaskList = true;
     },
@@ -641,6 +643,7 @@ export default {
       }else if (data.t == 0){
         this.orderDeviceType = 'sence';
       }
+      this.showDialogStatus();
       this.dataTaskList = JSON.parse(JSON.stringify(data.i));
       this.taskBlockIndex = index;
       this.drawerTaskList = true;
@@ -666,6 +669,7 @@ export default {
     },
     closeDrawer(event){
       if (!event){
+        this.dismissDialogStatus();
         this.clearForm();
       }
     },
@@ -1056,6 +1060,7 @@ export default {
       });
     },
     addTask(){
+      this.showDialogStatus();
       this.drawerTask = true;
     },
     setTask(){
