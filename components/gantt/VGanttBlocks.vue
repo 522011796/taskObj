@@ -133,7 +133,6 @@ export default {
       clearTimeout(this.timeOutEvent);
       if(this.timeOutEvent != 0 && time < 600){
         //这里写要执行的内容（尤如onclick事件）
-        console.log(11);
         this.showBlock(item, index)
       }
     },

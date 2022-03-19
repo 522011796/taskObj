@@ -677,7 +677,6 @@ export default {
         item: itemChild,
         children: array[indexChild]
       };
-      console.log(objArray);
       this.taskDetailItem = objArray;
       this.dialogTaskItemDetail = true;
     },
