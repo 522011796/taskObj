@@ -10,6 +10,7 @@
             <div class="gantt-timeline-wrapper" :style="{ width: totalWidth + scrollYBarWidth + 'px' }">
               <v-gantt-time-line
                 :datas="ganttTimeData"
+                :cell-width="cellWidth + (cellWidth * scale)"
                 :scrollLeft="scrollLeft"
                 :widthOfBlocksWrapper="widthOfBlocksWrapper"
                 :get-positon-offset="getPositonOffset">
@@ -36,7 +37,7 @@
                 :style="rightContentStyle"
                 :scrollTop="scrollTop"
                 :scrollLeft="scrollLeft"
-                :cell-width="cellWidth"
+                :cell-width="cellWidth + (cellWidth * scale)"
                 :cell-height="cellHeight"
                 :block-width="blockWidth"
                 :datas="ganttData"
@@ -105,6 +106,7 @@ export default {
       type: Boolean,
       default: false
     },
+    scale: Number,
     cellWidth: {
       type: Number,
       default: 60
@@ -189,13 +191,13 @@ export default {
     },
     rightContentStyle() {
       if (process.client){
-        const { ganttData, ganttColData, cellHeight, cellWidth } = this;
+        const { ganttData, ganttColData, cellHeight, cellWidth, scale } = this;
         const realHeight = ganttData.length * cellHeight;
         const realWidth = window.innerWidth;
         return {
-          backgroundSize: `${cellWidth}px ${cellHeight}px`,
+          backgroundSize: `${cellWidth + (cellWidth * scale)}px ${cellHeight}px`,
           height: `${realHeight }px`,
-          width: `${cellWidth * ganttColData.length}px`,
+          width: `${(cellWidth + (cellWidth * scale)) * ganttColData.length}px`,
         };
       }
     },
@@ -209,8 +211,8 @@ export default {
       return ganttData.length * cellHeight;
     },
     totalWidth() {
-      const { cellWidth } = this;
-      return cellWidth * this.ganttColData.length;
+      const { cellWidth, scale } = this;
+      return (cellWidth + (cellWidth * scale)) * this.ganttColData.length;
     },
     scrollXBarHeight() {
       return this.hideXScrollBar ? 0 : this.scrollBarWitdh;

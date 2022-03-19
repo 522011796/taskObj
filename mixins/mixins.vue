@@ -33,7 +33,7 @@ import {
           globalDataKeys: [],
           globalSenceListData: [],
           globalCellWidth: 60,
-          globalScal: 1,
+          globalScal: 0,
           scnenDuration: '',
           globalEditStatus: false,
           globalOprType: '',

@@ -15,7 +15,7 @@
         <div class="marginBottom10">
           <i class="fa fa-search-plus color-default"></i>
         </div>
-        <el-slider disabled class="opr-block-slider-v" vertical :show-tooltip="false" height="80px" style="margin:0 auto !important;" v-model="scaleValue"></el-slider>
+        <el-slider class="opr-block-slider-v" vertical :step="0.2" :min="0" :max="5" :show-tooltip="false" height="80px" style="margin:0 auto !important;" v-model="scaleValue" @input="sliderChange"></el-slider>
         <div class="marginTop10">
           <i class="fa fa-search-minus color-default"></i>
         </div>
@@ -29,6 +29,7 @@
     </div>
     <!--图标-->
     <v-gantt-pro
+      :scale="globalScal"
       :datas="dataTest"
       :gantt-data="ganttData"
       :gantt-col-data="ganttColData"
@@ -1312,6 +1313,9 @@ export default {
         this.taskDetailItem = '';
         this.dismissDialogStatus();
       }
+    },
+    sliderChange(data){
+      this.globalScal = data;
     }
   },
   watch: {
