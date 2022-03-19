@@ -227,6 +227,9 @@ import {
             minute = '00'
             second = '00'
             /* eslint-enable */
+            if (minsecond == 0){
+              return hour + ':' + minute + ':' + second
+            }
             return hour + ':' + minute + ':' + second + "." + minsecond
           }
         },
