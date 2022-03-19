@@ -37,7 +37,8 @@
       @scrollLeft="scrollLeftA"
       @showBlock="showBlock"
       @addBlock="addBlock"
-      @planItemClick="planItemClick">
+      @planItemClick="planItemClick"
+      @showItemBlock="showItemBlock">
 
       <div slot="title" class="textCenter" @click="globalDeviceType != 'ios' ? returnMain() : ''">
         <i v-if="globalDeviceType != 'ios'" class="fa fa-chevron-left font-size-12"></i>
@@ -258,6 +259,33 @@
       @changeOpenSource="changeOpenSource"
     ></drawer-sence-manage>
 
+    <!--指令子项详细数据-->
+    <el-dialog
+      top="20vh"
+      custom-class="dialog-input-block dialog-custom-box"
+      :show-close="false"
+      :visible.sync="dialogTaskItemDetail"
+      @close="closeDialog"
+      width="300px"
+      v-if="taskDetailItem != ''">
+
+      <div slot="title">
+        <div class="padding-full5 color-666666 font-size-12 detail-block-title">
+          <div>
+            <span>{{$t("类型")}}:</span>
+            <span class="padding-left10">{{orderValueInfo(taskDetailItem.item.type, 'set')}}</span>
+          </div>
+          <div>
+            <span>{{$t("时长")}}:</span>
+            <span class="padding-left10">{{changeTime(taskDetailItem.item.time)}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="padding-full5 color-666666 font-size-12" style="background: #212121;max-height: 200px;overflow-y: auto">
+        <task-list-item-detail :item="taskDetailItem.children"></task-list-item-detail>
+      </div>
+    </el-dialog>
+
     <drawer-room :drawer-room="drawerRoom" :data="globalRoomList" @click="roomItemClick" @handleClose="handleClose"></drawer-room>
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
     <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
@@ -285,10 +313,12 @@ import DrawerInsertAreaTypeSheet from "../components/DrawerInsertAreaTypeSheet";
 import mixinsData from "../mixins/mixinsData";
 import mixinsBrige from "../mixins/mixinsBrige";
 import DrawerPlanTypeSheet from "../components/DrawerPlanTypeSheet";
+import TaskListItemDetail from "../components/TaskListItemDetail";
 export default {
   layout: 'default',
   mixins: [mixins,mixinsData],
   components: {
+    TaskListItemDetail,
     DrawerPlanTypeSheet,
     DrawerInsertAreaTypeSheet,
     FormCurtains,
@@ -328,6 +358,7 @@ export default {
       drawerTask: false,
       drawerTaskList: false,
       drawerTaskSet: false,
+      dialogTaskItemDetail: false,
       directionTask: 'btt',
       directionTaskList: 'btt',
       directionTaskSet: 'btt',
@@ -343,6 +374,7 @@ export default {
       planItemData: '',
       planItemIndex: '',
       oprType: '',
+      taskDetailItem: '',
       formSence:{
         id: '',
         envKey: '',
@@ -659,6 +691,31 @@ export default {
       this.planItemIndex = index;
       this.planItemData = data;
       this.drawerPlanSheet = true;
+    },
+    showItemBlock(item, index, itemChild, indexChild){
+      let array = [];
+      let tempArray = [];
+      let objArray = [];
+      let num = 0;
+      for (let i = 0; i < item.i.length; i++){
+        if(item.i[i].i == 1 || item.i[i].i == 3 || item.i[i].i == 4){
+          tempArray.push(item.i[i]);
+          array.push(tempArray);
+          tempArray = [];
+        }else if(item.i[i].i != 1 && item.i[i].i != 2 && item.i[i].i != 3 && item.i[i].i != 4){
+          tempArray.push(item.i[i]);
+        }else if(item.i[i].i == 2){
+          array.push(tempArray);
+          tempArray = [];
+        }
+      }
+      objArray = {
+        item: itemChild,
+        children: array[indexChild]
+      };
+      console.log(objArray);
+      this.taskDetailItem = objArray;
+      this.dialogTaskItemDetail = true;
     },
     showOrderType(){
       if (this.orderDeviceType == 'light'){
@@ -1252,6 +1309,7 @@ export default {
     },
     closeDialog(event){
       if (!event){
+        this.taskDetailItem = '';
         this.dismissDialogStatus();
       }
     }
@@ -1331,5 +1389,8 @@ wl-item-end:after {
   border-radius: 50%;
   background: #00cbed;
 }
-
+.detail-block-title{
+  background: #212121;
+  color: #F2F6FC;
+}
 </style>

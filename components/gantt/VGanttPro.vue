@@ -44,7 +44,8 @@
                 :widthOfBlocksWrapper="widthOfBlocksWrapper"
                 :startTimeOfRenderArea="startTimeOfRenderArea"
                 :endTimeOfRenderArea="endTimeOfRenderArea"
-                @showBlock="showBlock">
+                @showBlock="showBlock"
+                @showItemBlock="showItemBlock">
 
               </v-gantt-blocks>
             </div>
@@ -444,6 +445,9 @@ export default {
     },
     showBlock(event, data){
       this.$emit("showBlock", event, data);
+    },
+    showItemBlock(item, index, itemChild, indexChild){
+      this.$emit("showItemBlock", item, index, itemChild, indexChild);
     },
     planItemClick(data, index){
       this.$emit("planItemClick", data, index);
