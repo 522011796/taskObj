@@ -212,7 +212,7 @@ import {
             /* eslint-enable */
             return hour + ':' + minute + ':' + second
           }
-          if (second < 60) {
+          if (second < 60 && second >= 1) {
             hour = '00'
             minute = '00'
             second = parseInt(second)
@@ -220,6 +220,14 @@ import {
             second >= 10 ? second : second = '0' + second
             /* eslint-enable */
             return hour + ':' + minute + ':' + second
+          }
+          if (second < 60 && second < 1) {
+            let minsecond = second * 1000
+            hour = '00'
+            minute = '00'
+            second = '00'
+            /* eslint-enable */
+            return hour + ':' + minute + ':' + second + "." + minsecond
           }
         },
         converRgbToArgb(r,g,b){
