@@ -27,7 +27,8 @@
                 :datas="ganttData"
                 :scrollTop="scrollTop"
                 :heightOfBlocksWrapper="heightOfBlocksWrapper"
-                :cellHeight="cellHeight">
+                :cellHeight="cellHeight"
+                @planItemClick="planItemClick">
               </v-gantt-left-bar>
             </div>
             <div ref="blocksWrapper" class="gantt-blocks-wrapper">
@@ -443,6 +444,9 @@ export default {
     },
     showBlock(event, data){
       this.$emit("showBlock", event, data);
+    },
+    planItemClick(data, index){
+      this.$emit("planItemClick", data, index);
     },
     checkOrient() {
       if (process.browser) {

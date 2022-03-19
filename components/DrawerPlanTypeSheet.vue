@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-drawer
-      custom-class="drawer-block drawer-other-block"
+      custom-class="drawer-block"
       :show-close="false"
-      size="70%"
+      :size="globalDrawerSheetHeight"
       :append-to-body="appendToBody"
       :visible.sync="drawer_"
       direction="btt"
@@ -19,8 +19,10 @@
           </el-row>
         </div>
       </div>
-      <div class="custom-el-drawer-cascader">
-        <el-cascader-panel ref="cascaderPanel" :props="{ multiple: true }" :options="data" :style="contentWidthStyle" @change="itemClick"></el-cascader-panel>
+      <div>
+        <div v-for="(item, index) in data" :key="index" @click="itemClick($event, item)" class="drawer-item-class">
+          <span class="color-666666">{{ item.name }}</span>
+        </div>
       </div>
     </el-drawer>
   </div>
@@ -28,6 +30,7 @@
 
 <script>
 import mixins from "../mixins/mixins";
+
 export default {
   mixins: [mixins],
   props:{
@@ -44,12 +47,6 @@ export default {
       default: false
     },
     data: {
-      type: Array,
-      default: function (){
-        return []
-      }
-    },
-    selData: {
       type: Array,
       default: function (){
         return []
@@ -72,9 +69,8 @@ export default {
     }
   },
   methods: {
-    itemClick(item){
-      let data = this.$refs.cascaderPanel.getCheckedNodes();
-      this.$emit('change', data);
+    itemClick(event, item){
+      this.$emit('click', item);
     },
     handleClose(done) {
       this.$emit('handleClose', done);

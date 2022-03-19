@@ -196,9 +196,7 @@ export default {
       this.init(type);
     },
     selEnv($event, item){
-      this.$router.push({
-        path: '/'
-      });
+
     },
     returnIndex(){
       this.$router.push({

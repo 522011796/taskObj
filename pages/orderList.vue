@@ -36,7 +36,8 @@
       :scroll-to-postion="position"
       @scrollLeft="scrollLeftA"
       @showBlock="showBlock"
-      @addBlock="addBlock">
+      @addBlock="addBlock"
+      @planItemClick="planItemClick">
 
       <div slot="title" class="textCenter" @click="globalDeviceType != 'ios' ? returnMain() : ''">
         <i v-if="globalDeviceType != 'ios'" class="fa fa-chevron-left font-size-12"></i>
@@ -261,6 +262,7 @@
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
     <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
     <drawer-device-list-sheet :data="deviceOptions" :drawer-sheet="drawerDeviceListSheet" @change="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
+    <drawer-plan-type-sheet :data="globalPlanTypeData" :drawer-sheet="drawerPlanSheet" @click="planListItemClick" @handleClose="handleSheetClose"></drawer-plan-type-sheet>
   </div>
 </template>
 
@@ -282,10 +284,12 @@ import FormCurtains from "../components/FormCurtains";
 import DrawerInsertAreaTypeSheet from "../components/DrawerInsertAreaTypeSheet";
 import mixinsData from "../mixins/mixinsData";
 import mixinsBrige from "../mixins/mixinsBrige";
+import DrawerPlanTypeSheet from "../components/DrawerPlanTypeSheet";
 export default {
   layout: 'default',
   mixins: [mixins,mixinsData],
   components: {
+    DrawerPlanTypeSheet,
     DrawerInsertAreaTypeSheet,
     FormCurtains,
     TaskListItem,
@@ -319,6 +323,7 @@ export default {
       drawerOrderTypeSheet: false,
       drawerDeviceListSheet: false,
       drawerInsertAreaSheet: false,
+      drawerPlanSheet: false,
       drawerRoom: false,
       drawerTask: false,
       drawerTaskList: false,
@@ -335,6 +340,8 @@ export default {
       placeholder: '',
       inputType: '',
       editSceneList: [],
+      planItemData: '',
+      planItemIndex: '',
       oprType: '',
       formSence:{
         id: '',
@@ -424,7 +431,6 @@ export default {
       let timeCount = 0;
       let ruleList = [];
       //格式化数据
-      console.log(1,data);
       let taskList = JSON.parse(JSON.stringify(data));
       for (let i = 0; i < taskList.length; i++){
         timeCount = 0;
@@ -541,6 +547,7 @@ export default {
       this.ganttData = taskList;
       this.ganttTimeData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
       this.ganttColData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
+      this.planItemIndex = "";
     },
     init(){
       let data = [];
@@ -648,6 +655,11 @@ export default {
       this.taskBlockIndex = index;
       this.drawerTaskList = true;
     },
+    planItemClick(data, index){
+      this.planItemIndex = index;
+      this.planItemData = data;
+      this.drawerPlanSheet = true;
+    },
     showOrderType(){
       if (this.orderDeviceType == 'light'){
         this.orderTypeData = this.globalLightOrderTypeData;
@@ -730,7 +742,12 @@ export default {
         d: this.formPlain.deviceSelDevice,
         n: this.formPlain.name
       };
-      this.ganttData.push(obj);
+      if (this.planItemIndex != ""){
+        obj['i'] = this.ganttData[this.planItemIndex]['i'];
+        this.ganttData[this.planItemIndex] = obj;
+      }else {
+        this.ganttData.push(obj);
+      }
       this.formatTaskList(this.ganttData);
       this.drawerTask = false;
     },
@@ -994,6 +1011,25 @@ export default {
       this.formPlain.type = data.value;
       this.drawerDeviceTypeSheet = false;
     },
+    planListItemClick(data, index){
+      if (data.value == 0){
+
+        this.formPlain = {
+          type: this.planItemData.t,
+          name: this.planItemData.n,
+          deviceList: [],
+          deviceSelDevice: this.planItemData.d
+        };
+
+        this.drawerTask = true;
+      }else if (data.value == 1){
+        this.ganttData.splice(this.planItemIndex, 1);
+      }else if (data.value == 2){
+        let data = JSON.parse(JSON.stringify(this.ganttData[this.planItemIndex]));
+        this.ganttData.push(data);
+      }
+      this.drawerPlanSheet = false;
+    },
     deviceListItemClick(data){
       let sns = [];
       for (let i = 0; i < data.length; i++){
@@ -1015,6 +1051,7 @@ export default {
       this.drawerDeviceTypeSheet = false;
       this.drawerDeviceListSheet = false;
       this.insertAreaItemClick = false;
+      this.drawerPlanSheet = false;
       this.clearSheet();
       done();
     },

@@ -1,7 +1,7 @@
 <template>
   <div class="gantt-leftbar">
     <div class="gantt-leftbar-item gantt-block-top-space" :style="{ height: topSpace + 'px' }" ></div>
-    <div class="gantt-leftbar-item padding-left10 moon-ellipsis-class" :style="cellHeightStyle" v-for="(item, index) in showDatas">
+    <div class="gantt-leftbar-item padding-left10 moon-ellipsis-class" :style="cellHeightStyle" v-for="(item, index) in showDatas" @click="planItemClick(item, index)">
       <span>
         <img v-if="item.t == 1" src="~/static/img/light.png" class="layout-menu-icon"/>
         <img v-if="item.t == 2" src="~/static/img/switch.png" class="layout-menu-icon"/>
@@ -50,7 +50,9 @@ export default {
 
   },
   methods: {
-
+    planItemClick(data, index){
+      this.$emit("planItemClick", data, index);
+    }
   }
 }
 </script>

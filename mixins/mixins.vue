@@ -45,6 +45,11 @@ import {
             {name:this.$t('释放'),value:'0'},
             {name:this.$t('按下'),value:'1'}
           ],
+          globalPlanTypeData: [
+            {name:this.$t('修改'),value:'0'},
+            {name:this.$t('删除'),value:'1'},
+            {name:this.$t('复制粘贴'),value:'2'}
+          ],
           globalLightOrderTypeData: [
             {name:this.$t('开/关灯控制'),value:'6'},
             {name:this.$t('亮度控制'),value:'7'},
