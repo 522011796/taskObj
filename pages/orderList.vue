@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <loading :pag-loading="pagLoading"></loading>
 <!--    <v-gantt-base :gantt-data="dataTest" :gantt-col-data="ganttColData"></v-gantt-base>-->
 <!--    <v-gantt-bak></v-gantt-bak>-->
 
@@ -338,6 +339,7 @@ export default {
   },
   data() {
     return {
+      pagLoading: false,
       dataTest: [],
       ganttData: [],
       ganttColData: [],
@@ -456,6 +458,7 @@ export default {
   methods: {
     initTask(){
       let sourceUrl = this.$route.query.sourceUrl;
+      this.pagLoading = true;
       this.$axios.get(sourceUrl).then(res => {
         this.formatTaskList(res.data.tasks);
       });
@@ -581,6 +584,7 @@ export default {
       this.ganttTimeData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
       this.ganttColData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
       this.planItemIndex = "";
+      this.pagLoading = false;
     },
     init(){
       let data = [];

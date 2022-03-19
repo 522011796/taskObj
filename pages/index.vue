@@ -1,6 +1,11 @@
 <template>
   <div class="container">
     <loading :pag-loading="pagLoading"></loading>
+
+    <div class="refalsh-block-item" @click.stop="refresh">
+      <i class="fa fa-refresh" :class="refreshStatus == true ? 'fa-spin' : ''" style="font-size: 30px; position: relative; top: 10px"></i>
+    </div>
+
     <div class="header-item" v-if="globalDeviceType != 'ios'">
       <el-row>
         <el-col :span="8">
@@ -40,8 +45,8 @@
             <el-col :span="12">
               <div class="padding-lf10">
                 <div class="marginTop5">
-                  <span class="font-size-14">{{ item.sceneName }}</span>
-                  <span>({{item.successCount}}/{{item.totalCount}})</span>
+                  <span class="font-size-14" @click.stop="deviceItemList(item)">{{ item.sceneName }}</span>
+                  <span @click.stop="deviceItemList(item)">({{item.successCount}}/{{item.totalCount}})</span>
                 </div>
                 <div class="marginTop10">
                   <span>
@@ -163,6 +168,70 @@
       </div>
     </el-drawer>
 
+    <!--设备列表-->
+    <el-drawer
+      custom-class="drawer-block"
+      :show-close="false"
+      size="70%"
+      :visible.sync="drawerDeviceAsyn"
+      :direction="directionEdit"
+      @close="closeDialog">
+      <div slot="title">
+        <div class="block-opr-header">
+          <el-row>
+            <el-col :span="3">
+              <div class="textCenter">
+                &nbsp
+              </div>
+            </el-col>
+            <el-col :span="18">
+              <div class="textCenter">
+                <span>{{$t('设备列表')}}</span>
+              </div>
+            </el-col>
+            <el-col :span="3">
+              <div class="textCenter">
+                &nbsp
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+      <div class="color-666666 padding-full10">
+        <div v-if="deviceStatusData.length == 0" class="textCenter">
+          <div style="margin-top: 25%">
+            <i class="fa fa-spinner fa-spin" style="font-size: 40px"></i>
+          </div>
+        </div>
+        <div v-else class="device-item-block padding-full5" v-for="(itemDevice, index) in deviceStatusData" :key="index">
+          <el-row>
+            <el-col :span="12">
+              <div class="padding-full5">
+                <span>{{itemDevice.deviceInfo.name}}</span>
+                <span>({{itemDevice.sn}})</span>
+              </div>
+            </el-col>
+            <el-col :span="12">
+              <div class="padding-full5 textRight">
+                <span v-if="itemDevice.actionStatus == 1" class="color-success">
+                  已安装
+                </span>
+                <span v-if="itemDevice.actionStatus == 2" class="color-warning">
+                  安装中
+                </span>
+                <span v-if="itemDevice.actionStatus == 3" class="color-success">
+                  安装成功
+                </span>
+                <span v-if="itemDevice.actionStatus == 4" class="color-error">
+                  安装失败
+                </span>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+    </el-drawer>
+
     <dialog-message :dialog-message="dialogMessage" @cancel="cancelDialog" @okClick="okDeleteDialog"></dialog-message>
 
     <dialog-input :dialog-input="dialogInput" :message="inputValue" @cancel="cancelDialog" @okClick="okDialog"></dialog-input>
@@ -213,16 +282,22 @@ export default {
       drawerTempSheet: false,
       drawerRoom: false,
       drawerDeviceGroup: false,
+      drawerDeviceAsyn: false,
+      refreshStatus: false,
       directionEdit: 'btt',
       removeSenceItem: '',
       timer: null,
+      timerScene: null,
       editSceneList: [],
+      deviceStatusData: [],
+      loopTime: 60,
       inputType: '',
       role: '',
       deviceSetCount: 0,
       deviceListCount: 0,
       deviceTplBakData: [],
       deviceTplData: [],
+      deviceAsyncList: [],
       formSence:{
         id: '',
         envKey: '',
@@ -482,6 +557,8 @@ export default {
     },
     closeDialog(event){
       if (!event){
+        this.deviceStatusData = [];
+        clearTimeout(this.timer);
         this.dismissDialogStatus();
       }
     },
@@ -781,6 +858,61 @@ export default {
         }
       });
     },
+    deviceItemList(item){
+      setTimeout(()=>{
+        this.installSenceDeviceStauts(item);
+      },800);
+      this.showDialogStatus();
+      this.drawerDeviceAsyn = true;
+    },
+    refresh(){
+      this.refreshStatus = true;
+      this.init();
+      setTimeout(()=>{
+        this.refreshStatus = false;
+      },1000);
+    },
+    installSenceDeviceStauts(item){
+      let params = {
+        envKey: this.$route.query.envKey != "" && this.$route.query.envKey != undefined ? this.$route.query.envKey : localStorage.getItem("envKey"),
+        sceneId: item.sceneId
+      };
+      clearTimeout(this.timer);
+      this.$axios.get(this.baseUrl + common.querySceneActionList, {params: params, sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
+        if (res.data.code == 200){
+          let flag = false;
+          this.deviceStatusData = res.data.data;
+          if (res.data.data.length == 0){
+            if (this.loopTime > 0){
+              this.timer = setTimeout(() => {
+                this.installSenceDeviceStauts(item);
+              }, 3000);
+              this.loopTime = this.loopTime - 3;
+            }else {
+              this.loopTime = 60;
+              clearTimeout(this.timer);
+            }
+          }else {
+            this.loopTime = 60;
+            for (let i = 0; i < res.data.data.length; i++){
+              if (res.data.data[i].actionStatus != 1){
+                if (res.data.data[i].systemTime / 1000 - res.data.data[i].lastTime / 1000 < 60){
+                  flag = true;
+                  break;
+                }
+              }
+            }
+            if (flag == false){
+              clearTimeout(this.timer);
+            }else {
+              this.timer = setTimeout(() => {
+                this.installSenceDeviceStauts(item);
+              }, 3000);
+            }
+          }
+        }
+      });
+    },
     test(){
       this.$router.push({
         path: '/test'
@@ -800,5 +932,8 @@ export default {
 .subTitle-item{
   position: relative;
   top: -3px;
+}
+.device-item-block{
+  border-bottom: 1px dashed #dddddd;
 }
 </style>
