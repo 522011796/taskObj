@@ -7,10 +7,14 @@
     <!--操作-->
     <div class="opr-block-block-view">
       <div class="opr-block-other">
+        <el-tooltip class="item" effect="dark" content="开启后，分别点击两个指令，显示时间差" placement="left">
+          <i class="fa fa-info-circle" style="position: absolute;top: -20px;left: 20px; font-size: 15px"></i>
+        </el-tooltip>
         <el-switch
           v-model="otherOprStatus"
           active-color="#13ce66"
-          inactive-color="#ff4949">
+          inactive-color="#ff4949"
+          @change="changeOtherOprStatus">
         </el-switch>
       </div>
       <div class="opr-block-add">
@@ -304,12 +308,13 @@
       :show-close="false"
       :visible.sync="drawerTimeDiffDetail"
       @close="closeDialog"
-      width="300px">
+      width="300px"
+      v-if="taskStartTimeItem != '' && taskEndTimeItem != ''">
 
       <div slot="title">
         <div class="padding-full5 color-666666 font-size-12 detail-block-title">
           <div>
-            <span>{{$t("开始")}}:</span>
+            <span>{{orderValueInfo(taskStartTimeItem.item.type, 'set')}}:</span>
             <span class="padding-left10">
               <label>
                 {{$t("第")}}{{taskStartTimeItem.index+1}}{{$t("行")}}
@@ -318,7 +323,7 @@
             </span>
           </div>
           <div>
-            <span>{{$t("结束")}}:</span>
+            <span>{{orderValueInfo(taskEndTimeItem.item.type, 'set')}}:</span>
             <span class="padding-left10">
               <label>
                 {{$t("第")}}{{taskEndTimeItem.index+1}}{{$t("行")}}
@@ -746,7 +751,7 @@ export default {
       let objArray = [];
       let timeDiff = 0;
       if (this.taskTimeClickNum == 0){
-        this.taskStartTime = itemChild.start;
+        this.taskStartTime = itemChild.start + itemChild.time;
         this.taskStartTimeItem = {
           index: index,
           indexChild: indexChild,
@@ -754,7 +759,7 @@ export default {
         };
         this.taskTimeClickNum++;
       }else {
-        this.taskEndTime = itemChild.start;
+        this.taskEndTime = itemChild.start + itemChild.time;
         this.taskEndTimeItem = {
           index: index,
           indexChild: indexChild,
@@ -770,7 +775,6 @@ export default {
         } else {
           timeDiff = this.taskEndTime - this.taskStartTime;
         }
-        console.log(timeDiff);
         this.taskTimeDiff = timeDiff;
         this.drawerTimeDiffDetail = true;
       }
@@ -1218,6 +1222,12 @@ export default {
     setTask(){
       this.drawerDeviceTypeSheet = true;
     },
+    changeOtherOprStatus(value){
+      if (!value){
+        this.taskTimeClickNum = 0;
+      }
+      this.otherOprStatus = value;
+    },
     async addDevice(){
       await this.getGroupDeviceList(this.formPlain.type);
       this.deviceOptions = this.globalGroupDeviceList
@@ -1259,6 +1269,7 @@ export default {
     saveTask(){
       let globalEditStatus = this.$route.query.globalEditStatus;
       let ganttDataJson = JSON.parse(JSON.stringify(this.ganttData));
+      let ruleList = [];
       if (globalEditStatus == '1'){
         this.saveLoading = true;
         let sourceUrl = this.$route.query.sourceUrl;
@@ -1281,16 +1292,27 @@ export default {
           };
           editTaskList = res.data.tasks;
           for (let i = 0; i < ganttDataJson.length; i++){
+            let timeCount = 0;
             if (ganttDataJson[i]['children']){
               ganttDataJson[i].children = undefined;
             }
             for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
+              if (ganttDataJson[i]['i'][j].i == 1 || ganttDataJson[i]['i'][j].i == 2) {
+                let result = Math.floor(ganttDataJson[i]['i'][j].v);
+                timeCount += result;
+              }else if(ganttDataJson[i]['i'][j].i == 3){
+                let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
+                timeCount += result;
+              }
               if (ganttDataJson[i]['i'][j].vLoop){
                 ganttDataJson[i]['i'][j].vLoop = undefined;
               }
             }
+            ruleList.push(timeCount);
           }
-          //console.log(JSON.parse(JSON.stringify(ganttDataJson)));
+          let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
+          console.log(ruleList,ruleMax);
+          this.formSence.duration = ruleMax;
           let bool = this.validateTaskList(ganttDataJson);
           if (!bool){
             MessageCommonTips(this.$t("请设置场景中的任务和指令！"));
@@ -1367,6 +1389,7 @@ export default {
     },
     closeDialog(event){
       if (!event){
+        this.taskTimeClickNum = 0;
         this.taskDetailItem = '';
         this.taskStartTime = '';
         this.taskEndTime = '';

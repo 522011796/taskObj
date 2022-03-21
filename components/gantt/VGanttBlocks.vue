@@ -15,7 +15,6 @@
            @touchmove="extraOprStatus == false ? gotouchmove(item, index, itemChild, indexChild) : ''">
 
         <div class="moon-ellipsis-class font-size-12 textCenter">
-          {{(itemChild.start) / 100 * (cellWidth / 10) + (itemChild.time / 1000 * cellWidth)}}
           {{ orderValueInfo(itemChild.type, 'set') }}
         </div>
         <div class="moon-ellipsis-class font-size-10 textCenter">

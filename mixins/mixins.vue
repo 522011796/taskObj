@@ -190,6 +190,7 @@ import {
           let minute = 0
           let second = 0
           second = time / 1000
+          let ms = time % 1000;
           if (second >= 3600) {
             minute = (second - (second % 60)) / 60
             hour = parseInt((minute / 60).toString())
@@ -200,6 +201,9 @@ import {
             second = second % 60
             second >= 10 ? second : second = '0' + second
             /* eslint-enable */
+            if (ms != 0 &&ms / 1000 < 1){
+              return hour + ':' + minute + ':' + second + "." + ms
+            }
             return hour + ':' + minute + ':' + second
           }
           if (second < 3600 && second >= 60) {
@@ -210,18 +214,24 @@ import {
             second = second % 60
             second >= 10 ? second : second = '0' + second
             /* eslint-enable */
+            if (ms != 0 &&ms / 1000 < 1){
+              return hour + ':' + minute + ':' + second + "." + ms
+            }
             return hour + ':' + minute + ':' + second
           }
           if (second < 60 && second >= 1) {
-            hour = '00'
-            minute = '00'
-            second = parseInt(second)
+            hour = '00';
+            minute = '00';
+            second = parseInt(second);
             /* eslint-disable */
             second >= 10 ? second : second = '0' + second
             /* eslint-enable */
-            return hour + ':' + minute + ':' + second
+            if (ms != 0 &&ms / 1000 < 1){
+              return hour + ':' + minute + ':' + second + "." + ms
+            }
+            return hour + ':' + minute + ':' + second;
           }
-          if (second < 60 && second < 1) {
+          if (second < 1) {
             let minsecond = second * 1000
             hour = '00'
             minute = '00'
