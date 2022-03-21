@@ -69,7 +69,7 @@
       :visible.sync="drawerTaskList"
       :direction="directionTaskList"
       direction="btt"
-      @closed="closeDrawer">
+      @closed="closeTaskListDrawer">
 
       <div slot="title">
         <div class="block-opr-header">
@@ -341,6 +341,7 @@
       </div>
     </el-dialog>
 
+    <dialog-message :message="message" :dialog-message="dialogMessage" @cancel="cancelDialog" @okClick="okDeleteDialog"></dialog-message>
     <drawer-room :drawer-room="drawerRoom" :data="globalRoomList" @click="roomItemClick" @handleClose="handleClose"></drawer-room>
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
     <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
@@ -369,10 +370,12 @@ import mixinsData from "../mixins/mixinsData";
 import mixinsBrige from "../mixins/mixinsBrige";
 import DrawerPlanTypeSheet from "../components/DrawerPlanTypeSheet";
 import TaskListItemDetail from "../components/TaskListItemDetail";
+import DialogMessage from "../components/DialogMessage";
 export default {
   layout: 'default',
   mixins: [mixins,mixinsData],
   components: {
+    DialogMessage,
     TaskListItemDetail,
     DrawerPlanTypeSheet,
     DrawerInsertAreaTypeSheet,
@@ -395,6 +398,7 @@ export default {
       pagLoading: false,
       dataTest: [],
       ganttData: [],
+      ganttBakData: [],
       ganttColData: [],
       ganttTimeData: [],
       dataTaskList: [],
@@ -405,6 +409,8 @@ export default {
       editOrderIndex: '',
       oprTaskType: '',
       taskBlockIndex: '',
+      message: '',
+      dialogMessage: false,
       drawerDeviceTypeSheet: false,
       drawerOrderTypeSheet: false,
       drawerDeviceListSheet: false,
@@ -444,7 +450,7 @@ export default {
         envKey: '',
         name: '',
         iconId: 1,
-        internal: true,
+        internal: false,
         roomId: '',
         sceneId: '',
         sceneName: '',
@@ -521,6 +527,7 @@ export default {
       let sourceUrl = this.$route.query.sourceUrl;
       this.pagLoading = true;
       this.$axios.get(sourceUrl).then(res => {
+        this.ganttBakData = JSON.parse(JSON.stringify(res.data.tasks));
         this.formatTaskList(res.data.tasks);
       });
     },
@@ -640,7 +647,6 @@ export default {
       }
       let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
       let ruleTime = ruleMax / 1000;
-
       this.ganttData = taskList;
       this.ganttTimeData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
       this.ganttColData = this.dateGanttTime(ruleTime < 30 ? 30 : ruleTime);
@@ -694,6 +700,19 @@ export default {
     },
     addBlock(data, index){
       this.showDialogStatus();
+      if (data.t == 1){
+        this.orderDeviceType = 'light';
+      }else if (data.t == 2){
+        this.orderDeviceType = 'switch';
+      }else if (data.t == 3){
+        this.orderDeviceType = 'curtains';
+      }else if (data.t == 5){
+        this.orderDeviceType = 'music';
+      }else if (data.t == 6){
+        this.orderDeviceType = 'changeDevice';
+      }else if (data.t == 0){
+        this.orderDeviceType = 'sence';
+      }
       this.taskBlockIndex = index;
       this.drawerTaskList = true;
     },
@@ -797,6 +816,13 @@ export default {
     },
     changeLightOpen(data){
       this.formOrder.open = data;
+    },
+    closeTaskListDrawer(event){
+      if (!event){
+        this.dismissDialogStatus();
+        this.dataTaskList = [];
+        this.clearForm();
+      }
     },
     closeDrawer(event){
       if (!event){
@@ -955,7 +981,11 @@ export default {
           t: this.formOrder.startLoop
         };
       }else if (this.formOrder.type == 4){
-
+        obj = {
+          i: parseInt(this.formOrder.type),
+          v: this.formOrder.sence,
+          n: this.formOrder.senceText
+        };
       }else if (this.formOrder.type == 6){
         obj = {
           i: parseInt(this.formOrder.type),
@@ -1201,19 +1231,26 @@ export default {
       }
     },
     returnMain(){
-      this.globalEditStatus = false;
-      this.$router.push({
-        path: '/',
-        replace: true,
-        query: {
-          envKey: this.$route.query.envKey,
-          sessionId: this.$route.query.sessionId,
-          role: this.$route.query.role,
-          userKey: this.$route.query.userKey,
-          appType: this.$route.query.appType,
-          deviceType: this.$route.query.deviceType,
+      let ganttDataJson = JSON.parse(JSON.stringify(this.ganttData));
+      for (let i = 0; i < ganttDataJson.length; i++){
+        if (ganttDataJson[i]['children']){
+          ganttDataJson[i].children = undefined;
         }
-      });
+        for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
+          if (ganttDataJson[i]['i'][j].vLoop){
+            ganttDataJson[i]['i'][j].vLoop = undefined;
+          }
+        }
+      }
+      ganttDataJson = JSON.parse(JSON.stringify(ganttDataJson));
+      if (!this.compareArray(ganttDataJson, this.ganttBakData)){
+        this.message = this.$t("系统检测到你修改过数据并未保存，返回后将清除已修改的部分");
+        this.dialogMessage = true;
+        this.showDialogStatus();
+        return;
+      }else {
+        this.returnMainPath();
+      }
     },
     addTask(){
       this.showDialogStatus();
@@ -1303,6 +1340,10 @@ export default {
               }else if(ganttDataJson[i]['i'][j].i == 3){
                 let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
                 timeCount += result;
+              }else if(ganttDataJson[i]['i'][j].i == 4){
+                console.log(ganttDataJson[i]['i'][j]);
+                let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
+                timeCount += result;
               }
               if (ganttDataJson[i]['i'][j].vLoop){
                 ganttDataJson[i]['i'][j].vLoop = undefined;
@@ -1311,7 +1352,6 @@ export default {
             ruleList.push(timeCount);
           }
           let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
-          console.log(ruleList,ruleMax);
           this.formSence.duration = ruleMax;
           let bool = this.validateTaskList(ganttDataJson);
           if (!bool){
@@ -1326,16 +1366,27 @@ export default {
         this.saveLoading = true;
         let ganttDataJson = JSON.parse(JSON.stringify(this.ganttData));
         for (let i = 0; i < ganttDataJson.length; i++){
+          let timeCount = 0;
           if (ganttDataJson[i]['children']){
             ganttDataJson[i].children = undefined;
           }
           for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
+            if (ganttDataJson[i]['i'][j].i == 1 || ganttDataJson[i]['i'][j].i == 2) {
+              let result = Math.floor(ganttDataJson[i]['i'][j].v);
+              timeCount += result;
+            }else if(ganttDataJson[i]['i'][j].i == 3){
+              let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
+              timeCount += result;
+            }
             if (ganttDataJson[i]['i'][j].vLoop){
               ganttDataJson[i]['i'][j].vLoop = undefined;
             }
           }
+          ruleList.push(timeCount);
         }
-
+        let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
+        console.log(ruleList,ruleMax);
+        this.formSence.duration = ruleMax;
         let bool = this.validateTaskList(ganttDataJson);
         if (!bool){
           MessageCommonTips(this.$t("请设置场景中的任务和指令！"));
@@ -1401,6 +1452,28 @@ export default {
     },
     sliderChange(data){
       this.globalScal = data;
+    },
+    cancelDialog(){
+      this.dialogMessage = false;
+    },
+    okDeleteDialog(data){
+      this.returnMainPath();
+      this.dialogMessage = false;
+    },
+    returnMainPath(){
+      this.globalEditStatus = false;
+      this.$router.push({
+        path: '/',
+        replace: true,
+        query: {
+          envKey: this.$route.query.envKey,
+          sessionId: this.$route.query.sessionId,
+          role: this.$route.query.role,
+          userKey: this.$route.query.userKey,
+          appType: this.$route.query.appType,
+          deviceType: this.$route.query.deviceType,
+        }
+      });
     }
   },
   watch: {

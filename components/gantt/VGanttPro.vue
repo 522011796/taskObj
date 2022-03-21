@@ -48,7 +48,8 @@
                 :endTimeOfRenderArea="endTimeOfRenderArea"
                 @showBlock="showBlock"
                 @showItemBlock="showItemBlock"
-                @showTimeDiff="showTimeDiff">
+                @showTimeDiff="showTimeDiff"
+                @addBlock="addBlock">
 
               </v-gantt-blocks>
             </div>
@@ -462,6 +463,9 @@ export default {
     },
     showTimeDiff(item, index, itemChild, indexChild){
       this.$emit('showTimeDiff', item, index, itemChild, indexChild);
+    },
+    addBlock(item, index){
+      this.$emit("addBlock", item, index);
     },
     checkOrient() {
       if (process.browser) {

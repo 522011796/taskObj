@@ -128,7 +128,7 @@ export default {
       this.timeOutEvent = 0;
       this.touchStart = new Date().getTime();
       this.timeOutEvent = setTimeout(() => {
-        //this.showItemBlock(item, index, itemChild, indexChild);
+        this.showItemBlock(item, index, itemChild, indexChild);
       },600);//这里设置定时
     },
     //手释放，如果在500毫秒内就释放，则取消长按事件，此时可以执行onclick应该执行的事件
