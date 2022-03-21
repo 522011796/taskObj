@@ -543,6 +543,21 @@ span,div,button,label{
   opacity: 0.9;
   font-size: 12px;
 }
+.opr-block-block-other-view{
+  position: absolute;
+  right: 5px;
+  bottom: 230px;
+  z-index: 9;
+}
+.opr-block-other{
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  position: relative;
+  border-bottom: 1px solid #434343;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
 .opr-block-add{
   height: 40px;
   line-height: 40px;

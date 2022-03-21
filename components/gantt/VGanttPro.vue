@@ -34,6 +34,7 @@
             </div>
             <div ref="blocksWrapper" class="gantt-blocks-wrapper">
               <v-gantt-blocks
+                :extra-opr-status="extraOprStatus"
                 :style="rightContentStyle"
                 :scrollTop="scrollTop"
                 :scrollLeft="scrollLeft"
@@ -46,7 +47,8 @@
                 :startTimeOfRenderArea="startTimeOfRenderArea"
                 :endTimeOfRenderArea="endTimeOfRenderArea"
                 @showBlock="showBlock"
-                @showItemBlock="showItemBlock">
+                @showItemBlock="showItemBlock"
+                @showTimeDiff="showTimeDiff">
 
               </v-gantt-blocks>
             </div>
@@ -97,6 +99,10 @@ export default {
     hideHeader: {
       type: Boolean,
       default: true
+    },
+    extraOprStatus: {
+      type: Boolean,
+      default: false
     },
     hideXScrollBar: {
       type: Boolean,
@@ -454,6 +460,9 @@ export default {
     planItemClick(data, index){
       this.$emit("planItemClick", data, index);
     },
+    showTimeDiff(item, index, itemChild, indexChild){
+      this.$emit('showTimeDiff', item, index, itemChild, indexChild);
+    },
     checkOrient() {
       if (process.browser) {
         if (window.orientation == 0 || window.orientation == 180){
@@ -531,9 +540,6 @@ export default {
 }
 .gantt-blocks-wrapper {
   overflow: hidden;
-}
-.gantt-blocks {
-  background-image: linear-gradient(#606060 1px, transparent 0), linear-gradient(90deg, #606060 1px, transparent 0);
 }
 .gantt-block {
   position: relative;

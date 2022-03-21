@@ -1,19 +1,21 @@
 <template>
-  <div class="gantt-blocks">
+  <div class="gantt-blocks" :class="extraOprStatus == false ? '' : 'gantt-blocks-extra'">
     <div class="gantt-block gantt-block-top-space" :style="{ height: topSpace + 'px' }"></div>
     <div class="gantt-block" v-for="(item, index) in showDatas" :key="index" :style="{ height: `${cellHeight}px` }">
 
       <div v-for="(itemChild, indexChild) in item.children"
-           v-if="scrollLeft <= ((itemChild.start) / 100 * (cellWidth / 10)) + cellWidth && getPosition(itemChild) - scrollLeft < blockWidth"
+           v-if="scrollLeft <= ((itemChild.start) / 100 * (cellWidth / 10)) + (itemChild.time / 1000 * cellWidth) && getPosition(itemChild) - scrollLeft < blockWidth"
            class="gantt-block-item"
            :style="{left: getPosition(itemChild) + 'px', width: `${ (itemChild.time/100) * (cellWidth/10)}px`,background: orderColorInfo(itemChild.type)}"
            style="height: 35px;top:2px;"
-           @mousedown.stop="gotouchstart(item, index, itemChild, indexChild)"
-           @mouseup.stop="gotouchend(item, index, itemChild, indexChild)"
-           @touchstart="gotouchstart(item, index, itemChild, indexChild)"
-           @touchmove="gotouchmove(item, index, itemChild, indexChild)">
+           @click="extraOprStatus == false ? '' : showTimeDiff(item, index, itemChild, indexChild)"
+           @mousedown.stop="extraOprStatus == false ? gotouchstart(item, index, itemChild, indexChild) : ''"
+           @mouseup.stop="extraOprStatus == false ? gotouchend(item, index, itemChild, indexChild) : ''"
+           @touchstart="extraOprStatus == false ? gotouchstart(item, index, itemChild, indexChild) : ''"
+           @touchmove="extraOprStatus == false ? gotouchmove(item, index, itemChild, indexChild) : ''">
 
         <div class="moon-ellipsis-class font-size-12 textCenter">
+          {{(itemChild.start) / 100 * (cellWidth / 10) + (itemChild.time / 1000 * cellWidth)}}
           {{ orderValueInfo(itemChild.type, 'set') }}
         </div>
         <div class="moon-ellipsis-class font-size-10 textCenter">
@@ -69,6 +71,10 @@ export default {
       type: Number,
       required: true
     },
+    extraOprStatus: {
+      type: Boolean,
+      default: false
+    },
     endTimeOfRenderArea: [Number, null],
     startTimeOfRenderArea: [Number, null],
     getPositonOffset: Function,
@@ -123,7 +129,7 @@ export default {
       this.timeOutEvent = 0;
       this.touchStart = new Date().getTime();
       this.timeOutEvent = setTimeout(() => {
-        this.showItemBlock(item, index, itemChild, indexChild);
+        //this.showItemBlock(item, index, itemChild, indexChild);
       },600);//这里设置定时
     },
     //手释放，如果在500毫秒内就释放，则取消长按事件，此时可以执行onclick应该执行的事件
@@ -141,6 +147,9 @@ export default {
       clearTimeout(this.timeOutEvent);//清除定时器
       this.timeOutEvent = 0;
     },
+    showTimeDiff(item, index, itemChild, indexChild){
+      this.$emit('showTimeDiff', item, index, itemChild, indexChild);
+    }
   }
 }
 </script>
@@ -150,6 +159,9 @@ export default {
   overflow: hidden;
 }
 .gantt-blocks {
+  background-image: linear-gradient(#606060 1px, transparent 0), linear-gradient(90deg, #606060 1px, transparent 0);
+}
+.gantt-blocks-extra{
   background-image: linear-gradient(#505050 1px, transparent 0), linear-gradient(90deg, #505050 1px, transparent 0);
 }
 .gantt-block {
@@ -160,6 +172,11 @@ export default {
   position: absolute;
   height: 100%;
   box-shadow: #808080 0px 0px 0px 1px;
+}
+.gantt-block-item:hover {
+  position: absolute;
+  height: 100%;
+  box-shadow: #808080 0px 0px 0px 2px;
 }
 .gantt-scroll-y{
   overflow-y: scroll;

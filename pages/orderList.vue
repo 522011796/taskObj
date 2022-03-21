@@ -6,6 +6,13 @@
 
     <!--操作-->
     <div class="opr-block-block-view">
+      <div class="opr-block-other">
+        <el-switch
+          v-model="otherOprStatus"
+          active-color="#13ce66"
+          inactive-color="#ff4949">
+        </el-switch>
+      </div>
       <div class="opr-block-add">
         <el-button type="text" size="mini" @click="addTask">
           <i class="fa fa-plus"></i>
@@ -30,6 +37,7 @@
     </div>
     <!--图标-->
     <v-gantt-pro
+      :extra-opr-status="otherOprStatus"
       :scale="globalScal"
       :datas="dataTest"
       :gantt-data="ganttData"
@@ -40,7 +48,8 @@
       @showBlock="showBlock"
       @addBlock="addBlock"
       @planItemClick="planItemClick"
-      @showItemBlock="showItemBlock">
+      @showItemBlock="showItemBlock"
+      @showTimeDiff="showTimeDiff">
 
       <div slot="title" class="textCenter" @click="globalDeviceType != 'ios' ? returnMain() : ''">
         <i v-if="globalDeviceType != 'ios'" class="fa fa-chevron-left font-size-12"></i>
@@ -288,6 +297,45 @@
       </div>
     </el-dialog>
 
+    <!--指令子项时间差详细数据-->
+    <el-dialog
+      top="20vh"
+      custom-class="dialog-input-block dialog-custom-box"
+      :show-close="false"
+      :visible.sync="drawerTimeDiffDetail"
+      @close="closeDialog"
+      width="300px">
+
+      <div slot="title">
+        <div class="padding-full5 color-666666 font-size-12 detail-block-title">
+          <div>
+            <span>{{$t("开始")}}:</span>
+            <span class="padding-left10">
+              <label>
+                {{$t("第")}}{{taskStartTimeItem.index+1}}{{$t("行")}}
+                {{$t("第")}}{{taskStartTimeItem.indexChild+1}}{{$t("列")}}
+              </label>
+            </span>
+          </div>
+          <div>
+            <span>{{$t("结束")}}:</span>
+            <span class="padding-left10">
+              <label>
+                {{$t("第")}}{{taskEndTimeItem.index+1}}{{$t("行")}}
+                {{$t("第")}}{{taskEndTimeItem.indexChild+1}}{{$t("列")}}
+              </label>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="padding-full5 color-666666 font-size-12" style="background: #212121;max-height: 200px;">
+        <div style="border-radius: 5px;height: 30px;line-height: 30px; background: #535353;color: #ffffff;padding:0px 10px;">
+          <span>{{$t("时间差")}}:</span>
+          <span class="padding-left10">{{ changeTime(this.taskTimeDiff) }}</span>
+        </div>
+      </div>
+    </el-dialog>
+
     <drawer-room :drawer-room="drawerRoom" :data="globalRoomList" @click="roomItemClick" @handleClose="handleClose"></drawer-room>
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
     <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
@@ -362,6 +410,8 @@ export default {
       drawerTaskList: false,
       drawerTaskSet: false,
       dialogTaskItemDetail: false,
+      otherOprStatus: false,
+      drawerTimeDiffDetail: false,
       directionTask: 'btt',
       directionTaskList: 'btt',
       directionTaskSet: 'btt',
@@ -378,6 +428,12 @@ export default {
       planItemIndex: '',
       oprType: '',
       taskDetailItem: '',
+      taskStartTime: '',
+      taskEndTime: '',
+      taskStartTimeItem: '',
+      taskEndTimeItem: '',
+      taskTimeClickNum: 0,
+      taskTimeDiff: 0,
       formSence:{
         id: '',
         envKey: '',
@@ -683,6 +739,41 @@ export default {
       };
       this.taskDetailItem = objArray;
       this.dialogTaskItemDetail = true;
+    },
+    showTimeDiff(item, index, itemChild, indexChild){
+      let array = [];
+      let tempArray = [];
+      let objArray = [];
+      let timeDiff = 0;
+      if (this.taskTimeClickNum == 0){
+        this.taskStartTime = itemChild.start;
+        this.taskStartTimeItem = {
+          index: index,
+          indexChild: indexChild,
+          item: itemChild
+        };
+        this.taskTimeClickNum++;
+      }else {
+        this.taskEndTime = itemChild.start;
+        this.taskEndTimeItem = {
+          index: index,
+          indexChild: indexChild,
+          item: itemChild
+        };;
+        this.taskTimeClickNum = 0;
+      }
+      if (this.taskStartTime !== '' && this.taskEndTime !== '') {
+        if (this.taskStartTime > this.taskEndTime) {
+          timeDiff = this.taskStartTime - this.taskEndTime;
+        } else if (this.taskStartTime < this.taskEndTime) {
+          timeDiff = this.taskEndTime - this.taskStartTime;
+        } else {
+          timeDiff = this.taskEndTime - this.taskStartTime;
+        }
+        console.log(timeDiff);
+        this.taskTimeDiff = timeDiff;
+        this.drawerTimeDiffDetail = true;
+      }
     },
     showOrderType(){
       if (this.orderDeviceType == 'light'){
@@ -1277,6 +1368,11 @@ export default {
     closeDialog(event){
       if (!event){
         this.taskDetailItem = '';
+        this.taskStartTime = '';
+        this.taskEndTime = '';
+        this.taskTimeDiff = 0;
+        this.taskStartTimeItem = '';
+        this.taskEndTimeItem = '';
         this.dismissDialogStatus();
       }
     },
