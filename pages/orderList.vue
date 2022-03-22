@@ -1240,7 +1240,7 @@ export default {
         if (ganttDataJson[i]['children']){
           ganttDataJson[i].children = undefined;
         }
-        if (ganttDataJson[i]['id']){
+        if (ganttDataJson[i]['id'] != undefined){
           ganttDataJson[i].id = undefined;
         }
         for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
