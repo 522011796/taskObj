@@ -1,5 +1,6 @@
 <script>
 import {common, commonConfig} from "../utils/api/url";
+import global from "~/utils/global";
 import {
   deviceType,
   keyType,
@@ -16,7 +17,6 @@ import {
       name: "mixins",
       data(){
         return {
-          globalSelf: null,
           globalDrawerHeight: '40%',
           globalDrawerSheetHeight: '50%',
           globalDrawerBottomHeight: '45%',
@@ -501,22 +501,35 @@ import {
           document.documentElement.appendChild(WVJBIframe);
           setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
         },
+        setOkConfirm(value){
+          let _self = this;
+          this.setupWebViewJavascriptBridge(function(bridge) {
+            //JS 调用 OC 的方法，方法名就是 OC 中提前注册的方法
+            bridge.callHandler('setOkConfirm', {'key': value}, function responseCallback(responseData) {
+              _self.changeStatus = 0;
+            });
+          })
+        },
         initBridage(){
           let _self = this;
+          if (this.orderListRef){
+            global._globalSelf = this;
+          }
           this.setupWebViewJavascriptBridge(function(bridge) {
             bridge.registerHandler('JS Echo', function(data, responseCallback) {
               if (data['value'] == 1){//任务列表
-                _self.$router.push({
-                  path: '/',
-                  query: {
-                    envKey: _self.$route.query.envKey,
-                    sessionId: _self.$route.query.sessionId,
-                    role: _self.$route.query.role,
-                    userKey: _self.$route.query.userKey,
-                    appType: _self.$route.query.appType,
-                    deviceType: _self.$route.query.deviceType,
-                  }
-                });
+                global._globalSelf.returnMain();
+                // _self.$router.push({
+                //   path: '/',
+                //   query: {
+                //     envKey: _self.$route.query.envKey,
+                //     sessionId: _self.$route.query.sessionId,
+                //     role: _self.$route.query.role,
+                //     userKey: _self.$route.query.userKey,
+                //     appType: _self.$route.query.appType,
+                //     deviceType: _self.$route.query.deviceType,
+                //   }
+                // });
               }
               if (data['value'] == 2){//模版列表
                 _self.$router.push({
@@ -532,10 +545,10 @@ import {
                 });
               }
               if (data['value'] == 100){//保存场景指令
-                _self.saveTask();
+                global._globalSelf.saveTask();
               }
               if (data['value'] == 200){//添加任务
-                _self.addTask();
+                global._globalSelf.addTask();
               }
               if (data['value'] == 300){//任务列表
                 _self.setPageStatus(1);
@@ -564,6 +577,9 @@ import {
                     deviceType: _self.$route.query.deviceType,
                   }
                 });
+              }
+              if (global._globalSelf.changeStatus == 1){
+                data['change'] = global._globalSelf.changeStatus;
               }
               responseCallback(data);
             });

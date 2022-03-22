@@ -367,7 +367,6 @@ import TaskListItem from "../components/TaskListItem";
 import FormCurtains from "../components/FormCurtains";
 import DrawerInsertAreaTypeSheet from "../components/DrawerInsertAreaTypeSheet";
 import mixinsData from "../mixins/mixinsData";
-import mixinsBrige from "../mixins/mixinsBrige";
 import DrawerPlanTypeSheet from "../components/DrawerPlanTypeSheet";
 import TaskListItemDetail from "../components/TaskListItemDetail";
 import DialogMessage from "../components/DialogMessage";
@@ -395,6 +394,7 @@ export default {
   },
   data() {
     return {
+      orderListRef: true,
       pagLoading: false,
       dataTest: [],
       ganttData: [],
@@ -405,6 +405,7 @@ export default {
       position: 0,
       scrollToY: 0,
       positionA: 0,
+      changeStatus: 0,
       orderDeviceType: '',
       editOrderIndex: '',
       oprTaskType: '',
@@ -1235,6 +1236,7 @@ export default {
       }
     },
     returnMain(){
+      this.changeStatus = 0;
       let ganttDataJson = JSON.parse(JSON.stringify(this.ganttData));
       for (let i = 0; i < ganttDataJson.length; i++){
         if (ganttDataJson[i]['children']){
@@ -1252,6 +1254,7 @@ export default {
       ganttDataJson = JSON.parse(JSON.stringify(ganttDataJson));
       if (!this.compareArray(ganttDataJson, this.ganttBakData)){
         this.message = this.$t("系统检测到你修改过数据并未保存，返回后将清除已修改的部分");
+        this.changeStatus = 1;
         this.dialogMessage = true;
         this.showDialogStatus();
         return;
@@ -1465,14 +1468,17 @@ export default {
       this.globalScal = data;
     },
     cancelDialog(){
+      this.dismissDialogStatus();
       this.dialogMessage = false;
     },
     okDeleteDialog(data){
+      this.setOkConfirm(1);
       this.returnMainPath();
       this.dialogMessage = false;
     },
     returnMainPath(){
       this.globalEditStatus = false;
+      this.dismissDialogStatus();
       this.$router.push({
         path: '/',
         replace: true,
