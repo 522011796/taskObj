@@ -537,6 +537,7 @@ export default {
       //格式化数据
       let taskList = JSON.parse(JSON.stringify(data));
       for (let i = 0; i < taskList.length; i++){
+        taskList[i]['id'] = i;
         timeCount = 0;
         let childBar = [];
         let childTime = 0;
@@ -713,7 +714,8 @@ export default {
       }else if (data.t == 0){
         this.orderDeviceType = 'sence';
       }
-      this.taskBlockIndex = index;
+      this.taskBlockIndex = data.id;
+      console.log(this.taskBlockIndex);
       this.dataTaskList = JSON.parse(JSON.stringify(data.i));
       this.drawerTaskList = true;
     },
@@ -733,7 +735,7 @@ export default {
       }
       this.showDialogStatus();
       this.dataTaskList = JSON.parse(JSON.stringify(data.i));
-      this.taskBlockIndex = index;
+      this.taskBlockIndex = data.id;
       this.drawerTaskList = true;
     },
     planItemClick(data, index){
@@ -1239,6 +1241,9 @@ export default {
         if (ganttDataJson[i]['children']){
           ganttDataJson[i].children = undefined;
         }
+        if (ganttDataJson[i]['id']){
+          ganttDataJson[i].id = undefined;
+        }
         for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
           if (ganttDataJson[i]['i'][j].vLoop){
             ganttDataJson[i]['i'][j].vLoop = undefined;
@@ -1336,6 +1341,9 @@ export default {
             if (ganttDataJson[i]['children']){
               ganttDataJson[i].children = undefined;
             }
+            if (ganttDataJson[i]['id'] != undefined){
+              ganttDataJson[i].id = undefined;
+            }
             for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
               if (ganttDataJson[i]['i'][j].i == 1 || ganttDataJson[i]['i'][j].i == 2) {
                 let result = Math.floor(ganttDataJson[i]['i'][j].v);
@@ -1353,7 +1361,7 @@ export default {
             }
             ruleList.push(timeCount);
           }
-          let sruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
+          let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
           this.formSence.duration = ruleMax;
           let bool = this.validateTaskList(ganttDataJson);
           if (!bool){
@@ -1371,6 +1379,9 @@ export default {
           let timeCount = 0;
           if (ganttDataJson[i]['children']){
             ganttDataJson[i].children = undefined;
+          }
+          if (ganttDataJson[i]['id'] != undefined){
+            ganttDataJson[i].id = undefined;
           }
           for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
             if (ganttDataJson[i]['i'][j].i == 1 || ganttDataJson[i]['i'][j].i == 2) {
