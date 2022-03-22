@@ -559,16 +559,16 @@ span,div,button,label{
   border-top-right-radius: 5px;
 }
 .opr-block-add{
-  height: 40px;
-  line-height: 40px;
+  height: 30px;
+  line-height: 30px;
   text-align: center;
   border-bottom: 1px solid #434343;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
 .opr-block-save{
-  height: 40px;
-  line-height: 40px;
+  height: 30px;
+  line-height: 30px;
   text-align: center;
   border-top: 1px solid #434343;
   border-bottom-left-radius: 5px;

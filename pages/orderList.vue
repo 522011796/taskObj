@@ -13,7 +13,7 @@
         <el-switch
           v-model="otherOprStatus"
           active-color="#13ce66"
-          inactive-color="#ff4949"
+          inactive-color="#dddddd"
           @change="changeOtherOprStatus">
         </el-switch>
       </div>
@@ -27,7 +27,7 @@
         <div class="marginBottom10">
           <i class="fa fa-search-plus color-default"></i>
         </div>
-        <el-slider class="opr-block-slider-v" vertical :step="0.2" :min="0" :max="5" :show-tooltip="false" height="80px" style="margin:0 auto !important;" v-model="scaleValue" @input="sliderChange"></el-slider>
+        <el-slider class="opr-block-slider-v" vertical :step="0.2" :min="0" :max="5" :show-tooltip="false" height="70px" style="margin:0 auto !important;" v-model="scaleValue" @input="sliderChange"></el-slider>
         <div class="marginTop10">
           <i class="fa fa-search-minus color-default"></i>
         </div>
