@@ -17,22 +17,22 @@
           @change="changeOtherOprStatus">
         </el-switch>
       </div>
-      <div class="opr-block-add">
+      <div class="opr-block-add" v-if="globalDeviceType != 'ios'">
         <el-button type="text" size="mini" @click="addTask">
           <i class="fa fa-plus"></i>
-          {{$t("任务")}}
+          {{$t("任务")}}s
         </el-button>
       </div>
       <div class="opr-block-scale textCenter">
         <div class="marginBottom10">
           <i class="fa fa-search-plus color-default"></i>
         </div>
-        <el-slider class="opr-block-slider-v" vertical :step="0.2" :min="0" :max="5" :show-tooltip="false" height="70px" style="margin:0 auto !important;" v-model="scaleValue" @input="sliderChange"></el-slider>
+        <el-slider class="opr-block-slider-v" vertical :step="0.2" :min="0" :max="5" :show-tooltip="false" height="120px" style="margin:0 auto !important;" v-model="scaleValue" @input="sliderChange"></el-slider>
         <div class="marginTop10">
           <i class="fa fa-search-minus color-default"></i>
         </div>
       </div>
-      <div class="opr-block-save">
+      <div class="opr-block-save" v-if="globalDeviceType != 'ios'">
         <el-button type="text" size="mini" @click="saveTask">
           <i class="fa fa-file"></i>
           {{$t("保存")}}
