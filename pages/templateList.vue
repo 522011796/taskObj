@@ -134,6 +134,7 @@ export default {
   },
   data() {
     return {
+      templateListRef: true,
       title: '',
       placeholder: '',
       tableHeader: {},

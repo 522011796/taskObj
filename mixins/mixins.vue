@@ -515,6 +515,10 @@ import {
           if (this.orderListRef){
             global._globalSelf = this;
           }
+          if (this.templateListRef){
+            global._globalSelf = this;
+            _self = global._globalSelf;
+          }
           this.setupWebViewJavascriptBridge(function(bridge) {
             bridge.registerHandler('JS Echo', function(data, responseCallback) {
               if (data['value'] == 1){//任务列表
