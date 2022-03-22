@@ -20,7 +20,7 @@
       <div class="opr-block-add" v-if="globalDeviceType != 'ios'">
         <el-button type="text" size="mini" @click="addTask">
           <i class="fa fa-plus"></i>
-          {{$t("任务")}}s
+          {{$t("任务")}}
         </el-button>
       </div>
       <div class="opr-block-scale textCenter">
