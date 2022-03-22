@@ -624,3 +624,6 @@ span,div,button,label{
   text-align: center;
   border-radius: 100%;
 }
+.custom-badge-block .el-badge__content.is-fixed.is-dot {
+  right: 0px;
+}

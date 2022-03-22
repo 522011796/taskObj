@@ -33,8 +33,11 @@
         </div>
       </div>
 
-      <div v-if="item.children.length == 0" class="block-item-empty-plus" @click="addBlock(item, index)">
-        <span class="fa fa-plus" style="font-size: 14px"></span>
+      <div v-if="item.children.length == 0" class="block-item-empty-plus custom-badge-block" @click="addBlock(item, index)">
+        <el-badge :is-dot="item.i.length > 0" class="item">
+          <span class="fa fa-plus" style="font-size: 14px">
+        </span>
+        </el-badge>
       </div>
     </div>
   </div>

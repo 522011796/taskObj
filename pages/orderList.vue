@@ -714,6 +714,7 @@ export default {
         this.orderDeviceType = 'sence';
       }
       this.taskBlockIndex = index;
+      this.dataTaskList = JSON.parse(JSON.stringify(data.i));
       this.drawerTaskList = true;
     },
     showBlock(data, index){
@@ -1136,6 +1137,8 @@ export default {
         this.formOrder.musicName = item.v;
       }else if (item.i == 15){
         this.formOrder.musicProcess = item.v;
+      }else if (item.i == 18){
+        this.formOrder.source = item.v;
       }
 
       this.drawerTaskSet = true;
