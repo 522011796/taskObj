@@ -1344,7 +1344,6 @@ export default {
                 let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
                 timeCount += result;
               }else if(ganttDataJson[i]['i'][j].i == 4){
-                console.log(ganttDataJson[i]['i'][j]);
                 let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
                 timeCount += result;
               }
@@ -1354,7 +1353,7 @@ export default {
             }
             ruleList.push(timeCount);
           }
-          let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
+          let sruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
           this.formSence.duration = ruleMax;
           let bool = this.validateTaskList(ganttDataJson);
           if (!bool){
@@ -1388,7 +1387,6 @@ export default {
           ruleList.push(timeCount);
         }
         let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
-        console.log(ruleList,ruleMax);
         this.formSence.duration = ruleMax;
         let bool = this.validateTaskList(ganttDataJson);
         if (!bool){
