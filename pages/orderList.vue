@@ -715,7 +715,6 @@ export default {
         this.orderDeviceType = 'sence';
       }
       this.taskBlockIndex = data.id;
-      console.log(this.taskBlockIndex);
       this.dataTaskList = JSON.parse(JSON.stringify(data.i));
       this.drawerTaskList = true;
     },
