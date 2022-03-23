@@ -1252,7 +1252,7 @@ export default {
         }
       }
       ganttDataJson = JSON.parse(JSON.stringify(ganttDataJson));
-      if (!this.compareArray(ganttDataJson, this.ganttBakData)){
+      if (!this.compareArray(ganttDataJson, this.ganttBakData) && this.globalPageStatusChange == true){
         this.message = this.$t("系统检测到你修改过数据并未保存，返回后将清除已修改的部分");
         this.changeStatus = 1;
         this.dialogMessage = true;
@@ -1478,6 +1478,7 @@ export default {
     },
     returnMainPath(){
       this.globalEditStatus = false;
+      this.globalPageStatusChange = true;
       this.dismissDialogStatus();
       this.$router.push({
         path: '/',

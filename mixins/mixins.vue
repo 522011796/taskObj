@@ -17,6 +17,7 @@ import {
       name: "mixins",
       data(){
         return {
+          globalPageStatusChange: true,
           globalDrawerHeight: '40%',
           globalDrawerSheetHeight: '50%',
           globalDrawerBottomHeight: '45%',
@@ -549,6 +550,7 @@ import {
                 });
               }
               if (data['value'] == 100){//保存场景指令
+                global._globalSelf.globalPageStatusChange = false;
                 global._globalSelf.saveTask();
               }
               if (data['value'] == 200){//添加任务
