@@ -854,7 +854,8 @@ export default {
           userKey: this.$route.query.userKey,
           appType: this.$route.query.appType,
           deviceType: this.$route.query.deviceType,
-          sourceUrl: item.sourceUrl
+          sourceUrl: item.sourceUrl,
+          sceneId: item.sceneId
         }
       });
     },

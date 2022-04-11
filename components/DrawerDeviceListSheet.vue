@@ -7,6 +7,7 @@
       :append-to-body="appendToBody"
       :visible.sync="drawer_"
       direction="btt"
+      @closed="closeDrawer"
       :before-close="handleClose">
       <div slot="title">
         <div class="block-opr-header">
@@ -20,7 +21,7 @@
         </div>
       </div>
       <div class="custom-el-drawer-cascader">
-        <el-cascader-panel ref="cascaderPanel" :props="{ multiple: true }" :options="data" :style="contentWidthStyle" @change="itemClick"></el-cascader-panel>
+        <el-cascader-panel ref="cascaderPanel" :props="{ multiple: true }" v-model="value" :selectModel="selectModel" :options="data" :style="contentWidthStyle" @change="itemClick"></el-cascader-panel>
       </div>
     </el-drawer>
   </div>
@@ -64,20 +65,30 @@ export default {
       set(v){
         this.$emit("changeDialog",v)
       }
-    }
+    },
+    selectModel(){
+      this.value = this.selData;
+    },
   },
   data() {
     return {
-      inputValue: ''
+      inputValue: '',
+      value: this.selData,
     }
   },
   methods: {
     itemClick(item){
       let data = this.$refs.cascaderPanel.getCheckedNodes();
-      this.$emit('change', data);
+      this.$emit('change', data, item);
     },
     handleClose(done) {
       this.$emit('handleClose', done);
+    },
+    closeDrawer(){
+      // if (this.$refs.cascaderPanel) {
+      //   this.$refs.cascaderPanel.clearCheckedNodes();
+      // }
+      //this.value = [];
     }
   }
 }

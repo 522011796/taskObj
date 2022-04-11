@@ -177,23 +177,26 @@ import {inArray, MessageError, MessageWarning, orderValue} from "../utils/utils"
                   if (arr[i].subgroup != null){
                     arrTemp = arr.filter((e) => {
                       let subGroupName = "";
+                      let subGroupSn = "";
                       //匹配设备组名称
                       if (e.devType == 1){
                         this.globalLightGroupList.filter(function (item, index) {
                           if (item.id == e.subgroup){
                             subGroupName = item.name;
+                            subGroupSn = e.sn;
                           }
                         });
                       }else if (e.devType == 3){
                         this.globalCurtainsGroupList.filter(function (item, index) {
                           if (item.id == e.subgroup){
                             subGroupName = item.name;
+                            subGroupSn = e.sn;
                           }
                         });
                       }
 
                       e['label'] = subGroupName;
-                      e['value'] = subGroupName;
+                      e['value'] = subGroupSn;
                       e['subGroupName'] = subGroupName;
                       e['devType'] = e.devType;
                       e['type'] = 'device';
@@ -228,6 +231,7 @@ import {inArray, MessageError, MessageWarning, orderValue} from "../utils/utils"
                   }
                 }
               }
+              console.log(att);
               this.globalGroupDeviceList = att;
             }
           });

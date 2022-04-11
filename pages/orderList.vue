@@ -227,8 +227,8 @@
 
       <div>
         <el-form class="custom-form" label-width="90px" ref="formPlain" :model="formPlain">
-          <el-form-item :label="$t('任务类型')" @click.native="setTask">
-            <div class="textRight color-666666">
+          <el-form-item :label="$t('任务类型')" @click.native="editPlaiList == false ? setTask() : ''">
+            <div class="textRight" :class="editPlaiList == false ? 'color-666666' : 'color-default'">
               <label>{{formPlain.type === '' ? $t("请选择") : planTypeInfo(formPlain.type)}}</label>
               <label class="fa fa-chevron-right"></label>
             </div>
@@ -345,7 +345,7 @@
     <drawer-room :drawer-room="drawerRoom" :data="globalRoomList" @click="roomItemClick" @handleClose="handleClose"></drawer-room>
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
     <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
-    <drawer-device-list-sheet :data="deviceOptions" :drawer-sheet="drawerDeviceListSheet" @change="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
+    <drawer-device-list-sheet :data="deviceOptions" :sel-data="formPlain.deviceSelAllDevice" :drawer-sheet="drawerDeviceListSheet" @change="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
     <drawer-plan-type-sheet :data="globalPlanTypeData" :drawer-sheet="drawerPlanSheet" @click="planListItemClick" @handleClose="handleSheetClose"></drawer-plan-type-sheet>
   </div>
 </template>
@@ -359,7 +359,7 @@ import DrawerOrderTypeSheet from "../components/DrawerOrderTypeSheet";
 import FormSwitch from "../components/FormSwitch";
 import FormSence from "../components/FormSence";
 import FormChangeDevice from "../components/FormChangeDevice";
-import {MessageCommonTips} from "../utils/utils";
+import {inArray, MessageCommonTips} from "../utils/utils";
 import DrawerDeviceTypeSheet from "../components/DrawerDeviceTypeSheet";
 import DrawerDeviceList from "../components/DrawerDeviceList";
 import DrawerDeviceListSheet from "../components/DrawerDeviceListSheet";
@@ -424,6 +424,7 @@ export default {
       dialogTaskItemDetail: false,
       otherOprStatus: false,
       drawerTimeDiffDetail: false,
+      editPlaiList: false,
       directionTask: 'btt',
       directionTaskList: 'btt',
       directionTaskSet: 'btt',
@@ -465,7 +466,8 @@ export default {
         type: '',
         name: '',
         deviceList: [],
-        deviceSelDevice: []
+        deviceSelDevice: [],
+        deviceSelAllDevice: []
       },
       formOrder: {
         type: '2',
@@ -829,6 +831,7 @@ export default {
     },
     closeDrawer(event){
       if (!event){
+        this.editPlaiList = false;
         this.dismissDialogStatus();
         this.clearForm();
       }
@@ -843,7 +846,8 @@ export default {
         type: '',
         name: '',
         deviceList: [],
-        deviceSelDevice: []
+        deviceSelDevice: [],
+        deviceSelAllDevice: []
       };
       this.formOrder = {
         type: '2',
@@ -890,7 +894,7 @@ export default {
         d: this.formPlain.deviceSelDevice,
         n: this.formPlain.name
       };
-      if (this.planItemIndex != ""){
+      if (this.planItemIndex !== ""){
         obj['i'] = this.ganttData[this.planItemIndex]['i'];
         this.ganttData[this.planItemIndex] = obj;
       }else {
@@ -1166,6 +1170,7 @@ export default {
       this.drawerDeviceTypeSheet = false;
     },
     planListItemClick(data, index){
+      this.editPlaiList = false;
       if (data.value == 0){
 
         this.formPlain = {
@@ -1174,7 +1179,7 @@ export default {
           deviceList: [],
           deviceSelDevice: this.planItemData.d
         };
-
+        this.editPlaiList = true;
         this.drawerTask = true;
       }else if (data.value == 1){
         this.ganttData.splice(this.planItemIndex, 1);
@@ -1184,13 +1189,34 @@ export default {
       }
       this.drawerPlanSheet = false;
     },
-    deviceListItemClick(data){
+    deviceListItemClick(data, item){
       let sns = [];
+      let objList = [];
+      let obj = {
+        id: this.envKey+"@*@"+this.$route.query.sceneId,
+        list: []
+      };
+      obj.list = item;
+
+      let deviceLocal =  localStorage.getItem('deviceLocal');
+      let deviceLocalObj = JSON.parse(deviceLocal);
+      if (deviceLocal && deviceLocal != ''){
+        objList = deviceLocalObj;
+        let index = inArray({id: this.envKey+"@*@"+this.$route.query.sceneId}, objList, 'id');
+        if (index > -1){
+          objList[index]['list'] = item;
+        }else {
+          objList.push(obj);
+        }
+      }
+
+      localStorage.setItem('deviceLocal', JSON.stringify(objList));
       for (let i = 0; i < data.length; i++){
         if (data[i].data.sn){
           sns.push(data[i].data.sn);
         }
       }
+      this.formPlain.deviceSelAllDevice = item;
       this.formPlain.deviceSelDevice = sns;
     },
     handleClose(done, type){
@@ -1263,6 +1289,7 @@ export default {
       }
     },
     addTask(){
+      this.planItemIndex = "";
       this.showDialogStatus();
       this.drawerTask = true;
     },
@@ -1276,8 +1303,19 @@ export default {
       this.otherOprStatus = value;
     },
     async addDevice(){
+      let deviceLocal =  localStorage.getItem('deviceLocal');
+      let deviceLocalObj = JSON.parse(deviceLocal);
+      if (deviceLocalObj && deviceLocalObj != ''){
+        for (let i = 0; i < deviceLocalObj.length; i++){
+          let id = deviceLocalObj[i].id;
+          let idStr = this.envKey + "@*@" + this.$route.query.sceneId;
+          if(idStr == id){
+            this.formPlain.deviceSelAllDevice = deviceLocalObj[i].list;
+          }
+        }
+      }
       await this.getGroupDeviceList(this.formPlain.type);
-      this.deviceOptions = this.globalGroupDeviceList
+      this.deviceOptions = this.globalGroupDeviceList;
       this.drawerDeviceListSheet = true;
     },
     showInput(event){
