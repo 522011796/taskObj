@@ -9,6 +9,12 @@
       direction="btt"
       @closed="closeDrawer"
       :before-close="handleClose">
+      <div v-if="dialogLoading == true" style="position: absolute;top: 50%;left: 50%">
+        <div>
+          <i class="fa fa-spinner fa-spin" style="font-size: 40px"></i>
+        </div>
+        <div class="font-size-12 marginTop10">loading</div>
+      </div>
       <div slot="title">
         <div class="block-opr-header">
           <el-row>
@@ -20,7 +26,7 @@
           </el-row>
         </div>
       </div>
-      <div class="custom-el-drawer-cascader">
+      <div class="custom-el-drawer-cascader" style="position: relative">
         <el-cascader-panel ref="cascaderPanel" :props="{ multiple: true }" v-model="value" :selectModel="selectModel" :options="data" :style="contentWidthStyle" @change="itemClick"></el-cascader-panel>
       </div>
     </el-drawer>
@@ -32,6 +38,10 @@ import mixins from "../mixins/mixins";
 export default {
   mixins: [mixins],
   props:{
+    dialogLoading: {
+      type: Boolean,
+      default: false
+    },
     drawerSheet: {
       type: Boolean,
       default: false

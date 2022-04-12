@@ -345,7 +345,7 @@
     <drawer-room :drawer-room="drawerRoom" :data="globalRoomList" @click="roomItemClick" @handleClose="handleClose"></drawer-room>
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
     <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
-    <drawer-device-list-sheet :data="deviceOptions" :sel-data="formPlain.deviceSelAllDevice" :drawer-sheet="drawerDeviceListSheet" @change="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
+    <drawer-device-list-sheet :dialog-loading="dialogLoading" :data="deviceOptions" :sel-data="formPlain.deviceSelAllDevice" :drawer-sheet="drawerDeviceListSheet" @change="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
     <drawer-plan-type-sheet :data="globalPlanTypeData" :drawer-sheet="drawerPlanSheet" @click="planListItemClick" @handleClose="handleSheetClose"></drawer-plan-type-sheet>
   </div>
 </template>
@@ -396,6 +396,7 @@ export default {
     return {
       orderListRef: true,
       pagLoading: false,
+      dialogLoading: false,
       dataTest: [],
       ganttData: [],
       ganttBakData: [],
@@ -1279,6 +1280,7 @@ export default {
       this.drawerDeviceListSheet = false;
       this.insertAreaItemClick = false;
       this.drawerPlanSheet = false;
+      this.dialogLoading = false;
       this.clearSheet();
       done();
     },
@@ -1351,13 +1353,15 @@ export default {
     },
     addDevice(){
       this.drawerDeviceListSheet = true;
+      this.dialogLoading = true;
       setTimeout(() => {
         this.syncDeviceList();
-      },200);
+      },500);
     },
     async syncDeviceList(){
       await this.getGroupDeviceList(this.formPlain.type);
       this.deviceOptions = this.globalGroupDeviceList;
+      this.dialogLoading = false;
     },
     showInput(event){
       this.inputType = '';
