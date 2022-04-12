@@ -241,7 +241,7 @@
           </el-form-item>
           <el-form-item :label="$t('添加设备')" @click.native="addDevice($event)">
             <div class="textRight color-666666">
-              <label>({{$t("已选择")}}{{formPlain.deviceSelDevice.length}}{{$t("台设备")}})</label>
+              <label>({{$t("已选择")}}{{formPlain.deviceSelAllDevice.length}}{{$t("台设备")}})</label>
               <label class="fa fa-chevron-right"></label>
             </div>
           </el-form-item>
@@ -884,10 +884,47 @@ export default {
     },
     okSetTask(){
       let obj = [];
+      let objLocal = {
+        id: this.envKey+"@*@"+this.$route.query.sceneId,
+        list: {}
+      };
+      let objList = [];
       if (this.formPlain.type === "" || this.formPlain.name == "" || this.formPlain.deviceSelDevice.length == 0){
         MessageCommonTips(this.$t("请设置信息"));
         return;
       }
+      let deviceLocal =  localStorage.getItem('deviceLocal');
+      let deviceLocalObj = JSON.parse(deviceLocal);
+      let planItemIndex = this.planItemIndex;
+      if (planItemIndex === ""){
+        planItemIndex = this.ganttData.length > 0 ? this.ganttData.length : 0;
+      }
+
+      if (deviceLocal && deviceLocal != ''){
+        objList = deviceLocalObj;
+        let index = inArray({id: this.envKey+"@*@"+this.$route.query.sceneId}, objList, 'id');
+        if (index > -1){
+          if (objList[index]['list'][planItemIndex]){
+            objList[index]['list'][planItemIndex].value = this.formPlain.deviceSelAllDevice;
+          }else{
+            objList[index]['list'][planItemIndex] = {
+              value: this.formPlain.deviceSelAllDevice
+            };
+          }
+        }else {
+          objLocal.list[planItemIndex] = {
+            value: this.formPlain.deviceSelAllDevice
+          }
+          objList.push(objLocal);
+        }
+      }else{
+        objLocal.list[planItemIndex] = {
+          value: this.formPlain.deviceSelAllDevice
+        }
+        objList.push(objLocal);
+      }
+      localStorage.setItem('deviceLocal', JSON.stringify(objList));
+
       obj = {
         t: parseInt(this.formPlain.type),
         i: [],
@@ -901,6 +938,7 @@ export default {
         this.ganttData.push(obj);
       }
       this.formatTaskList(this.ganttData);
+
       this.drawerTask = false;
     },
     cancelTask(){
@@ -1172,16 +1210,39 @@ export default {
     planListItemClick(data, index){
       this.editPlaiList = false;
       if (data.value == 0){
-
         this.formPlain = {
           type: this.planItemData.t,
           name: this.planItemData.n,
           deviceList: [],
-          deviceSelDevice: this.planItemData.d
+          deviceSelDevice: this.planItemData.d,
+          deviceSelAllDevice: []
         };
+        let deviceLocal =  localStorage.getItem('deviceLocal');
+        let deviceLocalObj = JSON.parse(deviceLocal);
+        if (deviceLocalObj && deviceLocalObj != ''){
+          for (let i = 0; i < deviceLocalObj.length; i++){
+            let id = deviceLocalObj[i].id;
+            let idStr = this.envKey + "@*@" + this.$route.query.sceneId;
+            if(idStr == id){
+              this.formPlain.deviceSelAllDevice = deviceLocalObj[i].list[this.planItemIndex] ? deviceLocalObj[i].list[this.planItemIndex].value : [];
+            }
+          }
+        }
         this.editPlaiList = true;
         this.drawerTask = true;
       }else if (data.value == 1){
+        let deviceLocal =  localStorage.getItem('deviceLocal');
+        let deviceLocalObj = JSON.parse(deviceLocal);
+        let planItemIndex = this.planItemIndex;
+
+        if (deviceLocal && deviceLocal != '') {
+          let index = inArray({id: this.envKey+"@*@"+this.$route.query.sceneId}, deviceLocalObj, 'id');
+          if (index > -1){
+            //deviceLocalObj[index]['list'][planItemIndex].value = null;
+            delete deviceLocalObj[index]['list'][planItemIndex];
+          }
+        }
+        localStorage.setItem('deviceLocal',JSON.stringify(deviceLocalObj));
         this.ganttData.splice(this.planItemIndex, 1);
       }else if (data.value == 2){
         let data = JSON.parse(JSON.stringify(this.ganttData[this.planItemIndex]));
@@ -1194,23 +1255,9 @@ export default {
       let objList = [];
       let obj = {
         id: this.envKey+"@*@"+this.$route.query.sceneId,
-        list: []
+        list: {}
       };
-      obj.list = item;
 
-      let deviceLocal =  localStorage.getItem('deviceLocal');
-      let deviceLocalObj = JSON.parse(deviceLocal);
-      if (deviceLocal && deviceLocal != ''){
-        objList = deviceLocalObj;
-        let index = inArray({id: this.envKey+"@*@"+this.$route.query.sceneId}, objList, 'id');
-        if (index > -1){
-          objList[index]['list'] = item;
-        }else {
-          objList.push(obj);
-        }
-      }
-
-      localStorage.setItem('deviceLocal', JSON.stringify(objList));
       for (let i = 0; i < data.length; i++){
         if (data[i].data.sn){
           sns.push(data[i].data.sn);
@@ -1289,7 +1336,7 @@ export default {
       }
     },
     addTask(){
-      this.planItemIndex = "";
+      this.planItemIndex = '';
       this.showDialogStatus();
       this.drawerTask = true;
     },
@@ -1302,21 +1349,15 @@ export default {
       }
       this.otherOprStatus = value;
     },
-    async addDevice(){
-      let deviceLocal =  localStorage.getItem('deviceLocal');
-      let deviceLocalObj = JSON.parse(deviceLocal);
-      if (deviceLocalObj && deviceLocalObj != ''){
-        for (let i = 0; i < deviceLocalObj.length; i++){
-          let id = deviceLocalObj[i].id;
-          let idStr = this.envKey + "@*@" + this.$route.query.sceneId;
-          if(idStr == id){
-            this.formPlain.deviceSelAllDevice = deviceLocalObj[i].list;
-          }
-        }
-      }
+    addDevice(){
+      this.drawerDeviceListSheet = true;
+      setTimeout(() => {
+        this.syncDeviceList();
+      },200);
+    },
+    async syncDeviceList(){
       await this.getGroupDeviceList(this.formPlain.type);
       this.deviceOptions = this.globalGroupDeviceList;
-      this.drawerDeviceListSheet = true;
     },
     showInput(event){
       this.inputType = '';
