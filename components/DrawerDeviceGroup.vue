@@ -170,7 +170,11 @@ export default {
       item.label = '';
       item.extraSn = '';
       item.extraName = '';
-      item.extraCount--;
+      this.extraCount--;
+      item.extraCount = this.extraCount;
+
+      this.$set(this.groupList[this.groupIndex], 'extraCount', item.extraCount);
+      console.log(this.groupList[this.groupIndex].extraCount,item.extraCount);
     },
     returnGroup(){
       this.type = 'group';
@@ -213,6 +217,7 @@ export default {
       this.$set(this.groupList[this.groupIndex], 'dd', this.deviceItemAllList);
       this.$set(this.groupList[this.groupIndex], 'extraCount', this.extraCount);
 
+      console.log(this.groupList[this.groupIndex].extraCount, this.groupList[this.groupIndex].d);
       if (this.groupList[this.groupIndex].extraCount == this.groupList[this.groupIndex].d.length){
         this.type = 'group';
       }else {

@@ -231,7 +231,6 @@ import {inArray, MessageError, MessageWarning, orderValue} from "../utils/utils"
                   }
                 }
               }
-              console.log(att);
               this.globalGroupDeviceList = att;
             }
           });
