@@ -174,7 +174,6 @@ export default {
       item.extraCount = this.extraCount;
 
       this.$set(this.groupList[this.groupIndex], 'extraCount', item.extraCount);
-      console.log(this.groupList[this.groupIndex].extraCount,item.extraCount);
     },
     returnGroup(){
       this.type = 'group';
