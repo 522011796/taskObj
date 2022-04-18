@@ -75,7 +75,9 @@
           <el-row>
             <el-col :span="3">
               <div class="textCenter">
-                <el-button size="mini" type="text" class="color-666666" @click="cancelTemp">{{$t("取消")}}</el-button>
+                <el-button size="mini" type="text" class="color-666666" @click="cancelTemp">
+                  <span class="font-size-14">{{$t("取消")}}</span>
+                </el-button>
               </div>
             </el-col>
             <el-col :span="18">
@@ -85,7 +87,9 @@
             </el-col>
             <el-col :span="3">
               <div class="textCenter">
-                <el-button size="mini" type="text" @click="okTemp">{{$t("确定")}}</el-button>
+                <el-button size="mini" type="text" @click="okTemp">
+                  <span class="font-size-14">{{$t("确定")}}</span>
+                </el-button>
               </div>
             </el-col>
           </el-row>

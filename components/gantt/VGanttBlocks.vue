@@ -29,13 +29,13 @@
         </div>
 
         <div v-if="item.children.length - 1 == indexChild && item.children.length > 0" class="block-item-plus" @click="addBlock(item, index)">
-          <span class="fa fa-plus" style="font-size: 14px"></span>
+          <span class="fa fa-plus" style="font-size: 18px"></span>
         </div>
       </div>
 
       <div v-if="item.children.length == 0" class="block-item-empty-plus custom-badge-block" @click="addBlock(item, index)">
         <el-badge :is-dot="item.i.length > 0" class="item">
-          <span class="fa fa-plus" style="font-size: 14px">
+          <span class="fa fa-plus" style="font-size: 18px">
         </span>
         </el-badge>
       </div>

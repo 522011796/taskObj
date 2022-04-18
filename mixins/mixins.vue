@@ -524,17 +524,9 @@ import {
             bridge.registerHandler('JS Echo', function(data, responseCallback) {
               if (data['value'] == 1){//任务列表
                 global._globalSelf.returnMain();
-                // _self.$router.push({
-                //   path: '/',
-                //   query: {
-                //     envKey: _self.$route.query.envKey,
-                //     sessionId: _self.$route.query.sessionId,
-                //     role: _self.$route.query.role,
-                //     userKey: _self.$route.query.userKey,
-                //     appType: _self.$route.query.appType,
-                //     deviceType: _self.$route.query.deviceType,
-                //   }
-                // });
+                if (global._globalSelf.changeStatus == 1){
+                  data['change'] = global._globalSelf.changeStatus;
+                }
               }
               if (data['value'] == 2){//模版列表
                 _self.$router.push({
@@ -552,6 +544,9 @@ import {
               if (data['value'] == 100){//保存场景指令
                 global._globalSelf.globalPageStatusChange = false;
                 global._globalSelf.saveTask();
+                if (global._globalSelf.changeStatus == 1){
+                  data['change'] = global._globalSelf.changeStatus;
+                }
               }
               if (data['value'] == 200){//添加任务
                 global._globalSelf.addTask();
@@ -583,9 +578,6 @@ import {
                     deviceType: _self.$route.query.deviceType,
                   }
                 });
-              }
-              if (global._globalSelf.changeStatus == 1){
-                data['change'] = global._globalSelf.changeStatus;
               }
               responseCallback(data);
             });

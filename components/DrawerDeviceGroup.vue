@@ -13,13 +13,17 @@
           <el-row>
             <el-col :span="4">
               <div class="textCenter">
-                <el-button v-if="type == 'device'" type="text" class="color-666666" @click="returnGroup">{{$t('返回')}}</el-button>
-                <el-button v-else type="text" class="color-666666" @click="cancelGroup">{{$t('取消')}}</el-button>
+                <el-button v-if="type == 'device'" type="text" class="color-666666" @click="returnGroup">
+                  <span class="font-size-14">{{$t('返回')}}</span>
+                </el-button>
+                <el-button v-else type="text" class="color-666666" @click="cancelGroup">
+                  <span class="font-size-14">{{$t('取消')}}</span>
+                </el-button>
               </div>
             </el-col>
             <el-col :span="16">
               <div class="textCenter">
-                <span>{{$t('设备设置')}}</span>
+                <span class="font-size-14">{{$t('设备设置')}}</span>
               </div>
             </el-col>
             <el-col :span="4">

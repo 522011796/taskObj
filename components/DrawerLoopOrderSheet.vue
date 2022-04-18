@@ -21,6 +21,7 @@
       </div>
       <div>
         <div v-for="(item, index) in data" :key="index" @click="itemClick($event, item)" class="drawer-item-class">
+          <span class="color-default">指令{{index+1}}:</span>
           <span class="color-666666">{{ item.name }}</span>
         </div>
       </div>

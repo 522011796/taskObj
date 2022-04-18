@@ -12,12 +12,14 @@
           <el-row>
             <el-col :span="3">
               <div class="textCenter">
-                <el-button size="mini" type="text" class="color-666666" @click="cancelScene">{{$t('取消')}}</el-button>
+                <el-button size="mini" type="text" class="color-666666" @click="cancelScene">
+                  <span class="font-size-14">{{$t('取消')}}</span>
+                </el-button>
               </div>
             </el-col>
             <el-col :span="18">
               <div class="textCenter">
-                <span>{{$t('场景管理')}}</span>
+                <span class="font-size-14">{{$t('场景管理')}}</span>
               </div>
             </el-col>
             <el-col :span="3">

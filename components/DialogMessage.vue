@@ -21,7 +21,7 @@
         <el-row>
           <el-col :span="11">
             <div class="textCenter" @click="cancelDialog">
-              <span>{{$t('取消')}}</span>
+              <span class="font-size-14">{{$t('取消')}}</span>
             </div>
           </el-col>
           <el-col :span="2">
@@ -31,7 +31,7 @@
           </el-col>
           <el-col :span="11">
             <div class="textCenter color-success" @click="okDialog">
-              <span>{{$t('确定')}}</span>
+              <span class="font-size-14">{{$t('确定')}}</span>
             </div>
           </el-col>
         </el-row>

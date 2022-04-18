@@ -7,6 +7,7 @@
       :append-to-body="appendToBody"
       :visible.sync="drawer_"
       direction="btt"
+      :key="keyOptions"
       @closed="closeDrawer"
       :before-close="handleClose">
       <div v-if="dialogLoading == true" style="position: absolute;top: 50%;left: 50%">
@@ -27,7 +28,10 @@
         </div>
       </div>
       <div class="custom-el-drawer-cascader" style="position: relative">
-        <el-cascader-panel ref="cascaderPanel" :props="{ multiple: true }" v-model="value" :selectModel="selectModel" :options="data" :style="contentWidthStyle" @change="itemClick"></el-cascader-panel>
+        <div v-if="data.length == 0" class="textCenter">
+          <span class="color-default padding-top10">暂无数据</span>
+        </div>
+        <el-cascader-panel v-if="data.length > 0" ref="cascaderPanel" :props="{ multiple: true }" v-model="value" :selectModel="selectModel" :options="data" :style="contentWidthStyle" @change="itemClick"></el-cascader-panel>
       </div>
     </el-drawer>
   </div>
@@ -65,6 +69,10 @@ export default {
       default: function (){
         return []
       }
+    },
+    keyOptions: {
+      type: Number,
+      default: 0
     }
   },
   computed: {

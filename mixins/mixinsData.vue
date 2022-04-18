@@ -112,6 +112,7 @@ import {inArray, MessageError, MessageWarning, orderValue} from "../utils/utils"
             pageNum: 1,
             pageSize: 99999
           };
+          this.globalGroupDeviceList = [];
           await this.$axios.get(this.baseUrl + common.deviceList, {params: params, sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
             if (res.data.code == 200) {
               let list = res.data.data.list;
@@ -144,13 +145,13 @@ import {inArray, MessageError, MessageWarning, orderValue} from "../utils/utils"
               roomArr = roomArr.filter((e, i, self) => {
                 return self.indexOf(e) == i
               });
+
               for (let j = 0; j < roomArr.length; j++) {
                 //过滤出匹配到的数据
                 let arr = list.filter((e) => {
                   e['label'] = e.name;
                   return e.room == roomArr[j];
                 });
-
                 let room = arr[0].room;
                 let roomName = "";
                 //匹配房间名称
@@ -224,13 +225,14 @@ import {inArray, MessageError, MessageWarning, orderValue} from "../utils/utils"
                       devType: arr[i].devType,
                       subGroup: arr[i].subgroup
                     };
-                    let sel = inArray(child, att[j]['children'], 'subGroup');
+                    let sel = inArray(child, att[j]['children'], 'sn');
                     if (sel == -1){
                       att[j]['children'].push(child);
                     }
                   }
                 }
               }
+              console.log(att);
               this.globalGroupDeviceList = att;
             }
           });

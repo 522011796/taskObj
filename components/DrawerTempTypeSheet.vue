@@ -24,7 +24,7 @@
           <span class="color-666666">{{ item.name }}</span>
         </div>
         <div @click="itemClick($event, 'cancel')" class="drawer-item-class color-disabled">
-          <span>{{$t('取消')}}</span>
+          <span class="font-size-14">{{$t('取消')}}</span>
         </div>
       </div>
     </el-drawer>

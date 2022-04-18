@@ -77,27 +77,30 @@
             <el-col :span="3">
               <div class="textCenter">
                 <el-button size="mini" type="text" @click="cancelTask">
-                  <span class="color-666666">{{$t('取消')}}</span>
+                  <span class="color-666666 font-size-14">{{$t('取消')}}</span>
                 </el-button>
               </div>
             </el-col>
-            <el-col :span="18">
+            <el-col :span="15">
               <div class="textCenter">
                 <span>{{$t('指令列表')}}</span>
               </div>
             </el-col>
-            <el-col :span="3">
+            <el-col :span="6">
               <el-row>
                 <el-col :span="12">
                   <div class="textCenter">
                     <el-button size="mini" type="text" @click="addOnlyTask">
                       <i class="fa fa-plus color-success"></i>
+                      <span class="color-success font-size-14">{{$t('添加')}}</span>
                     </el-button>
                   </div>
                 </el-col>
                 <el-col :span="12">
-                  <div class="textCenter">
-                    <el-button size="mini" type="text" @click="okTask">{{$t('保存')}}</el-button>
+                  <div class="textRight font-size-14">
+                    <el-button size="mini" type="text" @click="okTask">
+                      <span class="font-size-14">{{$t('保存')}}</span>
+                    </el-button>
                   </div>
                 </el-col>
               </el-row>
@@ -156,7 +159,7 @@
             <el-col :span="3">
               <div class="textCenter">
                 <el-button size="mini" type="text" @click="cancelTaskSet">
-                  <span class="color-666666">{{$t('取消')}}</span>
+                  <span class="color-666666 font-size-14">{{$t('取消')}}</span>
                 </el-button>
               </div>
             </el-col>
@@ -207,7 +210,7 @@
             <el-col :span="3">
               <div class="textCenter">
                 <el-button size="mini" type="text" @click="cancelSetTask">
-                  <span class="color-666666">{{$t('取消')}}</span>
+                  <span class="color-666666 font-size-14">{{$t('取消')}}</span>
                 </el-button>
               </div>
             </el-col>
@@ -218,7 +221,9 @@
             </el-col>
             <el-col :span="3">
               <div class="textCenter">
-                <el-button size="mini" type="text" @click="okSetTask">{{$t('确定')}}</el-button>
+                <el-button size="mini" type="text" @click="okSetTask">
+                  <span class="font-size-14">{{$t('确定')}}</span>
+                </el-button>
               </div>
             </el-col>
           </el-row>
@@ -345,7 +350,7 @@
     <drawer-room :drawer-room="drawerRoom" :data="globalRoomList" @click="roomItemClick" @handleClose="handleClose"></drawer-room>
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelInputDialog" @okClick="okInputDialog"></dialog-input>
     <drawer-device-type-sheet :data="globalDeviceTypeData" :drawer-sheet="drawerDeviceTypeSheet" @click="deviceTypeItemClick" @handleClose="handleSheetClose"></drawer-device-type-sheet>
-    <drawer-device-list-sheet :dialog-loading="dialogLoading" :data="deviceOptions" :sel-data="formPlain.deviceSelAllDevice" :drawer-sheet="drawerDeviceListSheet" @change="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
+    <drawer-device-list-sheet :key-options="deviceKeys" :dialog-loading="dialogLoading" :data="deviceOptions" :sel-data="formPlain.deviceSelAllDevice" :drawer-sheet="drawerDeviceListSheet" @change="deviceListItemClick" @handleClose="handleSheetClose"></drawer-device-list-sheet>
     <drawer-plan-type-sheet :data="globalPlanTypeData" :drawer-sheet="drawerPlanSheet" @click="planListItemClick" @handleClose="handleSheetClose"></drawer-plan-type-sheet>
   </div>
 </template>
@@ -499,7 +504,8 @@ export default {
         source: '',
         insertArea: ''
       },
-      deviceOptions: []
+      deviceOptions: [],
+      deviceKeys: 0
     }
   },
   computed: {
@@ -1354,6 +1360,7 @@ export default {
     addDevice(){
       this.drawerDeviceListSheet = true;
       this.dialogLoading = true;
+      this.deviceKeys++;
       setTimeout(() => {
         this.syncDeviceList();
       },500);
@@ -1396,7 +1403,9 @@ export default {
       // console.log("点击了浏览器的返回按钮");
       history.pushState(null, null, document.URL);
     },
-    saveTask(){
+    async saveTask(){
+      this.changeStatus = 0;
+      this.globalPageStatusChange = false;
       let globalEditStatus = this.$route.query.globalEditStatus;
       let ganttDataJson = JSON.parse(JSON.stringify(this.ganttData));
       let ruleList = [];
@@ -1404,7 +1413,7 @@ export default {
         this.saveLoading = true;
         let sourceUrl = this.$route.query.sourceUrl;
         let editTaskList = [];
-        this.$axios.get(sourceUrl).then(res => {
+        await this.$axios.get(sourceUrl).then(res => {
           this.formSence = {
             id: res.data.id,
             envKey: '',
@@ -1451,10 +1460,10 @@ export default {
           let bool = this.validateTaskList(ganttDataJson);
           if (!bool){
             MessageCommonTips(this.$t("请设置场景中的任务和指令！"));
+            this.changeStatus = 1;
             this.saveLoading = false;
             return;
           }
-
           this.okScene(this.formSence, JSON.parse(JSON.stringify(ganttDataJson)), this.initTask);
         });
       }else{
@@ -1487,6 +1496,7 @@ export default {
         let bool = this.validateTaskList(ganttDataJson);
         if (!bool){
           MessageCommonTips(this.$t("请设置场景中的任务和指令！"));
+          this.changeStatus = 1;
           this.saveLoading = false;
           return;
         }
