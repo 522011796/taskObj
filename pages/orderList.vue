@@ -1212,6 +1212,8 @@ export default {
     },
     deviceTypeItemClick(data){
       this.formPlain.type = data.value;
+      this.deviceOptions = [];
+      this.formPlain.deviceSelAllDevice = [];
       this.drawerDeviceTypeSheet = false;
     },
     planListItemClick(data, index){
