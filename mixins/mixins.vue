@@ -419,6 +419,7 @@ import {
 
           let url = this.globalOprType == 'add' ? common.createSence : common.editSence;
 
+          this.changeStatus = 2;
           this.$axios.post(this.baseUrl + url, codeData, {sessionId: this.sessionId, userKey: this.userKey, loading: false}).then(res => {
             if (res.data.code == 200){
               this.installSence(res.data.data.sceneId, dataObj.tasks);

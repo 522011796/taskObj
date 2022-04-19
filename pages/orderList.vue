@@ -531,6 +531,7 @@ export default {
       let taskList = localStorage.getItem('taskTempList');
       this.formatTaskList(JSON.parse(taskList));
     }
+    this.initSourceTask();
   },
   methods: {
     initTask(){
@@ -539,6 +540,26 @@ export default {
       this.$axios.get(sourceUrl).then(res => {
         this.ganttBakData = JSON.parse(JSON.stringify(res.data.tasks));
         this.formatTaskList(res.data.tasks);
+      });
+    },
+    async initSourceTask(){
+      let sourceUrl = this.$route.query.sourceUrl;
+      await this.$axios.get(sourceUrl).then(res => {
+        this.formSence = {
+          id: res.data.id,
+          envKey: '',
+          name: res.data.name,
+          iconId:  res.data.icon,
+          internal: res.data.internal == 1 ? true : false,
+          roomId: res.data.room,
+          sceneId: res.data.id,
+          sceneName: res.data.name,
+          sceneType: 1,
+          sourceCode: '',
+          openSource: true,
+          img: '',
+          duration: res.data.duration,
+        };
       });
     },
     formatTaskList(data){
@@ -1415,59 +1436,95 @@ export default {
         this.saveLoading = true;
         let sourceUrl = this.$route.query.sourceUrl;
         let editTaskList = [];
-        await this.$axios.get(sourceUrl).then(res => {
-          this.formSence = {
-            id: res.data.id,
-            envKey: '',
-            name: res.data.name,
-            iconId:  res.data.icon,
-            internal: res.data.internal == 1 ? true : false,
-            roomId: res.data.room,
-            sceneId: res.data.id,
-            sceneName: res.data.name,
-            sceneType: 1,
-            sourceCode: '',
-            openSource: true,
-            img: '',
-            duration: res.data.duration,
-          };
-          editTaskList = res.data.tasks;
-          for (let i = 0; i < ganttDataJson.length; i++){
-            let timeCount = 0;
-            if (ganttDataJson[i]['children']){
-              ganttDataJson[i].children = undefined;
-            }
-            if (ganttDataJson[i]['id'] != undefined){
-              ganttDataJson[i].id = undefined;
-            }
-            for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
-              if (ganttDataJson[i]['i'][j].i == 1 || ganttDataJson[i]['i'][j].i == 2) {
-                let result = Math.floor(ganttDataJson[i]['i'][j].v);
-                timeCount += result;
-              }else if(ganttDataJson[i]['i'][j].i == 3){
-                let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
-                timeCount += result;
-              }else if(ganttDataJson[i]['i'][j].i == 4){
-                let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
-                timeCount += result;
-              }
-              if (ganttDataJson[i]['i'][j].vLoop){
-                ganttDataJson[i]['i'][j].vLoop = undefined;
-              }
-            }
-            ruleList.push(timeCount);
+        for (let i = 0; i < ganttDataJson.length; i++){
+          let timeCount = 0;
+          if (ganttDataJson[i]['children']){
+            ganttDataJson[i].children = undefined;
           }
-          let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
-          this.formSence.duration = ruleMax;
-          let bool = this.validateTaskList(ganttDataJson);
-          if (!bool){
-            MessageCommonTips(this.$t("请设置场景中的任务和指令！"));
-            this.changeStatus = 1;
-            this.saveLoading = false;
-            return;
+          if (ganttDataJson[i]['id'] != undefined){
+            ganttDataJson[i].id = undefined;
           }
-          this.okScene(this.formSence, JSON.parse(JSON.stringify(ganttDataJson)), this.initTask);
-        });
+          for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
+            if (ganttDataJson[i]['i'][j].i == 1 || ganttDataJson[i]['i'][j].i == 2) {
+              let result = Math.floor(ganttDataJson[i]['i'][j].v);
+              timeCount += result;
+            }else if(ganttDataJson[i]['i'][j].i == 3){
+              let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
+              timeCount += result;
+            }else if(ganttDataJson[i]['i'][j].i == 4){
+              let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
+              timeCount += result;
+            }
+            if (ganttDataJson[i]['i'][j].vLoop){
+              ganttDataJson[i]['i'][j].vLoop = undefined;
+            }
+          }
+          ruleList.push(timeCount);
+        }
+        let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
+        this.formSence.duration = ruleMax;
+        let bool = this.validateTaskList(ganttDataJson);
+        if (!bool){
+          MessageCommonTips(this.$t("请设置场景中的任务和指令！"));
+          this.changeStatus = 1;
+          this.saveLoading = false;
+          return;
+        }
+        this.okScene(this.formSence, JSON.parse(JSON.stringify(ganttDataJson)), this.initTask);
+
+        // await this.$axios.get(sourceUrl).then(res => {
+        //   this.formSence = {
+        //     id: res.data.id,
+        //     envKey: '',
+        //     name: res.data.name,
+        //     iconId:  res.data.icon,
+        //     internal: res.data.internal == 1 ? true : false,
+        //     roomId: res.data.room,
+        //     sceneId: res.data.id,
+        //     sceneName: res.data.name,
+        //     sceneType: 1,
+        //     sourceCode: '',
+        //     openSource: true,
+        //     img: '',
+        //     duration: res.data.duration,
+        //   };
+        //   editTaskList = res.data.tasks;
+        //   for (let i = 0; i < ganttDataJson.length; i++){
+        //     let timeCount = 0;
+        //     if (ganttDataJson[i]['children']){
+        //       ganttDataJson[i].children = undefined;
+        //     }
+        //     if (ganttDataJson[i]['id'] != undefined){
+        //       ganttDataJson[i].id = undefined;
+        //     }
+        //     for (let j = 0; j < ganttDataJson[i]['i'].length; j++){
+        //       if (ganttDataJson[i]['i'][j].i == 1 || ganttDataJson[i]['i'][j].i == 2) {
+        //         let result = Math.floor(ganttDataJson[i]['i'][j].v);
+        //         timeCount += result;
+        //       }else if(ganttDataJson[i]['i'][j].i == 3){
+        //         let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
+        //         timeCount += result;
+        //       }else if(ganttDataJson[i]['i'][j].i == 4){
+        //         let result = Math.floor(ganttDataJson[i]['i'][j].vLoop);
+        //         timeCount += result;
+        //       }
+        //       if (ganttDataJson[i]['i'][j].vLoop){
+        //         ganttDataJson[i]['i'][j].vLoop = undefined;
+        //       }
+        //     }
+        //     ruleList.push(timeCount);
+        //   }
+        //   let ruleMax = ruleList.length == 0 ? 0 : Math.max(...ruleList);
+        //   this.formSence.duration = ruleMax;
+        //   let bool = this.validateTaskList(ganttDataJson);
+        //   if (!bool){
+        //     MessageCommonTips(this.$t("请设置场景中的任务和指令！"));
+        //     this.changeStatus = 1;
+        //     this.saveLoading = false;
+        //     return;
+        //   }
+        //   this.okScene(this.formSence, JSON.parse(JSON.stringify(ganttDataJson)), this.initTask);
+        // });
       }else{
         this.saveLoading = true;
         let ganttDataJson = JSON.parse(JSON.stringify(this.ganttData));
@@ -1502,7 +1559,6 @@ export default {
           this.saveLoading = false;
           return;
         }
-
         this.editSceneList = JSON.parse(JSON.stringify(ganttDataJson));
         this.globalOprType = 'add';
         this.drawerEdit = true;

@@ -603,7 +603,7 @@ span,div,button,label{
   margin: 0 auto !important;
 }
 .drawer-other-block .custom-el-drawer-cascader .el-cascader-menu {
-  min-width: 100px;
+  /*min-width: 100px;*/
   box-sizing: border-box;
   color: #606266;
   border-right: solid 1px #E4E7ED;
