@@ -63,6 +63,12 @@ export default {
       default: function (){
         return {}
       }
+    },
+    dataTaskList: {
+      type: Array,
+      default: function (){
+        return []
+      }
     }
   },
   computed: {
@@ -120,7 +126,10 @@ export default {
       this.dialogInput = true;
     },
     setLoop(){
-      this.loopData = [{name:1, value: 1},{name:2, value: 2}];
+      this.loopData = [];
+      for (let i = 0; i < this.dataTaskList.length; i++){
+        this.loopData.push({name:this.orderValueInfo(this.dataTaskList[i].i, 'set'), type: this.dataTaskList[i].i, value: i});
+      }
       this.drawerSheet = true;
     },
     typeItemClick(data){

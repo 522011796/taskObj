@@ -190,7 +190,7 @@
         <form-music v-if="orderDeviceType == 'music'" :form-data="formOrder" @handleChange="handleChange"></form-music>
         <form-sence v-if="orderDeviceType == 'sence'" :form-data="formOrder" :data-task-list="dataTaskList" @handleChange="handleChange"></form-sence>
         <form-curtains v-if="orderDeviceType == 'curtains'" :form-data="formOrder" :data-task-list="dataTaskList" @handleChange="handleChange"></form-curtains>
-        <form-change-device v-if="orderDeviceType == 'changeDevice'" :form-data="formOrder" @handleChange="handleChange"></form-change-device>
+        <form-change-device v-if="orderDeviceType == 'changeDevice'" :form-data="formOrder" :data-task-list="dataTaskList" @handleChange="handleChange"></form-change-device>
       </el-form>
     </el-drawer>
 
