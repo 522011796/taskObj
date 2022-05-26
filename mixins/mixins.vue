@@ -545,7 +545,7 @@ import {
               if (data['value'] == 100){//保存场景指令
                 global._globalSelf.globalPageStatusChange = false;
                 global._globalSelf.saveTask();
-                if (global._globalSelf.changeStatus == 1){
+                if (global._globalSelf.changeStatus == 1 || global._globalSelf.changeStatus == 2){
                   data['change'] = global._globalSelf.changeStatus;
                 }
               }

@@ -33,10 +33,19 @@
         </div>
       </el-form-item>
     </template>
+    <template v-if="_formData.insertArea != ''">
+      <el-form-item :label="$t('插入位置')" @click.native="handleInsert">
+        <div class="textRight color-666666">
+          <label>{{_formData.insertArea == 'up' ? $t("上一行") : $t("下一行")}}</label>
+          <label class="fa fa-chevron-right"></label>
+        </div>
+      </el-form-item>
+    </template>
 
     <dialog-input :title="title" :message="messageInput" :placeholder="placeholder" :dialog-input="dialogInput" @cancel="cancelDialog" @okClick="okDialog"></dialog-input>
 
     <drawer-loop-order-sheet :drawer-sheet="drawerSheet" :data="loopData" :append-to-body="true" @click="typeItemClick" @handleClose="handleClose"></drawer-loop-order-sheet>
+    <drawer-insert-area-type-sheet :data="globalInsertTypeData" :drawer-sheet="drawerInsertAreaSheet" :append-to-body="true" @click="insertAreaItemClick" @handleClose="handleClose"></drawer-insert-area-type-sheet>
   </div>
 </template>
 
@@ -73,7 +82,8 @@ export default {
       title: '',
       placeholder: '',
       drawerSheet: false,
-      loopData: []
+      loopData: [],
+      drawerInsertAreaSheet: false
     }
   },
   methods: {
@@ -86,6 +96,7 @@ export default {
     },
     okDialog(data){
       let strMatch = /^[A-Fa-f0-9]{1,60}$/;
+      let arr = [];
       if (data == ""){
         MessageCommonTips(this.$t("请输入串行器数据！"));
         return;
@@ -93,6 +104,12 @@ export default {
         MessageCommonTips(this.$t("请输入十六进制数据！"));
         return;
       }
+
+      //补齐
+      if (data.length % 2 != 0){
+        data = data+"0";
+      }
+
       this._formData.source = data;
       this.dialogInput = false;
     },
@@ -112,7 +129,15 @@ export default {
     },
     handleClose(done, type){
       this.drawerSheet = false;
+      this.drawerInsertAreaSheet = false;
       done();
+    },
+    handleInsert(){
+      this.drawerInsertAreaSheet = true;
+    },
+    insertAreaItemClick(data){
+      this._formData.insertArea = data.value;
+      this.drawerInsertAreaSheet = false;
     }
   }
 }
